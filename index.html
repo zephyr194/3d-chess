@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#173f3a" />
+    <title>楚河战阵 · 3D象棋</title>
+  </head>
+  <body>
+    <main id="app">
+      <section class="game-shell">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">3D CARTOON XIANGQI</p>
+            <h1>楚河战阵</h1>
+          </div>
+          <div class="turn-pill" id="turn-pill"><span></span><strong>红方行军</strong></div>
+        </header>
+
+        <div class="viewport-wrap">
+          <canvas id="game-canvas" aria-label="可操作的3D中国象棋棋盘"></canvas>
+          <div class="battle-toast" id="battle-toast" role="status"></div>
+          <div class="hint">点击棋子选择 · 拖动画面旋转 · 滚轮缩放</div>
+        </div>
+
+        <aside class="control-panel">
+          <div class="status-card">
+            <p class="label">战况</p>
+            <h2 id="status-title">红方整军待发</h2>
+            <p id="status-detail">选择一枚红方棋子开始行军。</p>
+          </div>
+
+          <div class="controls">
+            <label>
+              <span>演出速度</span>
+              <select id="speed-select">
+                <option value="1.7">快速</option>
+                <option value="1" selected>标准</option>
+                <option value="0.62">电影</option>
+              </select>
+            </label>
+            <button id="sound-button" class="secondary" aria-pressed="true">音效：开启</button>
+            <button id="view-button" class="secondary">恢复俯视</button>
+            <button id="reset-button" class="primary">重新布阵</button>
+          </div>
+
+          <div class="legend">
+            <span><i class="red"></i>红方</span>
+            <span><i class="black"></i>黑方</span>
+            <span><i class="move"></i>可移动</span>
+          </div>
+        </aside>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
