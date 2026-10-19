@@ -1,0 +1,27 @@
+{
+  "piece_scale": 0.68,
+  "station_root_height": 0.545,
+  "logical_stations": 90,
+  "files": [
+    {
+      "file": "src/scene/board.ts",
+      "unchanged": true,
+      "sha256": "311ce6eb9066d1e040f9474551fd48f3dc96bf8934e8c33308ab6ef4aea284ef"
+    },
+    {
+      "file": "src/scene/landscape-layout.ts",
+      "unchanged": true,
+      "sha256": "b86607c097fd26fb4d8924bc6d8e2402d79189f231662d2977506c1b76d87ba7"
+    },
+    {
+      "file": "src/game/xiangqi.ts",
+      "unchanged": true,
+      "sha256": "ee3257e3428e6d7652991e99c27fe774ff75a850916c531a1db539952bef04f4"
+    },
+    {
+      "file": "tests/xiangqi.test.ts",
+      "unchanged": true,
+      "sha256": "fa0e19304c69fbdef6aa8481aa130ee720ca8eccfd281f71a87ba508ba5192d7"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "stage": "before",
+  "viewport": [
+    1440,
+    1024
+  ],
+  "frames": [
+    [
+      "01-overview",
+      null,
+      null
+    ],
+    [
+      "02-crossings",
+      [
+        15,
+        12,
+        20
+      ],
+      [
+        0,
+        0.5,
+        0
+      ]
+    ],
+    [
+      "03-cliff",
+      [
+        6,
+        10,
+        9
+      ],
+      [
+        10,
+        0.5,
+        0
+      ]
+    ],
+    [
+      "04-ferry",
+      [
+        -4,
+        8,
+        10
+      ],
+      [
+        -9,
+        0.5,
+        0
+      ]
+    ]
+  ],
+  "checks": [],
+  "ferry_journeys": [],
+  "console_errors": [],
+  "source_commit": "de9d76a15a569e884c3738073203cd763b79d3c0",
+  "capture_method": "Native Vite app extracted from the baseline Git commit; identical camera list and viewport to the refined version."
+}

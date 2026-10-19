@@ -1,0 +1,82 @@
+{
+  "stage": "after",
+  "viewport": [
+    1440,
+    1024
+  ],
+  "frames": [
+    [
+      "01-overview",
+      null,
+      null
+    ],
+    [
+      "02-crossings",
+      [
+        15,
+        12,
+        20
+      ],
+      [
+        0,
+        0.5,
+        0
+      ]
+    ],
+    [
+      "03-cliff",
+      [
+        6,
+        10,
+        9
+      ],
+      [
+        10,
+        0.5,
+        0
+      ]
+    ],
+    [
+      "04-ferry",
+      [
+        -4,
+        8,
+        10
+      ],
+      [
+        -9,
+        0.5,
+        0
+      ]
+    ]
+  ],
+  "checks": [
+    "All 16 initial red pieces selectable; 32 physical pieces",
+    "Animation uses its first RAF timestamp; an earlier frame-clock origin cannot lock a move",
+    "Illegal horse endpoint rejected; keyboard legal move and route preview",
+    "Real legal soldier ferry and cliff crossings finish at their logical stations",
+    "Normal-motion cannon capture through the real ferry in both directions",
+    "390px mobile layout and synchronized move without horizontal overflow",
+    "Reset cancels in-flight transport with no stale logical move"
+  ],
+  "ferry_journeys": [
+    {
+      "direction": "north-to-south",
+      "frames": 777,
+      "footprint_rays": 6993,
+      "unsupported_samples": 0,
+      "maximum_boat_speed": 2.600000000000075,
+      "elapsed_seconds": 14.982700000000001
+    },
+    {
+      "direction": "south-to-north",
+      "frames": 759,
+      "footprint_rays": 6831,
+      "unsupported_samples": 0,
+      "maximum_boat_speed": 2.600000000000082,
+      "elapsed_seconds": 14.049400000000002
+    }
+  ],
+  "console_errors": [],
+  "source_commit": "855eb0c2b3b9c5c16cec534d3d8d0251c0fe3201"
+}

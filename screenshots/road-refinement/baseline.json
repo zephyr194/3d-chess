@@ -1,0 +1,90 @@
+{
+  "repository": "zephyr194/3d-chess",
+  "source_commit": "de9d76a15a569e884c3738073203cd763b79d3c0",
+  "application_tests": {
+    "passed": 12,
+    "test_files": 2,
+    "unscoped_command_failed_due_to_vendored_bun_suites": 5
+  },
+  "screenshots": {
+    "stage": "before",
+    "viewport": [
+      1440,
+      1024
+    ],
+    "frames": [
+      [
+        "01-overview",
+        null,
+        null
+      ],
+      [
+        "02-crossings",
+        [
+          15,
+          12,
+          20
+        ],
+        [
+          0,
+          0.5,
+          0
+        ]
+      ],
+      [
+        "03-cliff",
+        [
+          6,
+          10,
+          9
+        ],
+        [
+          10,
+          0.5,
+          0
+        ]
+      ],
+      [
+        "04-ferry",
+        [
+          -4,
+          8,
+          10
+        ],
+        [
+          -9,
+          0.5,
+          0
+        ]
+      ]
+    ],
+    "checks": [],
+    "ferry_journeys": [],
+    "console_errors": [],
+    "source_commit": "de9d76a15a569e884c3738073203cd763b79d3c0",
+    "capture_method": "Native Vite app extracted from the baseline Git commit; identical camera list and viewport to the refined version."
+  },
+  "ferry_regression": "before/ferry-discontinuity.json",
+  "design_selection": {
+    "base": "compiled timed intervals owned by battlefield",
+    "candidate_A_score": 21,
+    "candidate_B_score": 24,
+    "judge_model": "inherit-parent",
+    "grafts": [
+      "reset during disembarkation",
+      "stale handles after a new trip",
+      "elapsed-time partition equivalence"
+    ]
+  },
+  "workflow_adaptations": [
+    "Use existing isolated cloud checkout and one coupled source writer.",
+    "Cursor control-ui and deslop are not installed; use real Playwright browser evidence and independent source review.",
+    "GitHub CLI read-only repository request returns Forbidden; HTTPS Git fetch works."
+  ],
+  "clock_regression": {
+    "method": "Three consecutive real UI pawn moves after reset in Chromium",
+    "before": "The third move emitted March time must be finite and nonnegative and remained locked",
+    "cause": "performance.now initialization can be later than the first RAF callback timestamp",
+    "fix": "Use the first RAF callback timestamp as the movement clock origin"
+  }
+}
