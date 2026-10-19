@@ -32,6 +32,10 @@ npm run build
 
 浏览器截图与交互脚本：`scripts/capture-restored.py`。需要 Python Playwright 和 Chromium；默认连接本机 5173 端口。截图保存在 `screenshots/restored/`。该脚本只在浏览器响应中注入检查接口，不修改产品源码。
 
+## 项目本地技能
+
+原版 pstack 的 56 个技能以普通文件保存在 [`.agents/skills/`](.agents/skills/README.md)，随仓库管理。来源版本、使用方式和宿主兼容说明见该目录的 README。
+
 ## 本次恢复
 
 当前源码是在 `be6a6e5` 基础上，依据已确认需求重新实现的改造版，不是从缺失环境中找回的逐字相同副本。恢复及验证说明见 `docs/restoration.md`。
