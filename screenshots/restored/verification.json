@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "32 real pieces, all red pieces selectable",
+    "constant scale .68 and root height .545",
+    "synchronized 2D and 3D state",
+    "keyboard move and illegal horse endpoint rejected",
+    "cannon screen capture",
+    "real ferry route",
+    "real cliff route",
+    "mobile 390px without overflow",
+    "reset cancels pending state commit"
+  ],
+  "console_errors": []
+}

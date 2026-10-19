@@ -20,7 +20,9 @@
         <div class="viewport-wrap">
           <canvas id="game-canvas" aria-label="可操作的3D中国象棋棋盘"></canvas>
           <div class="battle-toast" id="battle-toast" role="status"></div>
-          <div class="hint">点击棋子选择 · 拖动画面旋转 · 滚轮缩放</div>
+          <section class="tactical-map" aria-label="棋局图"><div id="tactical-panel" hidden><div class="tactical-heading"><strong>棋局</strong><span>黑方在上 · 红方在下</span></div><div class="tactical-paper"><div id="tactical-board" role="group" aria-label="标准象棋布局"></div></div><p id="tactical-caption" aria-live="polite"></p></div><button id="tactical-toggle" aria-expanded="false" aria-controls="tactical-panel">看棋局 · M</button></section>
+          <div id="route-caption" class="route-caption" hidden></div>
+          <div class="hint">选择棋子 · 悬停落点看道路 · 拖动旋转</div>
         </div>
 
         <aside class="control-panel">
@@ -39,7 +41,9 @@
                 <option value="0.62">电影</option>
               </select>
             </label>
+            <button id="music-button" class="secondary" aria-pressed="true">战鼓：开启</button><label class="volume-label"><span>战鼓音量</span><input id="music-volume" type="range" min="0" max="100" value="28" aria-label="战鼓音量" /></label><p id="music-status" class="music-status">点击棋盘后启奏</p>
             <button id="sound-button" class="secondary" aria-pressed="true">音效：开启</button>
+            <button id="landscape-button" class="secondary">战场全景</button>
             <button id="view-button" class="secondary">恢复俯视</button>
             <button id="reset-button" class="primary">重新布阵</button>
           </div>
