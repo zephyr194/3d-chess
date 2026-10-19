@@ -16,8 +16,37 @@ import {
   creeks,
   EXTENT,
   inCity,
+  surfaceSpeed,
+  type MarchPath,
+  type Surface,
   type Route,
 } from "./landscape-layout";
+import type { PieceKind } from "../game/xiangqi";
+
+export type MarchFrame =
+  | { readonly status: "cancelled" }
+  | {
+      readonly status: "active";
+      readonly distance: number;
+      readonly surface: Surface;
+      readonly motion: "walking" | "riding" | "waiting";
+      readonly done: boolean;
+    };
+export interface MarchPlayback {
+  readonly durationSeconds: number;
+  advance(deltaSeconds: number): MarchFrame;
+}
+type ScoreInterval = {
+  readonly startsAt: number;
+  readonly endsAt: number;
+  readonly actorFrom: number;
+  readonly actorTo: number;
+  readonly boatFrom: number;
+  readonly boatTo: number;
+  readonly surface: Surface;
+  readonly motion: "walking" | "riding" | "waiting";
+};
+
 export function createBattlefield(parent: T.Group) {
   const root = new T.Group();
   root.name = "battlefield-decor";
@@ -150,10 +179,10 @@ export function createBattlefield(parent: T.Group) {
     vs: number[] = [],
     cs: number[] = [],
     ix: number[] = [];
-  const grass = new T.Color("#8da577"),
-    meadow = new T.Color("#a8b883"),
-    rock = new T.Color("#9da995"),
-    peak = new T.Color("#c5cbb7");
+  const grass = new T.Color("#789563"),
+    meadow = new T.Color("#a1ad74"),
+    rock = new T.Color("#879a86"),
+    peak = new T.Color("#afbfac");
   for (let j = 0; j <= nz; j++)
     for (let i = 0; i <= nx; i++) {
       const x = -EXTENT.x + (i * EXTENT.x * 2) / nx,
@@ -167,27 +196,20 @@ export function createBattlefield(parent: T.Group) {
       if (y > 5) c.lerp(peak, T.MathUtils.smoothstep(y, 5, 9));
       if (y < 0) c.lerp(new T.Color("#718f7c"), 0.4);
       const road = roadInfo(x, z);
-      if (road.distance < road.width / 2 + 0.4) {
+      const shoulder = road.width / 2 + 0.44 +
+        Math.sin(x * 2.1 + z * 1.7) * 0.09;
+      if (road.distance < shoulder) {
         const rc = new T.Color(
-          road.surface === "mud"
-            ? "#919c77"
-            : road.surface === "imperial"
-              ? "#b1ad89"
-              : road.surface === "courtyard"
-                ? "#a8b195"
-                : road.surface === "mountain"
-                  ? "#a4ab90"
-                  : "#aaa47d",
+          road.surface === "mud" ? "#736447"
+            : road.surface === "imperial" ? "#b3a17b"
+            : road.surface === "courtyard" ? "#a09b7e"
+            : road.surface === "mountain" ? "#9b8e6c"
+            : "#a48459",
         );
-        c.lerp(
-          rc,
-          1 -
-            T.MathUtils.smoothstep(
-              road.distance,
-              road.width / 2 - 0.15,
-              road.width / 2 + 0.4,
-            ),
-        );
+        const wear = 0.95 + 0.05 * Math.sin(x * 4.1 - z * 3.2);
+        rc.multiplyScalar(wear);
+        c.lerp(rc, 1 - T.MathUtils.smoothstep(road.distance,
+          road.width / 2 - 0.22, shoulder));
       }
       cs.push(c.r, c.g, c.b);
       if (i < nx && j < nz) {
@@ -252,6 +274,38 @@ export function createBattlefield(parent: T.Group) {
       "#e1f3e8",
       "cascade-whitewater",
     );
+  const waterMotion: {
+    mesh: T.Mesh<T.BufferGeometry, T.MeshBasicMaterial>;
+    origin: T.Vector3;
+    phase: number;
+    kind: "flow" | "spray";
+  }[] = [];
+  for (let i = 0; i < 34; i++) {
+    const x = -27 + (i * 29) / 33,
+      z = riverCentre(x) + Math.sin(i * 2.4) * riverWidth(x) * 0.63;
+    const m = new T.Mesh(new T.PlaneGeometry(0.4 + (i % 3) * 0.2, 0.035),
+      new T.MeshBasicMaterial({ color: i % 4 ? "#b7ddd0" : "#edf7dc",
+        transparent: true, opacity: 0.48, depthWrite: false }));
+    m.name = "river-flow-glint";
+    m.rotation.x = -Math.PI / 2;
+    m.rotation.z = Math.sin(i) * 0.18;
+    m.position.set(x, -1.025, z);
+    root.add(m);
+    waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 0.73, kind: "flow" });
+  }
+  for (let i = 0; i < 12; i++) {
+    const m = new T.Mesh(new T.IcosahedronGeometry(1, 0),
+      new T.MeshBasicMaterial({ color: "#d7eee0", transparent: true,
+        opacity: 0.32, depthWrite: false }));
+    m.name = i < 5 ? "cascade-outlet-foam" : "cascade-spray";
+    m.position.set(3.5 + Math.sin(i * 2.4) * 0.6,
+      i < 5 ? -1 : -0.65 + (i % 4) * 0.24,
+      riverCentre(3.5) + Math.cos(i * 1.8) * 0.55);
+    m.scale.set(i < 5 ? 0.34 : 0.13, i < 5 ? 0.035 : 0.17,
+      i < 5 ? 0.22 : 0.11);
+    root.add(m);
+    waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 1.21, kind: "spray" });
+  }
   const roadGroup = new T.Group();
   roadGroup.name = "walkable-roadbeds";
   root.add(roadGroup);
@@ -342,6 +396,28 @@ export function createBattlefield(parent: T.Group) {
   }
   // Land roads are carved into and colored on the actual heightfield. This avoids
   // coplanar overlays while preserving exactly the same route graph and level footing.
+  for (const r of routes) {
+    if (r.surface !== "imperial" && r.surface !== "courtyard") continue;
+    const path = new T.CurvePath<T.Vector3>();
+    for (let i = 1; i < r.points.length; i++)
+      path.add(new T.LineCurve3(r.points[i - 1], r.points[i]));
+    const steps = Math.ceil(r.length / 0.78);
+    for (let i = 0; i < steps; i++) {
+      const u = (i + 0.5) / steps, p = path.getPoint(u),
+        d = path.getTangent(u), yaw = Math.atan2(d.x, d.z);
+      if (stationDistance(p.x, p.z) < 0.65) continue;
+      for (const side of [-1, 1]) {
+        const n = new T.Vector3(-d.z, 0, d.x).normalize(),
+          offset = side * Math.min(0.28, r.width * 0.2);
+        box(i % 3 ? "#b7ad8e" : "#9f9d85", "inset-road-masonry",
+          p.x + n.x * offset, GROUND - 0.045, p.z + n.z * offset,
+          Math.min(0.46, r.width * 0.35), 0.09, 0.43 + (i % 2) * 0.12,
+          yaw + Math.sin(i * 7.1) * 0.055, roadGroup);
+      }
+    }
+  }
+  const ferryBerthOffset = 1.7;
+  let marchGeneration = 0;
   let boat: T.Group;
   const decks: T.Group[] = [];
   function beam(
@@ -437,7 +513,7 @@ export function createBattlefield(parent: T.Group) {
       }
       boat = new T.Group();
       boat.name = "working-ferry";
-      boat.position.set(c.x, 0, c.z + 1.7);
+      boat.position.set(c.x, 0, c.z + ferryBerthOffset);
       g.add(boat);
       box("#76664c", "ferry-hull", 0, -0.35, 0, 2.2, 1.7, 2.5, 0, boat);
       box(
@@ -550,6 +626,15 @@ export function createBattlefield(parent: T.Group) {
         const arch = mesh(vault, "#8e9d84", "bridge-arch-vault", g);
         arch.position.x = side * 1.13;
       }
+      for (const end of [-1, 1])
+        for (const side of [-1, 1]) {
+          box("#9da58b", "bridge-bank-wing", c.x + side * 1.95,
+            -0.18, c.z + end * 2.8, 0.8, 1.45, 1.5, end * side * 0.2, g);
+          for (let k = 0; k < 3; k++)
+            instance(rockG, "#82917c", "bridge-bank-rubble",
+              [c.x + side * (2.1 + k * 0.24), -0.5, c.z + end * (3.1 + k * 0.38)],
+              [0.38, 0.5, 0.45], k, g);
+        }
       gate(0, -2.65, false, "river-pass-gate");
     } else {
       const sp = crossingSpine(i);
@@ -598,6 +683,10 @@ export function createBattlefield(parent: T.Group) {
               0,
               g,
             );
+            const anchor = p.clone().addScaledVector(n, s * 0.6).setY(-1.6);
+            beam(anchor, p.clone().setY(0.37), "#77684d", "cliff-diagonal-brace", g);
+            instance(rockG, "#7c8d79", "cliff-rock-anchor",
+              [anchor.x, -1.7, anchor.z], [0.5, 0.6, 0.55], t, g);
           }
         }
       }
@@ -878,13 +967,68 @@ export function createBattlefield(parent: T.Group) {
     decks,
     roadGroup,
     terrain,
-    followMarch(p: T.Vector3) {
-      const c = crossings[0];
-      if (Math.abs(p.x - c.x) < 0.8 && Math.abs(p.z - c.z) < c.length / 2 + 0.1)
-        boat.position.z = c.z + T.MathUtils.clamp(p.z - c.z, -1.7, 1.7);
+    startMarch(path: MarchPath, kind: PieceKind): MarchPlayback {
+      const generation = ++marchGeneration;
+      const score: ScoreInterval[] = [];
+      let endsAt = 0, boatZ = boat.position.z;
+      const append = (
+        actorFrom: number, actorTo: number, boatTo: number,
+        surface: Surface, motion: "walking" | "riding" | "waiting",
+        seconds: number,
+      ) => {
+        if (seconds <= 1e-12) return;
+        score.push(Object.freeze({ startsAt: endsAt, endsAt: endsAt + seconds,
+          actorFrom, actorTo, boatFrom: boatZ, boatTo, surface, motion }));
+        endsAt += seconds;
+        boatZ = boatTo;
+      };
+      const length = path.getLength();
+      for (const section of path.sections) {
+        if (section.surface !== "ferry") {
+          append(section.start, section.end, boatZ, section.surface, "walking",
+            (section.end - section.start) / surfaceSpeed(kind, section.surface));
+          continue;
+        }
+        const from = path.getPointAt(section.start / length),
+          to = path.getPointAt(section.end / length),
+          direction = Math.sign(to.z - from.z),
+          entryZ = crossings[0].z - direction * ferryBerthOffset,
+          exitZ = crossings[0].z + direction * ferryBerthOffset,
+          boarded = section.start + Math.abs(entryZ - from.z),
+          disembark = section.end - Math.abs(to.z - exitZ);
+        append(section.start, section.start, entryZ, "boardwalk", "waiting",
+          Math.abs(boatZ - entryZ) / surfaceSpeed(kind, "ferry"));
+        append(section.start, boarded, entryZ, "boardwalk", "walking",
+          (boarded - section.start) / surfaceSpeed(kind, "boardwalk"));
+        append(boarded, disembark, exitZ, "ferry", "riding",
+          Math.abs(exitZ - entryZ) / surfaceSpeed(kind, "ferry"));
+        append(disembark, section.end, exitZ, "boardwalk", "walking",
+          (section.end - disembark) / surfaceSpeed(kind, "boardwalk"));
+      }
+      const intervals = Object.freeze(score);
+      let elapsed = 0;
+      return {
+        durationSeconds: endsAt,
+        advance(deltaSeconds: number): MarchFrame {
+          if (!Number.isFinite(deltaSeconds) || deltaSeconds < 0)
+            throw new RangeError("March time must be finite and nonnegative");
+          if (generation !== marchGeneration) return { status: "cancelled" };
+          elapsed = Math.min(endsAt, elapsed + deltaSeconds);
+          const interval = intervals.find((s) => elapsed < s.endsAt) ?? intervals.at(-1);
+          if (!interval) return { status: "active", distance: length,
+            surface: path.surfaceAt(1), motion: "walking", done: true };
+          const t = T.MathUtils.clamp((elapsed - interval.startsAt) /
+            (interval.endsAt - interval.startsAt), 0, 1);
+          boat.position.z = T.MathUtils.lerp(interval.boatFrom, interval.boatTo, t);
+          return { status: "active",
+            distance: T.MathUtils.lerp(interval.actorFrom, interval.actorTo, t),
+            surface: interval.surface, motion: interval.motion, done: elapsed >= endsAt };
+        },
+      };
     },
     reset() {
-      boat.position.z = crossings[0].z + 1.7;
+      marchGeneration++;
+      boat.position.z = crossings[0].z + ferryBerthOffset;
     },
     update(time: number, reduced: boolean) {
       if (reduced) return;
@@ -893,6 +1037,18 @@ export function createBattlefield(parent: T.Group) {
       });
       mist.forEach((m, i) => {
         m.material.opacity = 0.12 + Math.sin(time * 0.0001 + i) * 0.03;
+        const angle = Math.PI * (1.12 + (i / 8) * 0.76);
+        m.position.x = Math.cos(angle) * 32 + Math.sin(time * 0.000035 + i) * 1.4;
+      });
+      waterMotion.forEach(({ mesh: m, origin, phase, kind }) => {
+        m.position.copy(origin);
+        if (kind === "flow") {
+          m.position.x += Math.sin(time * 0.0005 + phase) * 0.24;
+          m.material.opacity = 0.32 + Math.sin(time * 0.0012 + phase) * 0.13;
+        } else {
+          m.position.y += Math.sin(time * 0.0015 + phase) * 0.06;
+          m.material.opacity = 0.24 + Math.sin(time * 0.001 + phase) * 0.08;
+        }
       });
     },
   };

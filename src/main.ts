@@ -228,8 +228,8 @@ controls.maxDistance = 150;
 controls.maxPolarAngle = Math.PI * 0.47;
 controls.target.set(0, 0.5, 0);
 
-scene.add(new THREE.HemisphereLight("#fff6dd", "#173c3b", 2.3));
-const sun = new THREE.DirectionalLight("#ffe8bf", 3.5);
+scene.add(new THREE.HemisphereLight("#f1f4dc", "#234b42", 1.9));
+const sun = new THREE.DirectionalLight("#ffe2af", 3.1);
 sun.position.set(-9, 17, 8);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -945,10 +945,6 @@ function clearSelection() {
   updateUI();
 }
 
-function easeInOut(value: number) {
-  return value < 0.5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2;
-}
-
 function createDustPuff(position: THREE.Vector3, strength = 1) {
   const material = new THREE.MeshStandardMaterial({
     color: "#d7b77c",
@@ -1269,16 +1265,14 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
     path = getMarchPath(piece, to, state.pieces, piece.kind),
     length = path.getLength(),
     speed = Number(speedSelect.value);
-  const end = gridToWorld(to),
-    duration = reducedMotion.matches
-      ? 120
-      : (450 + path.travelSeconds(piece.kind) * 900) / speed;
+  const end = gridToWorld(to);
   if (piece.kind === "cannon" && captured) {
     await animateCannonShot(g.position.clone(), end, 430 / speed);
     if (epoch !== animationEpoch) return;
   }
   await new Promise<void>((resolve) => {
-    const started = performance.now();
+    const march = battlefield.startMarch(path, piece.kind);
+    let previousTime: number | undefined;
     let dust = -1,
       impact = false;
     let lastDistance = 0,
@@ -1288,12 +1282,16 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
         resolve();
         return;
       }
-      const t = Math.min(1, (time - started) / duration),
-        u = path.progressAtTime(easeInOut(t), piece.kind),
-        p = path.getPointAt(u),
-        surface = path.surfaceAt(u);
-      g.position.copy(p).setY(BASE);
-      battlefield.followMarch(p);
+      const elapsed = previousTime === undefined ? 0 : (time - previousTime) / 1000;
+      previousTime = time;
+      const frame = march.advance(elapsed * speed * (reducedMotion.matches ? 5 : 1));
+      if (frame.status === "cancelled") { resolve(); return; }
+      const u = frame.distance / length,
+        t = u,
+        surface = frame.surface,
+        walking = frame.motion === "walking" && !frame.done;
+      g.userData.marchMotion = frame.motion;
+      g.position.copy(path.getPointAt(u)).setY(BASE);
       const d = path.getTangentAt(Math.min(0.9999, u)),
         yaw = Math.atan2(d.x, d.z) + Math.PI - Number(g.userData.modelBaseYaw);
       const turn = Math.atan2(
@@ -1302,7 +1300,7 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
       );
       g.rotation.y += turn * 0.32;
       const distance = u * length;
-      if (surface !== "ferry") groundDistance += distance - lastDistance;
+      if (walking) groundDistance += distance - lastDistance;
       lastDistance = distance;
       const stride =
           piece.kind === "horse"
@@ -1312,7 +1310,7 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
               : 0.5,
         phase = (groundDistance / stride) * Math.PI * 2,
         limb =
-          surface === "ferry" || reducedMotion.matches
+          !walking || reducedMotion.matches
             ? 0
             : Math.sin(t * Math.PI) * (surface === "boardwalk" ? 0.16 : 0.32);
       troop.traverse((o) => {
@@ -1323,10 +1321,10 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
       });
       troop.position.y =
         Number(g.userData.restY) +
-        (surface === "ferry" || reducedMotion.matches
+        (!walking || reducedMotion.matches
           ? 0
           : Math.abs(Math.sin(phase)) * 0.025);
-      if (surface !== "ferry")
+      if (walking)
         for (const wheel of (g.userData.wheels ?? []) as THREE.Mesh[]) {
           if (!wheel.userData.rest)
             wheel.userData.rest = wheel.quaternion.clone();
@@ -1340,7 +1338,7 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
             );
         }
       const step = Math.floor(groundDistance / 0.9);
-      if (step > dust && t > 0.05 && t < 0.95 && surface !== "ferry") {
+      if (step > dust && t > 0.05 && t < 0.95 && walking) {
         dust = step;
         if (
           !reducedMotion.matches &&
@@ -1356,8 +1354,9 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
         impact = true;
         createImpact(end, piece.kind, captured.kind);
       }
-      if (t < 1) requestAnimationFrame(tick);
+      if (!frame.done) requestAnimationFrame(tick);
       else {
+        g.userData.marchMotion = "idle";
         g.position.copy(end);
         troop.position.y = Number(g.userData.restY);
         troop.traverse((o) => {
