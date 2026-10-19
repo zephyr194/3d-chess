@@ -236,3 +236,4 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 
 /* Keep battle feedback local to the two troops. */
 .viewport-wrap.impact, .viewport-wrap.impact::after { animation: none; }
+#speed-feedback { display: block; font-size: 11px; line-height: 1.5; color: #c6d8c5; }

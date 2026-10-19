@@ -34,12 +34,15 @@
 
           <div class="controls">
             <label>
-              <span>演出速度</span>
-              <select id="speed-select">
-                <option value="1.7">快速</option>
-                <option value="1" selected>标准</option>
-                <option value="0.62">电影</option>
+              <span>行军速度 · 即时生效</span>
+              <select id="speed-select" aria-describedby="speed-feedback">
+                <option value="3">疾行 · 3×</option>
+                <option value="1.7">快速 · 1.7×</option>
+                <option value="1" selected>标准 · 1×</option>
+                <option value="0.62">电影 · 0.62×</option>
+                <option value="0.25">慢赏 · 0.25×</option>
               </select>
+              <small id="speed-feedback" aria-live="polite">行军、渡船与交锋中均可调整</small>
             </label>
             <button id="music-button" class="secondary" aria-pressed="true">战鼓：开启</button><label class="volume-label"><span>战鼓音量</span><input id="music-volume" type="range" min="0" max="100" value="28" aria-label="战鼓音量" /></label><p id="music-status" class="music-status">点击棋盘后启奏</p>
             <button id="sound-button" class="secondary" aria-pressed="true">音效：开启</button>

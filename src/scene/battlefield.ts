@@ -2,6 +2,10 @@ import * as T from "three";
 import { GROUND, boardPosition } from "./board";
 import {
   terrainHeight,
+  sampleLandscape,
+  waterAt,
+  watercourses,
+  WATER,
   roadDistance,
   roadInfo,
   stationDistance,
@@ -13,7 +17,6 @@ import {
   ridges,
   lakes,
   falls,
-  creeks,
   EXTENT,
   inCity,
   surfaceSpeed,
@@ -174,8 +177,8 @@ export function createBattlefield(parent: T.Group) {
     m.castShadow = false;
     return m;
   };
-  const nx = 180,
-    nz = 190,
+  const nx = 288,
+    nz = 304,
     vs: number[] = [],
     cs: number[] = [],
     ix: number[] = [];
@@ -196,7 +199,7 @@ export function createBattlefield(parent: T.Group) {
       if (y > 5) c.lerp(peak, T.MathUtils.smoothstep(y, 5, 9));
       if (y < 0) c.lerp(new T.Color("#718f7c"), 0.4);
       const road = roadInfo(x, z);
-      const shoulder = road.width / 2 + 0.44 +
+      const shoulder = .91 +
         Math.sin(x * 2.1 + z * 1.7) * 0.09;
       if (road.distance < shoulder) {
         const rc = new T.Color(
@@ -209,7 +212,7 @@ export function createBattlefield(parent: T.Group) {
         const wear = 0.95 + 0.05 * Math.sin(x * 4.1 - z * 3.2);
         rc.multiplyScalar(wear);
         c.lerp(rc, 1 - T.MathUtils.smoothstep(road.distance,
-          road.width / 2 - 0.22, shoulder));
+          .52, shoulder));
       }
       cs.push(c.r, c.g, c.b);
       if (i < nx && j < nz) {
@@ -239,7 +242,7 @@ export function createBattlefield(parent: T.Group) {
   root.add(terrain);
   const water = Array.from({ length: 180 }, (_, i) => {
     const x = -38 + (i * 42) / 179;
-    return new T.Vector3(x, -1.05, riverCentre(x));
+    return new T.Vector3(x, WATER, riverCentre(x));
   });
   // Variable-width river, tapering into the headwater valley.
   for (let i = 1; i < water.length; i++) {
@@ -252,7 +255,7 @@ export function createBattlefield(parent: T.Group) {
         [b.x, b.z + riverWidth(b.x)],
         [a.x, a.z + riverWidth(a.x)],
       ],
-      -1.05,
+      WATER,
       "#63aaa4",
       "chu-han-river",
     );
@@ -260,12 +263,12 @@ export function createBattlefield(parent: T.Group) {
   lakes.forEach((l, i) =>
     poly(
       l.outline.map(([x, z]) => [x + l.x, z + l.z]),
-      -0.94,
+      l.surfaceY,
       "#6db3aa",
       `lake-${i}`,
     ),
   );
-  creeks.forEach((p, i) => ribbon(p, 0.36, "#7abcb2", `creek-${i}`));
+  watercourses.forEach((course) => ribbon(course.points, course.width, "#7abcb2", course.id));
   ribbon(falls, 1.35, "#9bd7ca", "headwater-cascade");
   for (const dx of [-0.35, -0.1, 0.15, 0.4])
     ribbon(
@@ -289,7 +292,7 @@ export function createBattlefield(parent: T.Group) {
     m.name = "river-flow-glint";
     m.rotation.x = -Math.PI / 2;
     m.rotation.z = Math.sin(i) * 0.18;
-    m.position.set(x, -1.025, z);
+    m.position.set(x, WATER + .025, z);
     root.add(m);
     waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 0.73, kind: "flow" });
   }
@@ -299,7 +302,7 @@ export function createBattlefield(parent: T.Group) {
         opacity: 0.32, depthWrite: false }));
     m.name = i < 5 ? "cascade-outlet-foam" : "cascade-spray";
     m.position.set(3.5 + Math.sin(i * 2.4) * 0.6,
-      i < 5 ? -1 : -0.65 + (i % 4) * 0.24,
+      i < 5 ? WATER + .05 : WATER + .4 + (i % 4) * 0.24,
       riverCentre(3.5) + Math.cos(i * 1.8) * 0.55);
     m.scale.set(i < 5 ? 0.34 : 0.13, i < 5 ? 0.035 : 0.17,
       i < 5 ? 0.22 : 0.11);
@@ -416,6 +419,38 @@ export function createBattlefield(parent: T.Group) {
       }
     }
   }
+  for (const r of routes) {
+    if (r.crossing !== undefined) continue;
+    const path = new T.CurvePath<T.Vector3>();
+    for (let i = 1; i < r.points.length; i++)
+      path.add(new T.LineCurve3(r.points[i - 1], r.points[i]));
+    const steps = Math.max(1, Math.ceil(r.length / .15));
+    const wet = Array.from({ length: steps + 1 }, (_, i) => {
+      const p = path.getPoint(i / steps), d = path.getTangent(i / steps),
+        n = new T.Vector3(-d.z, 0, d.x).normalize();
+      return [-.6, 0, .6].some((side) => {
+        const q = p.clone().addScaledVector(n, side);
+        return waterAt(q.x, q.z) !== null;
+      });
+    });
+    for (let i = 0; i <= steps; i++) {
+      if (!wet[i]) continue;
+      let end = i;
+      while (end < steps && wet[end + 1]) end++;
+      const start = Math.max(0, i - 7), finish = Math.min(steps, end + 7),
+        points = Array.from({ length: finish - start + 1 }, (_, j) => path.getPoint((start + j) / steps)),
+        crossing = { ...r, points, width: 1.32, crossing: 3 };
+      const deck = solidRoad(crossing, roadGroup, "stream-crossing-deck");
+      deck.material = [mat("#b6aa87"), mat("#87795e")];
+      deck.userData.waterCrossing = true;
+      for (let j = 0; j < points.length; j += 2) {
+        const p = points[j], d = path.getTangent((start + j) / steps);
+        box(j % 3 ? "#ac9875" : "#bca784", "stream-crossing-planks",
+          p.x, GROUND - .015, p.z, 1.32, .03, .24, Math.atan2(d.x, d.z), roadGroup);
+      }
+      i = end;
+    }
+  }
   const ferryBerthOffset = 1.7;
   let marchGeneration = 0;
   let boat: T.Group;
@@ -515,45 +550,62 @@ export function createBattlefield(parent: T.Group) {
       boat.name = "working-ferry";
       boat.position.set(c.x, 0, c.z + ferryBerthOffset);
       g.add(boat);
-      box("#76664c", "ferry-hull", 0, -0.35, 0, 2.2, 1.7, 2.5, 0, boat);
-      box(
-        "#ac956d",
-        "continuous-ferry-deck",
-        0,
-        0.459,
-        0,
-        2.2,
-        0.16,
-        2.5,
-        0,
-        boat,
-      );
+      const stations = [
+        { z: -1.52, width: .08, bottom: WATER + .03 },
+        { z: -1.22, width: 1.1, bottom: WATER - .38 },
+        { z: 1.22, width: 1.1, bottom: WATER - .38 },
+        { z: 1.52, width: .08, bottom: WATER + .05 },
+      ];
+      const hullVertices: number[] = [], hullIndices: number[] = [];
+      for (const section of stations)
+        hullVertices.push(-section.width, .46, section.z,
+          -section.width * .68, section.bottom, section.z,
+          section.width * .68, section.bottom, section.z,
+          section.width, .46, section.z);
+      for (let i = 1; i < stations.length; i++)
+        for (let side = 0; side < 3; side++) {
+          const a = (i - 1) * 4 + side, b = i * 4 + side;
+          hullIndices.push(a, a + 1, b, a + 1, b + 1, b);
+        }
+      const hullGeometry = new T.BufferGeometry();
+      hullGeometry.setAttribute("position", new T.Float32BufferAttribute(hullVertices, 3));
+      hullGeometry.setIndex(hullIndices); hullGeometry.computeVertexNormals();
+      const hull = mesh(hullGeometry, "#715b40", "ferry-hull", boat);
+      hull.material.side = T.DoubleSide;
+      hull.userData.waterline = WATER;
+      box("#a58b62", "continuous-ferry-deck", 0, .459, 0, 2.16, .16, 2.38, 0, boat);
       for (let p = 0; p < 13; p++)
-        box(
-          p % 3 ? "#af986f" : "#bca67e",
-          "ferry-plank",
-          0,
-          0.5275,
-          (p - 6) * 0.19,
-          2.18,
-          0.025,
-          0.18,
-          0,
-          boat,
-        );
-      for (const s of [-1, 1])
-        box(
-          "#8c7554",
-          "ferry-gunwale",
-          s * 1.12,
-          0.7,
-          0,
-          0.09,
-          0.3,
-          2.5,
-          0,
-          boat,
-        );
+        box(p % 3 ? "#af986f" : "#bca67e", "ferry-plank",
+          0, .5275, (p - 6) * .18, 2.14, .025, .17, 0, boat);
+      for (const side of [-1, 1]) {
+        for (let rib = 0; rib < 5; rib++) {
+          const z = (rib - 2) * .42;
+          beam(new T.Vector3(side * .78, WATER - .2, z),
+            new T.Vector3(side * 1.1, .53, z), "#a18b65", "ferry-side-rib", boat);
+        }
+        beam(new T.Vector3(side * 1.1, .56, -.95),
+          new T.Vector3(side * 1.1, .56, .95), "#947b55", "ferry-sheer", boat);
+        cyl("#796246", "ferry-cleat", side * .93, .63, -.96, .065, .15, boat);
+      }
+      beam(new T.Vector3(.98, .8, -.84), new T.Vector3(1.68, WATER + .04, -1.12),
+        "#a89268", "ferry-steering-oar", boat);
+      box("#87724f", "ferry-oar-blade", 1.68, WATER + .03, -1.12, .24, .055, .52, .4, boat);
+      const bowShape = new T.Shape();
+      bowShape.moveTo(-1.06, 1.08); bowShape.lineTo(1.06, 1.08);
+      bowShape.lineTo(.08, 1.5); bowShape.lineTo(-.08, 1.5); bowShape.closePath();
+      const bowGeometry = new T.ShapeGeometry(bowShape); bowGeometry.rotateX(-Math.PI / 2);
+      const bow = mesh(bowGeometry, "#bca57b", "ferry-pointed-bow", boat); bow.position.y = GROUND;
+      for (const side of [-1, 1])
+        ribbon([new T.Vector3(side * .93, WATER + .025, -1),
+          new T.Vector3(side * 1.25, WATER + .025, 0),
+          new T.Vector3(side * 1.18, WATER + .025, 1.05)],
+          .05, "#c6dfcd", "ferry-waterline-foam", boat);
+      const shelter = new T.Group(); shelter.name = "ferry-offset-shelter";
+      shelter.position.set(-.8, 0, -.76); boat.add(shelter);
+      for (const z of [-.23, .23])
+        cyl("#87714f", "ferry-canopy-post", 0, 1.12, z, .035, 1.12, shelter);
+      const canopy = mesh(new T.ConeGeometry(.48, .16, 4), "#a69366", "ferry-small-canopy", shelter);
+      canopy.position.y = 1.73; canopy.rotation.y = Math.PI / 4;
       beam(
         new T.Vector3(c.x - 1.65, 1.4, c.z - 2.6),
         new T.Vector3(c.x - 1.65, 1.4, c.z + 2.6),
@@ -831,24 +883,24 @@ export function createBattlefield(parent: T.Group) {
           x,
         );
   };
-  for (let i = 0; i < 1400; i++) {
-    const x = (random() - 0.5) * 54,
-      z = (random() - 0.5) * 58,
-      y = terrainHeight(x, z);
-    if (
-      y < 0.15 ||
-      y > 7.6 ||
-      inCity(x, z) ||
-      roadDistance(x, z) < 1.55 ||
-      stationDistance(x, z) < 2.35 ||
-      (Math.abs(z - riverCentre(x)) < riverWidth(x) + 0.6 && x < 5) ||
-      crossings.some((c) => Math.abs(x - c.x) < 2.2 && Math.abs(z - c.z) < 4)
-    )
-      continue;
+  const forestPositions: { x: number; z: number; radius: number }[] = [];
+  for (let i = 0; i < 6800; i++) {
+    const x = (random() - .5) * 54, z = (random() - .5) * 58,
+      sample = sampleLandscape(x, z), y = sample.height,
+      interior = Math.abs(x) < 13.6 && Math.abs(z) < 16.8,
+      size = interior ? 1.25 + random() * .8 : 1.7 + random() * 1.2,
+      crownRadius = size * .42,
+      roadClearance = .5 + crownRadius,
+      stationClearance = .53 + crownRadius;
+    if (y < .12 || y > 7.6 || inCity(x, z) || sample.water ||
+      roadDistance(x, z) < roadClearance || stationDistance(x, z) < stationClearance ||
+      (Math.abs(z - riverCentre(x)) < riverWidth(x) + .4 && x < 5) ||
+      crossings.some((c) => Math.abs(x - c.x) < 1.9 && Math.abs(z - c.z) < 3.3)) continue;
     if (x > 3 && x < 9 && Math.abs(z) < 1.6) continue;
-    if (Math.abs(x) < 15 && z > 13 && z < 21) continue;
-    if (random() > 0.65) continue;
-    trees(x, y - 0.1, z, 1.7 + random() * 1.2, random() > 0.55);
+    if (random() > sample.forestDensity * .85) continue;
+    if (forestPositions.some((p) => Math.hypot(x - p.x, z - p.z) < (crownRadius + p.radius) * .85)) continue;
+    forestPositions.push({ x, z, radius: crownRadius });
+    trees(x, y - .08, z, size, random() > .48);
   }
   for (let i = 0; i < 180; i++) {
     const x = (random() - 0.5) * 46,

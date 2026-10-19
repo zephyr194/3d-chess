@@ -9,6 +9,10 @@ import {
   crossingSpine,
   terrainHeight,
   MarchPath,
+  lakes,
+  watercourses,
+  waterAt,
+  WATER,
 } from "../src/scene/landscape-layout";
 import { createBattlefield } from "../src/scene/battlefield";
 import { initialState, legalMoves, applyMove } from "../src/game/xiangqi";
@@ -88,6 +92,102 @@ describe("restored continuous battlefield", () => {
       (map.root.getObjectByName("station-stone-pins") as T.InstancedMesh).count,
     ).toBe(90);
     expect(map.root.getObjectByName("headwater-cascade")).toBeTruthy();
+  });
+  it("retains interior mountains and connected groves between the travel corridors", () => {
+    let interiorTrees = 0;
+    const at = new T.Matrix4(), position = new T.Vector3();
+    map.root.traverse((object) => {
+      if (!(object instanceof T.InstancedMesh) || object.name !== "forest-trunks") return;
+      for (let i = 0; i < object.count; i++) {
+        object.getMatrixAt(i, at); position.setFromMatrixPosition(at);
+        if (Math.abs(position.x) < 12.8 && Math.abs(position.z) < 15.74) interiorTrees++;
+      }
+    });
+    expect(interiorTrees).toBeGreaterThanOrEqual(25);
+    const heights: number[] = [];
+    const positionAttribute = map.terrain.geometry.getAttribute("position");
+    for (let i = 0; i < positionAttribute.count; i++) {
+      if (Math.abs(positionAttribute.getX(i)) < 12.8 && Math.abs(positionAttribute.getZ(i)) < 15.74)
+        heights.push(positionAttribute.getY(i));
+    }
+    expect(Math.max(...heights)).toBeGreaterThan(2.4);
+    expect(Math.max(...heights) - Math.min(...heights)).toBeGreaterThan(3.2);
+  });
+  it("renders the same connected watershed into exposed lake and tributary surfaces", () => {
+    const downstream = new Map([
+      ...lakes.map((lake) => [lake.id, lake.outflow] as const),
+      ...watercourses.map((course) => [course.id, course.joins] as const),
+    ]);
+    for (const start of downstream.keys()) {
+      let next = start;
+      const seen = new Set<string>();
+      while (next !== "main-river") {
+        expect(seen.has(next)).toBe(false);
+        seen.add(next);
+        expect(downstream.has(next)).toBe(true);
+        next = downstream.get(next)!;
+      }
+    }
+    for (const lake of lakes) {
+      const outlet = watercourses.find((course) => course.id === lake.outflow)!;
+      expect(outlet.points[0].distanceTo(new T.Vector3(lake.x, lake.surfaceY, lake.z))).toBeLessThan(1e-9);
+    }
+    for (const [index, lake] of lakes.entries()) {
+      const surface = map.root.getObjectByName(`lake-${index}`)!;
+      const ray = new T.Raycaster(new T.Vector3(lake.x, 15, lake.z), new T.Vector3(0, -1, 0));
+      const actualWater = ray.intersectObject(surface)[0], actualBed = ray.intersectObject(map.terrain)[0];
+      expect(actualWater?.point.y).toBeCloseTo(lake.surfaceY, 5);
+      expect(actualBed.point.y).toBeLessThan(lake.surfaceY - .15);
+    }
+    for (const course of watercourses) {
+      const surface = map.root.getObjectByName(course.id)!;
+      expect(surface).toBeInstanceOf(T.Mesh);
+      let visibleSamples = 0;
+      for (let i = 1; i < course.points.length; i++) {
+        const point = course.points[i - 1].clone().lerp(course.points[i], .5);
+        if (!waterAt(point.x, point.z)) continue;
+        const ray = new T.Raycaster(new T.Vector3(point.x, 15, point.z), new T.Vector3(0, -1, 0));
+        const actualWater = ray.intersectObject(surface)[0], actualBed = ray.intersectObject(map.terrain)[0];
+        if (actualWater && actualBed.point.y < actualWater.point.y - .04) visibleSamples++;
+      }
+      expect(visibleSamples, course.id).toBeGreaterThan(0);
+    }
+    const crossings: T.Mesh[] = [];
+    map.roadGroup.traverse((object) => {
+      if (object instanceof T.Mesh && object.name === "stream-crossing-deck") crossings.push(object);
+    });
+    expect(crossings.length).toBeGreaterThan(4);
+    for (const bridge of crossings) {
+      const bounds = new T.Box3().setFromObject(bridge);
+      expect(bounds.min.y).toBeGreaterThan(WATER + .3);
+      expect(bounds.max.y).toBeCloseTo(GROUND, 2);
+    }
+  });
+  it("uses a pointed displacement hull with open water between the vessel and opposite landing", () => {
+    map.reset();
+    const hull = map.root.getObjectByName("ferry-hull") as T.Mesh;
+    const positions = hull.geometry.getAttribute("position"), bounds = new T.Box3().setFromBufferAttribute(positions as T.BufferAttribute);
+    expect(bounds.max.z - bounds.min.z).toBeLessThan(3.4);
+    expect(bounds.min.y).toBeLessThan(WATER);
+    expect(bounds.max.y).toBeGreaterThan(WATER);
+    let bowHalfWidth = 0, middleHalfWidth = 0;
+    for (let i = 0; i < positions.count; i++) {
+      const z = positions.getZ(i), x = Math.abs(positions.getX(i));
+      if (Math.abs(z) > 1.4) bowHalfWidth = Math.max(bowHalfWidth, x);
+      if (Math.abs(z) < 1.3) middleHalfWidth = Math.max(middleHalfWidth, x);
+    }
+    expect(bowHalfWidth).toBeLessThan(middleHalfWidth * .15);
+    expect(map.root.getObjectByName("ferry-steering-oar")).toBeTruthy();
+    expect(map.root.getObjectByName("ferry-side-rib")).toBeTruthy();
+    const boat = map.root.getObjectByName("working-ferry")!;
+    const passengerDeck = map.root.getObjectByName("continuous-ferry-deck")!;
+    const deckBounds = new T.Box3().setFromObject(passengerDeck);
+    expect(deckBounds.max.z - deckBounds.min.z).toBeGreaterThan(.88);
+    expect(deckBounds.max.x - deckBounds.min.x).toBeGreaterThan(.88);
+    expect(Math.abs(boat.position.z - crossings[0].z)).toBe(1.7);
+    const acrossWater = new T.Vector3(crossings[0].x, 3, crossings[0].z - 1.15);
+    const ray = new T.Raycaster(acrossWater, new T.Vector3(0, -1, 0));
+    expect(ray.intersectObjects(map.decks, true)).toEqual([]);
   });
   it("connects every station through independent roads, without logical grid edges", () => {
     const reached = new Set(["0,0"]),

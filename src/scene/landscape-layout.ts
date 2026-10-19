@@ -19,7 +19,7 @@ export type Route = {
   length: number;
   crossing?: number;
 };
-export const WATER = -1.05,
+export const WATER = -0.15,
   EXTENT = { x: 36, z: 38 };
 export const riverCentre = (x: number) => Math.sin(x * 0.19) * 0.35;
 export const riverWidth = (x: number) =>
@@ -61,75 +61,68 @@ export const crossingSpine = (i: number) => {
   ).map(([x, z]) => new T.Vector3(c.x + x, BASE, c.z + z));
 };
 export const ridges = [
-  [-17, -10, 5, 8, 8],
-  [-18, 0, 5, 7, 9],
-  [-17, 10, 5, 8, 7],
-  [17, -10, 5, 7, 9],
-  [18, 0, 6, 7, 10],
-  [17, 11, 5, 8, 8],
-  [-10, -23, 7, 5, 7],
-  [9, -23, 8, 5, 8],
-  [-10, 23, 6, 4, 5],
-  [10, 23, 7, 4, 6],
-  [7.4, -0.2, 2.4, 1.8, 6.8],
-  [13, 0.5, 2.8, 3.2, 5.7],
+  [-17, -10, 5, 8, 8], [-18, 0, 5, 7, 9], [-17, 10, 5, 8, 7],
+  [17, -10, 5, 7, 9], [18, 0, 6, 7, 10], [17, 11, 5, 8, 8],
+  [-10, -23, 7, 5, 7], [9, -23, 8, 5, 8],
+  [-10, 23, 6, 4, 5], [10, 23, 7, 4, 6],
+  [10.5, -13.8, 3.1, 4.5, 5.4], [7.8, -8, 3.2, 4.1, 4.5],
+  [5.2, -4.8, 3.4, 3.7, 3.5], [7.4, -0.2, 2.4, 1.8, 6.8],
+  [13, 0.5, 2.8, 3.2, 5.7], [8, 5.2, 3.2, 4, 4.2],
+  [10, 10.4, 3.8, 4.8, 5.4], [6.5, 14, 3.3, 4, 3.3],
+  [-2.4, -5, 3, 3.2, 2.8],
 ];
 export const lakes = [
-  {
-    x: -7.8,
-    z: -4.8,
-    outline: [
-      [-1.6, -0.3],
-      [-1.2, -1.1],
-      [-0.2, -1.25],
-      [0.5, -0.7],
-      [1.5, -0.8],
-      [1.7, 0.2],
-      [0.65, 0.6],
-      [0.1, 1.1],
-      [-0.8, 0.8],
-      [-1.5, 1.2],
-    ],
-  },
-  {
-    x: 7.5,
-    z: 5.1,
-    outline: [
-      [-0.7, -1.7],
-      [0.1, -1.8],
-      [0.8, -0.9],
-      [0.55, -0.25],
-      [1.1, 0.45],
-      [0.45, 1.5],
-      [-0.2, 1.8],
-      [-0.85, 0.85],
-      [-0.65, 0],
-      [-1, -0.6],
-    ],
-  },
+  { id: "west-reed-lake", x: -7.8, z: -7.7, surfaceY: WATER + 0.10,
+    outflow: "west-outflow", outline: [
+      [-2.1, -0.3], [-1.5, -1.4], [-0.3, -1.5], [0.6, -0.9],
+      [1.7, -1], [2, 0.2], [0.9, 0.8], [0.1, 1.4],
+      [-0.9, 1], [-1.8, 1.4],
+    ] },
+  { id: "east-mountain-lake", x: 5, z: 7.6, surfaceY: WATER + 0.14,
+    outflow: "east-outflow", outline: [
+      [-1, -1.7], [0.1, -1.9], [1, -1], [0.8, -0.2],
+      [1.5, 0.5], [0.7, 1.7], [-0.2, 2], [-1.1, 1],
+      [-0.9, 0], [-1.4, -0.6],
+    ] },
 ];
 export const falls = [
-  new T.Vector3(7.4, 7, -0.2),
-  new T.Vector3(6.8, 6.9, -0.35),
-  new T.Vector3(6.2, 3.9, -0.2),
-  new T.Vector3(5, 3.8, -0.15),
-  new T.Vector3(4.35, 0.2, 0),
+  new T.Vector3(7.4, 7, -0.2), new T.Vector3(6.8, 6.9, -0.35),
+  new T.Vector3(6.2, 3.9, -0.2), new T.Vector3(5, 3.8, -0.15),
+  new T.Vector3(4.35, 0.5, 0),
   new T.Vector3(3.4, WATER + 0.02, riverCentre(3.4)),
 ];
-export const creeks = [
-  [
-    new T.Vector3(-7.8, -0.94, -4.8),
-    new T.Vector3(-6.5, -0.96, -3.7),
-    new T.Vector3(-6.4, -1, -2.3),
-    new T.Vector3(-5.7, WATER + 0.01, riverCentre(-5.7)),
-  ],
-  [
-    new T.Vector3(7.5, -0.94, 5.1),
-    new T.Vector3(5.7, -0.97, 4),
-    new T.Vector3(5, -1, 2.4),
-    new T.Vector3(4, WATER + 0.02, riverCentre(4)),
-  ],
+type Watercourse = { id: string; width: number; joins: string; points: T.Vector3[] };
+const stream = (points: number[][]) => points.map(([x, y, z]) => new T.Vector3(x, y, z));
+export const watercourses: Watercourse[] = [
+  { id: "west-outflow", width: .7, joins: "main-river", points: stream([
+    [-7.8, WATER + .1, -7.7], [-6.1, WATER + .08, -5.7],
+    [-5.5, WATER + .05, -3.7], [-5.7, WATER + .01, riverCentre(-5.7)],
+  ]) },
+  { id: "west-headstream", width: .5, joins: "west-reed-lake", points: stream([
+    [-1.6, WATER + .22, -10.7], [-3.4, WATER + .2, -10.3],
+    [-4.5, WATER + .17, -8.2], [-6.3, WATER + .12, -7.2], [-7.8, WATER + .1, -7.7],
+  ]) },
+  { id: "west-tributary", width: .4, joins: "west-headstream", points: stream([
+    [1.7, WATER + .26, -6.9], [-.5, WATER + .22, -7.8],
+    [-2.2, WATER + .2, -9.3], [-3.4, WATER + .2, -10.3],
+  ]) },
+  { id: "east-outflow", width: .74, joins: "main-river", points: stream([
+    [5, WATER + .14, 7.6], [3.8, WATER + .1, 5.7], [2.6, WATER + .06, 4.8],
+    [1.8, WATER + .03, 2.7], [1.6, WATER + .01, riverCentre(1.6)],
+  ]) },
+  { id: "east-headstream", width: .52, joins: "east-mountain-lake", points: stream([
+    [8, WATER + .3, 13.9], [6.9, WATER + .26, 12],
+    [6, WATER + .19, 10.6], [5, WATER + .14, 7.6],
+  ]) },
+  { id: "east-tributary", width: .42, joins: "east-headstream", points: stream([
+    [3.5, WATER + .3, 13.7], [4.9, WATER + .28, 12.8], [6.9, WATER + .26, 12],
+  ]) },
 ];
+export const creeks = watercourses.map((course) => course.points);
+export const LANDSCAPE_SEED = 194;
+const variation = (x: number, z: number) =>
+  Math.sin(x * .73 + Math.sin(z * .39) * .7 + LANDSCAPE_SEED) *
+  Math.cos(z * .67 - Math.sin(x * .33));
 export const key = (p: Position) => `${p.x},${p.y}`;
 export const nodes = new Map<string, T.Vector3>();
 export const routes: Route[] = [];
@@ -415,76 +408,71 @@ export function lakeDistance(
   }
   return inside ? -d : d;
 }
-export function terrainHeight(x: number, z: number) {
-  let max = 0,
-    sum = 0;
-  for (const [px, pz, rx, rz, h] of ridges) {
-    const g =
-      Math.exp(-1.35 * (((x - px) / rx) ** 2 + ((z - pz) / rz) ** 2)) * h;
-    max = Math.max(max, g);
-    sum += g;
-  }
-  let h =
-    0.38 + 0.09 * Math.sin(x * 0.4) * Math.cos(z * 0.3) + max + sum * 0.08;
-  if (inCity(x, z)) h = 0.5;
-  const wet = Math.abs(z - riverCentre(x));
-  if (x < 4)
-    h = T.MathUtils.lerp(
-      -1.9,
-      h,
-      T.MathUtils.smoothstep(wet, riverWidth(x) - 0.1, riverWidth(x) + 1),
-    );
-  for (const l of lakes) {
-    const d = lakeDistance(x, z, l);
-    if (d < 0.6)
-      h = Math.min(
-        h,
-        T.MathUtils.lerp(-1.4, h, T.MathUtils.smoothstep(d, -0.05, 0.6)),
-      );
-  }
-  for (const stream of [...creeks, falls]) {
-    let nearest = Infinity,
-      bed = 0;
-    for (let i = 1; i < stream.length; i++) {
-      const a = stream[i - 1],
-        b = stream[i],
-        dx = b.x - a.x,
-        dz = b.z - a.z,
-        t = T.MathUtils.clamp(
-          ((x - a.x) * dx + (z - a.z) * dz) / (dx * dx + dz * dz || 1),
-          0,
-          1,
-        ),
-        d = segmentDistance(x, z, a, b);
-      if (d < nearest) {
-        nearest = d;
-        bed = T.MathUtils.lerp(a.y, b.y, t) - 0.18;
+export function waterAt(x: number, z: number) {
+  if (stationDistance(x, z) < .98) return null;
+  if (x < 4 && Math.abs(z - riverCentre(x)) < riverWidth(x))
+    return { id: "main-river", surfaceY: WATER, depth: .85 };
+  for (const lake of lakes)
+    if (lakeDistance(x, z, lake) < 0)
+      return { id: lake.id, surfaceY: lake.surfaceY, depth: .72 };
+  for (const course of watercourses) {
+    for (let i = 1; i < course.points.length; i++) {
+      const a = course.points[i - 1], b = course.points[i];
+      if (segmentDistance(x, z, a, b) < course.width / 2 + .06) {
+        const dx = b.x - a.x, dz = b.z - a.z,
+          t = T.MathUtils.clamp(((x - a.x) * dx + (z - a.z) * dz) / (dx * dx + dz * dz), 0, 1);
+        return { id: course.id, surfaceY: T.MathUtils.lerp(a.y, b.y, t), depth: .5 };
       }
     }
-    const isFall = stream === falls;
-    if (nearest < (isFall ? 1.15 : 0.55))
-      h = Math.min(
-        h,
-        T.MathUtils.lerp(
-          bed,
-          h,
-          T.MathUtils.smoothstep(
-            nearest,
-            isFall ? 0.65 : 0.18,
-            isFall ? 1.15 : 0.55,
-          ),
-        ),
-      );
+  }
+  return null;
+}
+export function sampleLandscape(x: number, z: number) {
+  let max = 0, sum = 0;
+  for (const [px, pz, rx, rz, height] of ridges) {
+    const g = Math.exp(-1.35 * (((x - px) / rx) ** 2 + ((z - pz) / rz) ** 2)) * height;
+    max = Math.max(max, g); sum += g;
+  }
+  let height = .38 + .08 * variation(x, z) + max + sum * .08;
+  if (inCity(x, z)) height = .5;
+  const riverDistance = Math.abs(z - riverCentre(x)) - riverWidth(x);
+  if (x < 4 && riverDistance < .8)
+    height = T.MathUtils.lerp(WATER - .85, height, T.MathUtils.smoothstep(riverDistance, -.12, .8));
+  for (const lake of lakes) {
+    const d = lakeDistance(x, z, lake);
+    if (d < .45) height = Math.min(height,
+      T.MathUtils.lerp(lake.surfaceY - .72, height, T.MathUtils.smoothstep(d, -.08, .45)));
+  }
+  for (const course of [...watercourses, { id: "cascade", points: falls, width: 1.35 }]) {
+    let nearest = Infinity, bed = 0;
+    for (let i = 1; i < course.points.length; i++) {
+      const a = course.points[i - 1], b = course.points[i],
+        dx = b.x - a.x, dz = b.z - a.z,
+        t = T.MathUtils.clamp(((x - a.x) * dx + (z - a.z) * dz) / (dx * dx + dz * dz), 0, 1),
+        d = segmentDistance(x, z, a, b);
+      if (d < nearest) { nearest = d; bed = T.MathUtils.lerp(a.y, b.y, t) - .5; }
+    }
+    const halfWidth = course.width / 2;
+    if (nearest < halfWidth + .4)
+      height = Math.min(height, T.MathUtils.lerp(bed, height,
+        T.MathUtils.smoothstep(nearest, halfWidth + .08, halfWidth + .4)));
   }
   if (Math.abs(x - 10.5) < 2 && Math.abs(z - crossings[2].z) < 2.2)
-    h = Math.min(h, -1.7 + Math.abs(x - 10.5) * 0.4);
-  const rd = roadDistance(x, z);
-  if (rd < 1.5)
-    h = T.MathUtils.lerp(GROUND, h, T.MathUtils.smoothstep(rd, 1.1, 1.5));
-  const sd = stationDistance(x, z);
-  if (sd < 1.35)
-    h = T.MathUtils.lerp(GROUND, h, T.MathUtils.smoothstep(sd, 0.98, 1.35));
-  return h;
+    height = Math.min(height, WATER - .65 + Math.abs(x - 10.5) * .2);
+  const water = waterAt(x, z), rd = roadDistance(x, z), sd = stationDistance(x, z);
+  if (!water && rd < 1.05)
+    height = T.MathUtils.lerp(GROUND, height, T.MathUtils.smoothstep(rd, .81, 1.05));
+  if (water) height = Math.min(height, water.surfaceY - water.depth);
+  if (sd < 1.08)
+    height = T.MathUtils.lerp(GROUND, height, T.MathUtils.smoothstep(sd, .81, 1.08));
+  const forestDensity = T.MathUtils.clamp(.45 + .25 * Math.sin(x * .24 + z * .18) +
+    .18 * variation(x * .4, z * .4) + (height > 1 ? .2 : 0), .1, .95);
+  const region = water ? "wetland" : height > 2 ? "ridge" : height > .9 ? "foothill" :
+    forestDensity > .53 ? "forest" : "plain";
+  return { height, region, forestDensity, water };
+}
+export function terrainHeight(x: number, z: number) {
+  return sampleLandscape(x, z).height;
 }
 export function surfaceSpeed(kind: PieceKind, surface: Surface) {
   const base =
