@@ -1,0 +1,667 @@
+{
+  "stage": "after",
+  "frames": [
+    [
+      "01-overview",
+      null,
+      null
+    ],
+    [
+      "02-ferry",
+      [
+        -4,
+        8,
+        10
+      ],
+      [
+        -9,
+        0.5,
+        0
+      ]
+    ],
+    [
+      "03-watershed",
+      [
+        19,
+        23,
+        25
+      ],
+      [
+        0,
+        1,
+        0
+      ]
+    ],
+    [
+      "04-lake",
+      [
+        -3,
+        12,
+        3
+      ],
+      [
+        -7.8,
+        0,
+        -7.7
+      ]
+    ]
+  ],
+  "viewport": [
+    1440,
+    1024
+  ],
+  "pawn_checks": [
+    {
+      "side": "red",
+      "legal": [
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 3,
+          "y": 4
+        }
+      ],
+      "sideways_move": true
+    },
+    {
+      "side": "black",
+      "legal": [
+        {
+          "x": 1,
+          "y": 5
+        },
+        {
+          "x": 3,
+          "y": 5
+        },
+        {
+          "x": 2,
+          "y": 6
+        }
+      ],
+      "sideways_move": true
+    }
+  ],
+  "combat": [
+    {
+      "kind": "soldier",
+      "changed_real_joints": [
+        "spear",
+        "shield"
+      ],
+      "peak": {
+        "phase": "attacking",
+        "progress": 0.4801428571428568,
+        "impacts": 1,
+        "at": [
+          -3.2529044811080254,
+          0.545,
+          -3.7381774966874053
+        ],
+        "scale": 0.68,
+        "marchMotion": "idle",
+        "joints": {
+          "spear": {
+            "position": [
+              0.3,
+              0.78,
+              -0.3199999404081404
+            ],
+            "quaternion": [
+              -0.6051863093733036,
+              0,
+              0,
+              0.7960838718044224
+            ],
+            "restPosition": [
+              0.3,
+              0.78,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "shield": {
+            "position": [
+              -0.25,
+              0.9299999720663158,
+              -0.11999997765305263
+            ],
+            "quaternion": [
+              -0.174108105502049,
+              0,
+              0,
+              0.984726544578995
+            ],
+            "restPosition": [
+              -0.25,
+              0.78,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "impacts": 1,
+      "restored": true
+    },
+    {
+      "kind": "horse",
+      "changed_real_joints": [
+        "rider",
+        "lance",
+        "head"
+      ],
+      "peak": {
+        "phase": "attacking",
+        "progress": 0.4826041666666664,
+        "impacts": 0,
+        "at": [
+          -6.386878859854334,
+          0.545,
+          3.739835299071856
+        ],
+        "scale": 0.68,
+        "marchMotion": "idle",
+        "joints": {
+          "rider": {
+            "position": [
+              0,
+              0.72,
+              0.08
+            ],
+            "quaternion": [
+              -0.1844774815989249,
+              0,
+              0,
+              0.9828367406558011
+            ],
+            "restPosition": [
+              0,
+              0.72,
+              0.08
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "lance": {
+            "position": [
+              0.28,
+              1.1,
+              -0.19530546594441456
+            ],
+            "quaternion": [
+              -0.631564271873317,
+              0,
+              0,
+              0.7753235263379584
+            ],
+            "restPosition": [
+              0.28,
+              1.1,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "head": {
+            "position": [
+              0,
+              0.9,
+              -0.35
+            ],
+            "quaternion": [
+              0.14595584877068532,
+              0,
+              0,
+              0.9892911048875497
+            ],
+            "restPosition": [
+              0,
+              0.9,
+              -0.35
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "impacts": 1,
+      "restored": true
+    },
+    {
+      "kind": "chariot",
+      "changed_real_joints": [
+        "chassis",
+        "ram"
+      ],
+      "peak": {
+        "phase": "attacking",
+        "progress": 0.48023809523810734,
+        "impacts": 0,
+        "at": [
+          -12.070319734826523,
+          0.545,
+          6.467942452901307
+        ],
+        "scale": 0.68,
+        "marchMotion": "idle",
+        "joints": {
+          "chassis": {
+            "position": [
+              0,
+              0.41506743042515937,
+              0
+            ],
+            "quaternion": [
+              -0.059848619073129286,
+              0,
+              0,
+              0.9982074648063094
+            ],
+            "restPosition": [
+              0,
+              0.45,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "ram": {
+            "position": [
+              0,
+              0.54,
+              -0.649036708212009
+            ],
+            "quaternion": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "restPosition": [
+              0,
+              0.54,
+              -0.15
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "impacts": 1,
+      "restored": true
+    },
+    {
+      "kind": "cannon",
+      "changed_real_joints": [
+        "trunnion",
+        "barrel"
+      ],
+      "peak": {
+        "phase": "attacking",
+        "progress": 0.4807499999999984,
+        "impacts": 1,
+        "at": [
+          -9.937051568352663,
+          0.545,
+          -6.5356976432563325
+        ],
+        "scale": 0.68,
+        "marchMotion": "idle",
+        "joints": {
+          "trunnion": {
+            "position": [
+              0,
+              0.67,
+              0
+            ],
+            "quaternion": [
+              -0.1316471883028417,
+              0,
+              0,
+              0.9912966346215224
+            ],
+            "restPosition": [
+              0,
+              0.67,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "barrel": {
+            "position": [
+              0,
+              0,
+              0.16349276928384154
+            ],
+            "quaternion": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "restPosition": [
+              0,
+              0,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "impacts": 1,
+      "restored": true
+    },
+    {
+      "kind": "elephant",
+      "changed_real_joints": [
+        "head",
+        "trunk",
+        "foot"
+      ],
+      "peak": {
+        "phase": "attacking",
+        "progress": 0.48144444444444384,
+        "impacts": 0,
+        "at": [
+          0.44764144521990673,
+          0.545,
+          9.669103613049767
+        ],
+        "scale": 0.68,
+        "marchMotion": "idle",
+        "joints": {
+          "head": {
+            "position": [
+              0,
+              0.85,
+              -0.3
+            ],
+            "quaternion": [
+              0,
+              -0.21533275325330725,
+              0,
+              0.9765407341101293
+            ],
+            "restPosition": [
+              0,
+              0.85,
+              -0.3
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "trunk": {
+            "position": [
+              0,
+              0.79,
+              -0.55
+            ],
+            "quaternion": [
+              -0.2975958135719033,
+              0.08084603774587609,
+              0.24938505033849986,
+              0.9179911473390869
+            ],
+            "restPosition": [
+              0,
+              0.79,
+              -0.55
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "foot": {
+            "position": [
+              0.24,
+              0.4314134704336916,
+              -0.18
+            ],
+            "quaternion": [
+              -0.05086146463063365,
+              0,
+              0,
+              0.9987057181250275
+            ],
+            "restPosition": [
+              0.24,
+              0.35,
+              -0.18
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "impacts": 1,
+      "restored": true
+    },
+    {
+      "kind": "advisor",
+      "changed_real_joints": [
+        "tabletArm"
+      ],
+      "peak": {
+        "phase": "attacking",
+        "progress": 0.48186956521739194,
+        "impacts": 0,
+        "at": [
+          -0.08985060289269996,
+          0.545,
+          11.74575829513462
+        ],
+        "scale": 0.68,
+        "marchMotion": "idle",
+        "joints": {
+          "tabletArm": {
+            "position": [
+              0.2,
+              0.9195361640352918,
+              0
+            ],
+            "quaternion": [
+              0.4981997152096025,
+              0,
+              0,
+              0.8670623067375671
+            ],
+            "restPosition": [
+              0.2,
+              0.85,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "impacts": 1,
+      "restored": true
+    },
+    {
+      "kind": "general",
+      "changed_real_joints": [
+        "torso",
+        "weapon"
+      ],
+      "peak": {
+        "phase": "attacking",
+        "progress": 0.48329999999999923,
+        "impacts": 0,
+        "at": [
+          -0.0898506028927,
+          0.545,
+          11.745758295134618
+        ],
+        "scale": 0.68,
+        "marchMotion": "idle",
+        "joints": {
+          "torso": {
+            "position": [
+              0,
+              0.5,
+              0
+            ],
+            "quaternion": [
+              0,
+              -0.021605535414470127,
+              0,
+              0.9997665731756858
+            ],
+            "restPosition": [
+              0,
+              0.5,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "weapon": {
+            "position": [
+              0.28,
+              0.78,
+              0
+            ],
+            "quaternion": [
+              -0.40189099486351804,
+              -0.15693405972347338,
+              -0.16755261970601917,
+              0.8864431446945548
+            ],
+            "restPosition": [
+              0.28,
+              0.78,
+              0
+            ],
+            "restQuaternion": [
+              0,
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "impacts": 1,
+      "restored": true
+    }
+  ],
+  "live_speed": {
+    "0.62": {
+      "frames": 12,
+      "observed_rate": 0.6190709290617179
+    },
+    "1.7": {
+      "frames": 12,
+      "observed_rate": 1.8201928226811883
+    }
+  },
+  "checks": [
+    "Crossed red and black soldiers show forward and lateral moves; facing-general pin remains illegal with explanation",
+    "Live .62 to 1.7 speed change alters presentation slope during a real march; ferry uses the live rate too",
+    "Both ferry directions retain nine-point actual mesh support and fixed root height/scale under normal motion",
+    "All seven real models perform distinct actuator attacks, one impact each, then restore rig and commit one capture",
+    "Reset during an attack restores all initial rigs and cancels the pending capture",
+    "390px mobile layout has no horizontal overflow"
+  ],
+  "console_errors": [],
+  "scene": {
+    "interiorTrees": 45,
+    "totalTrees": 457,
+    "boatBox": {
+      "min": [
+        -11.078822494766221,
+        -0.5299999713897705,
+        -0.1588401782195341
+      ],
+      "max": [
+        -7.708223959803581,
+        1.8099999982118606,
+        2.8811597836334935
+      ]
+    },
+    "terrainVertices": 88145
+  },
+  "transport": [
+    {
+      "side": "red",
+      "frames": 288,
+      "footprint_rays": 2592,
+      "unsupported": 0,
+      "gait_failures": 0
+    },
+    {
+      "side": "black",
+      "frames": 368,
+      "footprint_rays": 3312,
+      "unsupported": 0,
+      "gait_failures": 0
+    }
+  ]
+}
