@@ -1,10 +1,11 @@
 """Record real browser frames from main and encode gameplay GIFs with FFmpeg."""
 import argparse
+import hashlib
 import importlib.util
 import json
 import subprocess
 import tempfile
-import time
+from datetime import datetime, timedelta
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -22,8 +23,9 @@ def run():
     subprocess.run(['git','diff','--quiet','HEAD','--','src','index.html','vite.config.ts'],cwd=ROOT,check=True)
     out=ROOT/'screenshots/shanhe/gifs';out.mkdir(parents=True,exist_ok=True)
     report={'commit':git('rev-parse','HEAD'),'source_tree':git('rev-parse','HEAD:src'),
-            'viewport':[960,760],'capture':'Native browser screenshot sequence during real RAF animation',
-            'target_capture_fps':8,'timing':'GIF frame durations preserve measured capture intervals',
+            'recorder_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            'viewport':[960,760],'capture':'Native browser frames running application RAF callbacks on a controlled browser clock',
+            'fps':8,'timing':'Fixed 125ms browser-clock steps; not a real-time performance recording',
             'clips':[],'errors':[]}
     with sync_playwright() as pw, tempfile.TemporaryDirectory(prefix='shanhe-frames-') as temporary:
         browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader','--use-angle=swiftshader'])
@@ -35,6 +37,16 @@ def run():
         page.on('pageerror',lambda e:report['errors'].append(str(e)))
         page.on('console',lambda m:report['errors'].append(m.text) if m.type=='error' else None)
         page.goto(args.base_url,wait_until='networkidle');page.wait_for_function('window.__v2')
+        page.evaluate('window.__p.renderer.setAnimationLoop(null)')
+        page.clock.install()
+        page.clock.pause_at(datetime.now()+timedelta(seconds=1))
+        page.evaluate('window.__p.pause()')
+        def press(locator):locator.dispatch_event('click')
+        def until(expression,limit=120000,step=125):
+            elapsed=0
+            while not page.evaluate(expression):
+                assert elapsed<limit,expression
+                page.clock.run_for(step);elapsed+=step
         def camera(at,target):
             page.evaluate('([at,target])=>{const p=window.__p;p.controls.enableDamping=false;p.camera.position.fromArray(at);p.controls.target.fromArray(target);p.controls.update()}',[at,target])
         def attack_camera(target):
@@ -61,21 +73,17 @@ def run():
             }''',{'x':target[0],'y':target[1]})
         def cell(x,y):return page.locator(f'.tactical-cell[data-x="{x}"][data-y="{y}"]')
         def load(state):
-            page.locator('#reset-button').click()
+            press(page.locator('#reset-button'))
             page.evaluate('s=>window.__v2.load(s)',state)
-            if page.locator('#tactical-panel').is_hidden():page.locator('#tactical-toggle').click()
+            if page.locator('#tactical-panel').is_hidden():press(page.locator('#tactical-toggle'))
         captured_durations={}
         def frames(folder,count):
-            timestamps=[]
             for _ in range(count):
-                started=time.monotonic()
+                page.clock.run_for(125)
                 number=len(list(folder.glob('*.png')))
-                page.screenshot(path=str(folder/f'{number:04d}.png'))
-                timestamps.append(time.monotonic())
-                spent=time.monotonic()-started
-                page.wait_for_timeout(max(1,125-spent*1000))
-            durations=[b-a for a,b in zip(timestamps,timestamps[1:])]+[.125]
-            captured_durations.setdefault(folder,[]).extend(durations)
+                page.evaluate('window.__p.render()')
+                page.screenshot(path=str(folder/f'{number:04d}.png'),animations='disabled')
+            captured_durations.setdefault(folder,[]).extend([.125]*count)
         def encode(name,folder,details):
             target=out/(name+'.gif')
             images=sorted(folder.glob('*.png'));durations=captured_durations[folder]
@@ -89,22 +97,22 @@ def run():
                 '-fps_mode','vfr','-loop','0',str(target)],check=True)
             assert target.stat().st_size>10000
             report['clips'].append({'file':str(target.relative_to(ROOT)),'frames':len(list(folder.glob('*.png'))),
-                                    'captured_seconds':sum(durations),'bytes':target.stat().st_size,**details})
+                                    'simulation_seconds':sum(durations),'bytes':target.stat().st_size,**details})
             print('Recorded',name,flush=True)
         folder=Path(temporary)/'landscape';folder.mkdir()
         camera([15,13,17],[2,1,1]);frames(folder,48)
         encode('01-living-landscape',folder,{'scene':'River currents, lake rings, moving canopy, leaves and mountain mist'})
 
         load(previous.fixture(kind='chariot',start=(0,9)))
-        page.locator('#speed-select').select_option('3');cell(0,9).click();cell(0,0).click()
-        page.wait_for_function('window.__p.pieceGroups.get("actor").userData.marchMotion==="riding"',timeout=120000)
+        page.locator('#speed-select').select_option('3');press(cell(0,9));press(cell(0,0))
+        until('window.__p.pieceGroups.get("actor").userData.marchMotion==="riding"',step=25)
         page.locator('#speed-select').select_option('0.25')
         camera([-5,4,3],[-9.6,.4,0])
-        if page.locator('#tactical-panel').is_visible():page.locator('#tactical-toggle').click()
+        if page.locator('#tactical-panel').is_visible():press(page.locator('#tactical-toggle'))
         folder=Path(temporary)/'ferry';folder.mkdir();frames(folder,64)
         encode('02-ferry-march',folder,{'scene':'Actual chariot rides the ferry and leaves toward its destination'})
         page.locator('#speed-select').select_option('3')
-        page.wait_for_function('!window.__p.getLocked()',timeout=120000)
+        until('!window.__p.getLocked()')
 
         folder=Path(temporary)/'combat';folder.mkdir();checks=[]
         cases=[('soldier',(2,4),(3,4)),('horse',(1,7),(2,5)),('chariot',(0,7),(0,6)),
@@ -115,18 +123,18 @@ def run():
             load(state)
             framing=attack_camera(target)
             assert framing['clear']>=4,(kind,framing)
-            page.locator('#speed-select').select_option('3');cell(*start).click();cell(*target).click()
-            page.wait_for_function('window.__v2.rig("actor").phase==="attacking"',timeout=120000)
-            page.locator('#speed-select').select_option('0.25')
-            if page.locator('#tactical-panel').is_visible():page.locator('#tactical-toggle').click()
+            page.locator('#speed-select').select_option('3');press(cell(*start));press(cell(*target))
+            until('window.__v2.rig("actor").phase==="attacking"',step=25)
+            page.locator('#speed-select').select_option('0.62')
+            if page.locator('#tactical-panel').is_visible():press(page.locator('#tactical-toggle'))
             camera(framing['at'],framing['target'])
             frames(folder,24)
             page.locator('#speed-select').select_option('3')
-            page.wait_for_function('!window.__p.getLocked()',timeout=60000)
+            until('!window.__p.getLocked()',limit=60000)
             final=page.evaluate('window.__v2.rig("actor")')
             assert final['impacts']==1 and final['phase']=='idle',(kind,final)
             assert page.evaluate('!window.__p.getState().pieces.some(p=>p.id==="victim")')
-            page.wait_for_timeout(150);camera(framing['at'],framing['target']);frames(folder,4)
+            page.clock.run_for(150);camera(framing['at'],framing['target']);frames(folder,4)
             checks.append({'kind':kind,'impacts':final['impacts'],'capture_committed':True,'camera_clear_center_rays':framing['clear']})
             print('Recorded combat',kind,flush=True)
         encode('03-seven-troop-attacks',folder,{'scene':'Seven actual model attacks and battle dispatches','captures':checks})

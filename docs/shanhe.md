@@ -46,6 +46,20 @@ python scripts/capture-shanhe.py --stage after --verify
 python scripts/record-shanhe.py
 ```
 
-录制脚本通过真实界面操作行军、渡船和七种吃子，逐帧捕获浏览器画面。测试布局只通过浏览器响应注入，不修改产品源码，也不替换动画。GIF 使用实测捕获间隔保留动作时间，记录开始提交和 `src` 树哈希；录制过程中不修改源码。
+录制脚本通过原有棋局面板事件驱动行军、渡船和七种吃子，逐帧捕获真实浏览器画面。测试布局只通过浏览器响应注入，不修改产品源码，也不替换模型动画。浏览器时钟以 `125ms` 步长推进原有 RAF 回调，再以每秒 8 帧导出 GIF；这样可避免云端软件渲染漏过关键动作。这是确定性逐帧导出，不是设备实时帧率录像。机器报告包含开始提交、`src` 树哈希和录制脚本哈希；录制过程中不修改产品源码。
 
 本轮暂停 GitHub Pages 发布。设计取舍、源码所有权和独立审阅方法见 [实施方案](../.audit/shanhe-design.md)。
+
+## 主分支交付
+
+产品改造通过 [PR #1](https://github.com/zephyr194/3d-chess/pull/1) 合并到 `main`，合并提交为 `e9ffca534566c7605656671a7ab9632f674cd4ba`。合并后核对 `src` 树哈希仍为 `4dac285b18a54954466f4e940445a7c8dcd18dc4`，与独立验证的代码一致。
+
+以下动图均在合并后从该提交的浏览器实机画面逐帧导出，分辨率为 960 × 760；不代表设备实时帧率。
+
+| 动图 | 时长 | 内容 |
+| --- | --- | --- |
+| [山水风物](../screenshots/shanhe/gifs/01-living-landscape.gif) | 6.01 秒 | 河流、湖面、林动、落叶和山雾 |
+| [渡船行军](../screenshots/shanhe/gifs/02-ferry-march.gif) | 8.01 秒 | 棋子乘船过河并继续沿路行军 |
+| [七种兵种交锋](../screenshots/shanhe/gifs/03-seven-troop-attacks.gif) | 24.51 秒 | 兵、马、车、炮、象、士、将的独立攻击和战报 |
+
+七次吃子均只触发一次命中并完成移除守方；录制过程没有浏览器错误。三段 GIF 已完整解码，分别包含 48、64、196 个不同画面，另各有一帧用于收尾。[录制记录](../screenshots/shanhe/gifs/recording.json) 保存源码与脚本哈希和攻击结果；[文件验证](../screenshots/shanhe/gifs/validation.json) 保存解码帧数、时长与 SHA-256。

@@ -1,0 +1,30 @@
+{
+  "source_tree": "4dac285b18a54954466f4e940445a7c8dcd18dc4",
+  "checks": [
+    {
+      "file": "screenshots/shanhe/gifs/01-living-landscape.gif",
+      "frames": 49,
+      "unique_decoded_frames": 48,
+      "duration": 6.01,
+      "bytes": 9280229,
+      "sha256": "6b0dd43f92a03a31b09fd07160bd5db21a74f140954ddc11f08eb179cd47fed8"
+    },
+    {
+      "file": "screenshots/shanhe/gifs/02-ferry-march.gif",
+      "frames": 65,
+      "unique_decoded_frames": 64,
+      "duration": 8.01,
+      "bytes": 6461581,
+      "sha256": "90d29f55036b5ac63ffcaed2268d4bd42fb86129c53937e3b30245c2dbaf9701"
+    },
+    {
+      "file": "screenshots/shanhe/gifs/03-seven-troop-attacks.gif",
+      "frames": 197,
+      "unique_decoded_frames": 196,
+      "duration": 24.51,
+      "bytes": 26098733,
+      "sha256": "a6105028c229b43bf32ea966241cb0a615586d7ec9092caa7b48f89dd73208c6"
+    }
+  ],
+  "errors": []
+}

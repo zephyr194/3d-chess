@@ -1,0 +1,80 @@
+{
+  "commit": "e9ffca534566c7605656671a7ab9632f674cd4ba",
+  "source_tree": "4dac285b18a54954466f4e940445a7c8dcd18dc4",
+  "recorder_sha256": "774c78ae514c2d467917f7e72ef34dcf32a1ccca6ea43daa432d39ee49fd2241",
+  "viewport": [
+    960,
+    760
+  ],
+  "capture": "Native browser frames running application RAF callbacks on a controlled browser clock",
+  "fps": 8,
+  "timing": "Fixed 125ms browser-clock steps; not a real-time performance recording",
+  "clips": [
+    {
+      "file": "screenshots/shanhe/gifs/01-living-landscape.gif",
+      "frames": 48,
+      "simulation_seconds": 6.0,
+      "bytes": 9280229,
+      "scene": "River currents, lake rings, moving canopy, leaves and mountain mist"
+    },
+    {
+      "file": "screenshots/shanhe/gifs/02-ferry-march.gif",
+      "frames": 64,
+      "simulation_seconds": 8.0,
+      "bytes": 6461581,
+      "scene": "Actual chariot rides the ferry and leaves toward its destination"
+    },
+    {
+      "file": "screenshots/shanhe/gifs/03-seven-troop-attacks.gif",
+      "frames": 196,
+      "simulation_seconds": 24.5,
+      "bytes": 26098733,
+      "scene": "Seven actual model attacks and battle dispatches",
+      "captures": [
+        {
+          "kind": "soldier",
+          "impacts": 1,
+          "capture_committed": true,
+          "camera_clear_center_rays": 6
+        },
+        {
+          "kind": "horse",
+          "impacts": 1,
+          "capture_committed": true,
+          "camera_clear_center_rays": 6
+        },
+        {
+          "kind": "chariot",
+          "impacts": 1,
+          "capture_committed": true,
+          "camera_clear_center_rays": 6
+        },
+        {
+          "kind": "cannon",
+          "impacts": 1,
+          "capture_committed": true,
+          "camera_clear_center_rays": 6
+        },
+        {
+          "kind": "elephant",
+          "impacts": 1,
+          "capture_committed": true,
+          "camera_clear_center_rays": 6
+        },
+        {
+          "kind": "advisor",
+          "impacts": 1,
+          "capture_committed": true,
+          "camera_clear_center_rays": 6
+        },
+        {
+          "kind": "general",
+          "impacts": 1,
+          "capture_committed": true,
+          "camera_clear_center_rays": 6
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
