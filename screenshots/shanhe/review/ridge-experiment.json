@@ -1,0 +1,88 @@
+{
+  "replacements": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "results": [
+    {
+      "dir": [
+        1.8,
+        29,
+        21
+      ],
+      "fullyBlocked": [
+        {
+          "id": "black-chariot-0",
+          "hits": [
+            "broadleaf-canopy",
+            "broadleaf-canopy",
+            "broadleaf-canopy"
+          ]
+        },
+        {
+          "id": "black-elephant-6",
+          "hits": [
+            "continuous-valley-terrain",
+            "continuous-valley-terrain",
+            "continuous-valley-terrain"
+          ]
+        },
+        {
+          "id": "black-horse-7",
+          "hits": [
+            "broadleaf-canopy",
+            "broadleaf-canopy",
+            "broadleaf-canopy"
+          ]
+        },
+        {
+          "id": "black-soldier-15",
+          "hits": [
+            "broadleaf-canopy",
+            "broadleaf-canopy",
+            "broadleaf-canopy"
+          ]
+        },
+        {
+          "id": "red-soldier-30",
+          "hits": [
+            "pine-canopy",
+            "pine-canopy",
+            "pine-canopy"
+          ]
+        }
+      ],
+      "allCorners": true
+    },
+    {
+      "dir": [
+        1.8,
+        40,
+        21
+      ],
+      "fullyBlocked": [
+        {
+          "id": "black-elephant-6",
+          "hits": [
+            "continuous-valley-terrain",
+            "continuous-valley-terrain",
+            "continuous-valley-terrain"
+          ]
+        },
+        {
+          "id": "black-soldier-15",
+          "hits": [
+            "broadleaf-canopy",
+            "broadleaf-canopy",
+            "broadleaf-canopy"
+          ]
+        }
+      ],
+      "allCorners": true
+    }
+  ]
+}

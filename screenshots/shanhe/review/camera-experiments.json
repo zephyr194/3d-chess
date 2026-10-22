@@ -1,0 +1,424 @@
+[
+  {
+    "fov": 41,
+    "dir": [
+      1.8,
+      29,
+      21
+    ],
+    "camera": [
+      1.561854787836403,
+      36.021047887713955,
+      29.622936632199703
+    ],
+    "distance": 46.56881535588208,
+    "allCorners": true,
+    "fullyBlocked": [
+      {
+        "id": "black-chariot-0",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-horse-1",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-elephant-6",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-chariot-8",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-soldier-11",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-soldier-15",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "red-chariot-24",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "red-cannon-26",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "red-soldier-27",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "red-soldier-30",
+        "hits": [
+          "pine-canopy",
+          "pine-canopy",
+          "pine-canopy"
+        ]
+      },
+      {
+        "id": "red-soldier-31",
+        "hits": [
+          "outcrop",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      }
+    ],
+    "headBlocked": [
+      "black-chariot-0",
+      "black-horse-1",
+      "black-elephant-6",
+      "black-chariot-8",
+      "black-soldier-11",
+      "black-soldier-15",
+      "red-chariot-16",
+      "red-chariot-24",
+      "red-cannon-26",
+      "red-soldier-27",
+      "red-soldier-30",
+      "red-soldier-31"
+    ]
+  },
+  {
+    "fov": 41,
+    "dir": [
+      1.8,
+      60,
+      14
+    ],
+    "camera": [
+      0.49496527149651515,
+      55.304218074554846,
+      14.131731741003657
+    ],
+    "distance": 57.05878963081041,
+    "allCorners": true,
+    "fullyBlocked": [
+      {
+        "id": "black-chariot-0",
+        "hits": [
+          "continuous-valley-terrain",
+          "outcrop",
+          "outcrop"
+        ]
+      },
+      {
+        "id": "black-elephant-6",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-chariot-8",
+        "hits": [
+          "outcrop",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-soldier-11",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-soldier-15",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "red-soldier-27",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      }
+    ],
+    "headBlocked": [
+      "black-chariot-0",
+      "black-elephant-6",
+      "black-chariot-8",
+      "black-soldier-11",
+      "black-soldier-15",
+      "red-soldier-27"
+    ]
+  },
+  {
+    "fov": 41,
+    "dir": [
+      1.8,
+      90,
+      7
+    ],
+    "camera": [
+      1.0250408106201876,
+      63.54633317296347,
+      5.437526012063956
+    ],
+    "distance": 63.78439825137232,
+    "allCorners": true,
+    "fullyBlocked": [
+      {
+        "id": "black-chariot-0",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-chariot-8",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-soldier-15",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "red-chariot-16",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      }
+    ],
+    "headBlocked": [
+      "black-chariot-0",
+      "black-elephant-6",
+      "black-chariot-8",
+      "black-soldier-15",
+      "red-chariot-16"
+    ]
+  },
+  {
+    "fov": 25,
+    "dir": [
+      1.8,
+      60,
+      14
+    ],
+    "camera": [
+      2.0484145726588245,
+      92.1283835880103,
+      22.02112044876751
+    ],
+    "distance": 94.7416883612288,
+    "allCorners": true,
+    "fullyBlocked": [
+      {
+        "id": "black-chariot-0",
+        "hits": [
+          "continuous-valley-terrain",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-chariot-8",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-soldier-11",
+        "hits": [
+          "continuous-valley-terrain",
+          "continuous-valley-terrain",
+          "continuous-valley-terrain"
+        ]
+      },
+      {
+        "id": "black-soldier-15",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "red-soldier-27",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      }
+    ],
+    "headBlocked": [
+      "black-chariot-0",
+      "black-elephant-6",
+      "black-chariot-8",
+      "black-soldier-11",
+      "black-soldier-15",
+      "red-soldier-27"
+    ]
+  },
+  {
+    "fov": 25,
+    "dir": [
+      1.8,
+      90,
+      7
+    ],
+    "camera": [
+      1.9461771286726566,
+      105.57567042659355,
+      8.428987969470798
+    ],
+    "distance": 105.92914212348603,
+    "allCorners": true,
+    "fullyBlocked": [
+      {
+        "id": "black-chariot-0",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-chariot-8",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-soldier-15",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      }
+    ],
+    "headBlocked": [
+      "black-chariot-0",
+      "black-chariot-8",
+      "black-soldier-15"
+    ]
+  },
+  {
+    "fov": 18,
+    "dir": [
+      1.8,
+      90,
+      7
+    ],
+    "camera": [
+      2.8049194173977274,
+      146.83737556896952,
+      11.522798824219661
+    ],
+    "distance": 147.31540839880415,
+    "allCorners": true,
+    "fullyBlocked": [
+      {
+        "id": "black-chariot-0",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-chariot-8",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      },
+      {
+        "id": "black-soldier-15",
+        "hits": [
+          "broadleaf-canopy",
+          "broadleaf-canopy",
+          "broadleaf-canopy"
+        ]
+      }
+    ],
+    "headBlocked": [
+      "black-chariot-0",
+      "black-chariot-8",
+      "black-soldier-15"
+    ]
+  },
+  {
+    "fov": 14,
+    "dir": [
+      1.8,
+      90,
+      3
+    ],
+    "camera": [
+      4.313673751819379,
+      216.26467638733925,
+      7.236343823230761
+    ],
+    "distance": 216.42869914619533,
+    "allCorners": true,
+    "fullyBlocked": [],
+    "headBlocked": []
+  }
+]
