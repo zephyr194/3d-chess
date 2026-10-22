@@ -1,5 +1,5 @@
 import * as T from "three";
-import { GROUND, boardPosition } from "./board";
+import { BOARD_BOUNDS, GROUND, boardPosition } from "./board";
 import {
   terrainHeight,
   sampleLandscape,
@@ -309,6 +309,35 @@ export function createBattlefield(parent: T.Group) {
     root.add(m);
     waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 1.21, kind: "spray" });
   }
+  const streamGlints: {
+    mesh: T.Mesh<T.PlaneGeometry, T.MeshBasicMaterial>;
+    from: T.Vector3;
+    to: T.Vector3;
+    phase: number;
+  }[] = [];
+  for (const [index, course] of watercourses.entries())
+    for (let segment = 1; segment < course.points.length; segment++) {
+      const from = course.points[segment - 1].clone(), to = course.points[segment].clone();
+      from.y += .025; to.y += .025;
+      const glint = new T.Mesh(new T.PlaneGeometry(.32, .03),
+        new T.MeshBasicMaterial({ color: "#e2f0d7", transparent: true, opacity: .28, depthWrite: false }));
+      glint.name = "tributary-current";
+      glint.rotation.set(-Math.PI / 2, 0, -Math.atan2(to.z - from.z, to.x - from.x));
+      glint.position.copy(from).lerp(to, .5);
+      root.add(glint);
+      streamGlints.push({ mesh: glint, from, to, phase: index * .21 + segment * .17 });
+    }
+  const ripples: { mesh: T.Mesh<T.RingGeometry, T.MeshBasicMaterial>; phase: number }[] = [];
+  for (const [index, lake] of lakes.entries())
+    for (let i = 0; i < 3; i++) {
+      const ripple = new T.Mesh(new T.RingGeometry(.25, .272, 32),
+        new T.MeshBasicMaterial({ color: "#c5e2c7", transparent: true, opacity: .13, depthWrite: false, side: T.DoubleSide }));
+      ripple.name = "lake-ripple";
+      ripple.rotation.x = -Math.PI / 2;
+      ripple.position.set(lake.x + .2 * Math.sin(index), lake.surfaceY + .022, lake.z + .15);
+      root.add(ripple);
+      ripples.push({ mesh: ripple, phase: i / 3 + index * .12 });
+    }
   const roadGroup = new T.Group();
   roadGroup.name = "walkable-roadbeds";
   root.add(roadGroup);
@@ -887,7 +916,7 @@ export function createBattlefield(parent: T.Group) {
   for (let i = 0; i < 6800; i++) {
     const x = (random() - .5) * 54, z = (random() - .5) * 58,
       sample = sampleLandscape(x, z), y = sample.height,
-      interior = Math.abs(x) < 13.6 && Math.abs(z) < 16.8,
+      interior = Math.abs(x) < BOARD_BOUNDS.halfWidth + .8 && Math.abs(z) < BOARD_BOUNDS.halfDepth + 1,
       size = interior ? 1.25 + random() * .8 : 1.7 + random() * 1.2,
       crownRadius = size * .42,
       roadClearance = .5 + crownRadius,
@@ -964,7 +993,19 @@ export function createBattlefield(parent: T.Group) {
         0.3,
       );
   }
-  const mist: T.Mesh<T.IcosahedronGeometry, T.MeshBasicMaterial>[] = [];
+  const leaves: { mesh: T.Mesh<T.PlaneGeometry, T.MeshBasicMaterial>; origin: T.Vector3; phase: number }[] = [];
+  for (let i = 0; i < 22 && forestPositions.length; i++) {
+    const tree = forestPositions[(i * 19 + 7) % forestPositions.length];
+    const leaf = new T.Mesh(new T.PlaneGeometry(.13, .22),
+      new T.MeshBasicMaterial({ color: i % 3 ? "#c0b575" : "#8d9c58", side: T.DoubleSide,
+        transparent: true, opacity: .7, depthWrite: false }));
+    leaf.name = "windborne-leaf";
+    leaf.position.set(tree.x, terrainHeight(tree.x, tree.z) + 1.9, tree.z);
+    leaf.visible = false;
+    root.add(leaf);
+    leaves.push({ mesh: leaf, origin: leaf.position.clone(), phase: i * .137 });
+  }
+  const mist: { mesh: T.Mesh<T.IcosahedronGeometry, T.MeshBasicMaterial>; origin: T.Vector3 }[] = [];
   for (let i = 0; i < 9; i++) {
     const angle = Math.PI * (1.12 + (i / 8) * 0.76),
       m = new T.Mesh(
@@ -984,7 +1025,16 @@ export function createBattlefield(parent: T.Group) {
     );
     m.scale.set(6, 0.65, 3.5);
     root.add(m);
-    mist.push(m);
+    mist.push({ mesh: m, origin: m.position.clone() });
+  }
+  for (const [x, z] of [[8.5, -7], [7, 8.5], [-13, -9]]) {
+    const m = new T.Mesh(new T.IcosahedronGeometry(1, 1),
+      new T.MeshBasicMaterial({ color: "#c6d7c7", transparent: true, opacity: .07, depthWrite: false }));
+    m.name = "mountain-drift";
+    m.position.set(x, terrainHeight(x, z) + .9, z);
+    m.scale.set(3.2, .24, 1.3);
+    root.add(m);
+    mist.push({ mesh: m, origin: m.position.clone() });
   }
   const pins = new T.InstancedMesh(
     new T.BoxGeometry(0.18, 0.035, 0.18),
@@ -1001,7 +1051,12 @@ export function createBattlefield(parent: T.Group) {
     pins.setMatrixAt(i, dummy.matrix);
   }
   root.add(pins);
-  // Serialize repeated forest, masonry, and plank parts into instanced batches.
+  const foliage: {
+    mesh: T.InstancedMesh;
+    rests: { matrix: T.Matrix4; position: T.Vector3; rotation: T.Quaternion; scale: T.Vector3 }[];
+  }[] = [];
+  const windRotation = new T.Quaternion(), windAxis = new T.Vector3(0, 0, 1);
+  let motionActive = true;
   for (const b of batch.values()) {
     const m = new T.InstancedMesh(b.g, mat(b.color), b.ms.length);
     m.name = b.name;
@@ -1010,6 +1065,15 @@ export function createBattlefield(parent: T.Group) {
     m.receiveShadow = true;
     m.computeBoundingSphere();
     b.owner.add(m);
+    if (b.name === "pine-canopy" || b.name === "broadleaf-canopy") {
+      m.instanceMatrix.setUsage(T.DynamicDrawUsage);
+      m.frustumCulled = false;
+      foliage.push({ mesh: m, rests: b.ms.map((matrix) => {
+        const position = new T.Vector3(), rotation = new T.Quaternion(), scale = new T.Vector3();
+        matrix.decompose(position, rotation, scale);
+        return { matrix, position, rotation, scale };
+      }) });
+    }
   }
   root.userData.routes = routes;
   root.userData.ridges = ridges.length;
@@ -1083,24 +1147,83 @@ export function createBattlefield(parent: T.Group) {
       boat.position.z = crossings[0].z + ferryBerthOffset;
     },
     update(time: number, reduced: boolean) {
-      if (reduced) return;
+      if (reduced) {
+        if (!motionActive) return;
+        foliage.forEach(({ mesh: m, rests }) => {
+          rests.forEach((rest, i) => m.setMatrixAt(i, rest.matrix));
+          m.instanceMatrix.needsUpdate = true;
+        });
+        cloths.forEach((f) => { f.rotation.y = 0; });
+        mist.forEach(({ mesh: m, origin }) => {
+          m.position.copy(origin);
+          m.material.opacity = m.name === "mountain-drift" ? .07 : .13;
+        });
+        waterMotion.forEach(({ mesh: m, origin, kind }) => {
+          m.position.copy(origin);
+          m.material.opacity = kind === "flow" ? .48 : .32;
+        });
+        streamGlints.forEach(({ mesh: m, from, to }) => {
+          m.position.copy(from).lerp(to, .5); m.material.opacity = .28;
+        });
+        ripples.forEach(({ mesh: m }) => { m.scale.setScalar(1); m.material.opacity = .13; });
+        leaves.forEach(({ mesh: m, origin }) => {
+          m.position.copy(origin); m.rotation.set(0, 0, 0); m.material.opacity = .7; m.visible = false;
+        });
+        motionActive = false;
+        return;
+      }
+      motionActive = true;
+      foliage.forEach(({ mesh: m, rests }) => {
+        rests.forEach((rest, i) => {
+          const phase = rest.position.x * .41 + rest.position.z * .23,
+            bend = Math.sin(time * .0013 + phase) * .052 + Math.sin(time * .0021 + phase * .7) * .016;
+          dummy.position.copy(rest.position);
+          dummy.position.x += bend * rest.scale.y * .7;
+          dummy.position.z += bend * rest.scale.y * .25;
+          windRotation.setFromAxisAngle(windAxis, bend);
+          dummy.quaternion.copy(rest.rotation).premultiply(windRotation);
+          dummy.scale.copy(rest.scale);
+          dummy.updateMatrix();
+          m.setMatrixAt(i, dummy.matrix);
+        });
+        m.instanceMatrix.needsUpdate = true;
+      });
       cloths.forEach((f, i) => {
         f.rotation.y = Math.sin(time * 0.0015 + i) * 0.09;
       });
-      mist.forEach((m, i) => {
-        m.material.opacity = 0.12 + Math.sin(time * 0.0001 + i) * 0.03;
-        const angle = Math.PI * (1.12 + (i / 8) * 0.76);
-        m.position.x = Math.cos(angle) * 32 + Math.sin(time * 0.000035 + i) * 1.4;
+      mist.forEach(({ mesh: m, origin }, i) => {
+        m.material.opacity = (m.name === "mountain-drift" ? .065 : .12) + Math.sin(time * .00018 + i) * .025;
+        m.position.x = origin.x + Math.sin(time * .00012 + i) * 1.4;
+        m.position.z = origin.z + Math.cos(time * .0001 + i) * .3;
       });
       waterMotion.forEach(({ mesh: m, origin, phase, kind }) => {
         m.position.copy(origin);
         if (kind === "flow") {
-          m.position.x += Math.sin(time * 0.0005 + phase) * 0.24;
-          m.material.opacity = 0.32 + Math.sin(time * 0.0012 + phase) * 0.13;
+          const progress = (time * .00016 + phase) % 1;
+          m.position.x -= (progress - .5) * 1.4;
+          m.material.opacity = Math.sin(progress * Math.PI) ** 2 * .55;
         } else {
           m.position.y += Math.sin(time * 0.0015 + phase) * 0.06;
           m.material.opacity = 0.24 + Math.sin(time * 0.001 + phase) * 0.08;
         }
+      });
+      streamGlints.forEach(({ mesh: m, from, to, phase }) => {
+        const progress = (time * .00013 + phase) % 1;
+        m.position.copy(from).lerp(to, progress);
+        m.material.opacity = Math.sin(progress * Math.PI) ** 2 * .48;
+      });
+      ripples.forEach(({ mesh: m, phase }) => {
+        const progress = (time * .00016 + phase) % 1;
+        m.scale.setScalar(.5 + progress * 2.8);
+        m.material.opacity = Math.sin(progress * Math.PI) * .26;
+      });
+      leaves.forEach(({ mesh: m, origin, phase }) => {
+        const progress = (time * .000045 + phase) % 1;
+        m.visible = true;
+        m.position.copy(origin).add(new T.Vector3(progress * 2.1 - .8,
+          -progress * 1.35 + Math.sin(time * .0015 + phase) * .08, Math.sin(progress * Math.PI * 2 + phase) * .45));
+        m.rotation.set(progress * 5 + phase, time * .0008 + phase, Math.sin(time * .001 + phase) * .8);
+        m.material.opacity = Math.sin(progress * Math.PI) * .7;
       });
     },
   };

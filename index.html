@@ -3,58 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#173f3a" />
-    <title>楚河战阵 · 3D象棋</title>
+    <meta name="description" content="山河为局，一子成军。在山林、渡口与关隘之间，展开一局低多边形 3D 中国象棋。" />
+    <meta name="theme-color" content="#263a31" />
+    <title>山河弈境 · 3D象棋</title>
   </head>
   <body>
     <main id="app">
       <section class="game-shell">
         <header class="topbar">
-          <div>
-            <p class="eyebrow">3D CARTOON XIANGQI</p>
-            <h1>楚河战阵</h1>
-          </div>
+          <div class="brand"><span class="brand-seal" aria-hidden="true">弈</span><div>
+            <p class="eyebrow">SHANHE · XIANGQI</p>
+            <h1>山河弈境</h1>
+          </div></div><p class="campaign-note">山河为局 <span>·</span> 一子成军</p>
           <div class="turn-pill" id="turn-pill"><span></span><strong>红方行军</strong></div>
         </header>
 
+        <section class="status-card" aria-label="当前战况">
+          <span class="status-seal" aria-hidden="true">战报</span>
+          <div class="status-copy"><h2 id="status-title">红方整军待发</h2><p id="status-detail">选择一枚红方棋子开始行军。</p></div>
+          <div class="legend" aria-label="棋子标记"><span><i class="red"></i>红方</span><span><i class="black"></i>黑方</span><span><i class="move"></i>可移动</span></div>
+        </section>
+
         <div class="viewport-wrap">
           <canvas id="game-canvas" aria-label="可操作的3D中国象棋棋盘"></canvas>
+          <div class="map-compass" aria-hidden="true"><span>北</span><i></i><span>南</span></div>
+          <section id="battle-banner" class="battle-banner" role="status" aria-live="polite" aria-atomic="true" hidden>
+            <span class="banner-seal" data-banner-label></span><div class="banner-copy"><strong data-banner-title></strong><p data-banner-detail></p></div>
+          </section>
           <div class="battle-toast" id="battle-toast" role="status"></div>
           <section class="tactical-map" aria-label="棋局图"><div id="tactical-panel" hidden><div class="tactical-heading"><strong>棋局</strong><span>黑方在上 · 红方在下</span></div><div class="tactical-paper"><div id="tactical-board" role="group" aria-label="标准象棋布局"></div></div><p id="tactical-caption" aria-live="polite"></p></div><button id="tactical-toggle" aria-expanded="false" aria-controls="tactical-panel">看棋局 · M</button></section>
           <div id="route-caption" class="route-caption" hidden></div>
           <div class="hint">选择棋子 · 悬停落点看道路 · 拖动旋转</div>
         </div>
 
-        <aside class="control-panel">
-          <div class="status-card">
-            <p class="label">战况</p>
-            <h2 id="status-title">红方整军待发</h2>
-            <p id="status-detail">选择一枚红方棋子开始行军。</p>
-          </div>
-
+        <aside class="control-panel" aria-label="行军操作台">
           <div class="controls">
-            <label>
-              <span>行军速度 · 即时生效</span>
+            <label class="speed-control" for="speed-select">
+              <span>行军速度</span>
               <select id="speed-select" aria-describedby="speed-feedback">
-                <option value="3">疾行 · 3×</option>
-                <option value="1.7">快速 · 1.7×</option>
-                <option value="1" selected>标准 · 1×</option>
-                <option value="0.62">电影 · 0.62×</option>
-                <option value="0.25">慢赏 · 0.25×</option>
+                <option value="3">疾行 · 3×</option><option value="1.7">快速 · 1.7×</option>
+                <option value="1" selected>标准 · 1×</option><option value="0.62">电影 · 0.62×</option><option value="0.25">慢赏 · 0.25×</option>
               </select>
-              <small id="speed-feedback" aria-live="polite">行军、渡船与交锋中均可调整</small>
+              <small id="speed-feedback" aria-live="polite">途中调整，即时生效</small>
             </label>
-            <button id="music-button" class="secondary" aria-pressed="true">战鼓：开启</button><label class="volume-label"><span>战鼓音量</span><input id="music-volume" type="range" min="0" max="100" value="28" aria-label="战鼓音量" /></label><p id="music-status" class="music-status">点击棋盘后启奏</p>
-            <button id="sound-button" class="secondary" aria-pressed="true">音效：开启</button>
-            <button id="landscape-button" class="secondary">战场全景</button>
-            <button id="view-button" class="secondary">恢复俯视</button>
+            <div class="view-controls" role="group" aria-label="战场视角">
+              <button id="landscape-button" class="secondary">战场全景</button><button id="view-button" class="secondary">恢复俯视</button>
+            </div>
+            <button id="ambience-button" class="secondary" aria-pressed="true" title="林木、水流与微风遵循系统的减少动态效果设置">风物：流动</button>
+            <details class="sound-settings"><summary>战场声音</summary>
+              <div class="audio-controls">
+                <button id="music-button" class="secondary" aria-pressed="true">战鼓：开启</button><button id="sound-button" class="secondary" aria-pressed="true">音效：开启</button>
+                <label class="volume-label" for="music-volume"><span>战鼓音量</span><input id="music-volume" type="range" min="0" max="100" value="28" aria-label="战鼓音量" /></label>
+                <p id="music-status" class="music-status">点击棋盘后启奏</p>
+              </div>
+            </details>
             <button id="reset-button" class="primary">重新布阵</button>
-          </div>
-
-          <div class="legend">
-            <span><i class="red"></i>红方</span>
-            <span><i class="black"></i>黑方</span>
-            <span><i class="move"></i>可移动</span>
           </div>
         </aside>
       </section>

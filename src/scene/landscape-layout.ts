@@ -1,5 +1,5 @@
 import * as T from "three";
-import { boardPosition, BASE, GROUND } from "./board";
+import { boardPosition, BASE, BOARD_BOUNDS, GROUND } from "./board";
 import type { Position, PieceKind } from "../game/xiangqi";
 export type Surface =
   | "dirt"
@@ -60,9 +60,10 @@ export const crossingSpine = (i: number) => {
         ]
   ).map(([x, z]) => new T.Vector3(c.x + x, BASE, c.z + z));
 };
+const perimeterRidgeX = BOARD_BOUNDS.halfWidth + 4.2;
 export const ridges = [
-  [-17, -10, 5, 8, 8], [-18, 0, 5, 7, 9], [-17, 10, 5, 8, 7],
-  [17, -10, 5, 7, 9], [18, 0, 6, 7, 10], [17, 11, 5, 8, 8],
+  [-perimeterRidgeX, -10, 5, 8, 8], [-perimeterRidgeX - 1, 0, 5, 7, 9], [-perimeterRidgeX, 10, 5, 8, 7],
+  [perimeterRidgeX, -10, 5, 7, 9], [perimeterRidgeX + 1, 0, 6, 7, 10], [perimeterRidgeX, 11, 5, 8, 8],
   [-10, -23, 7, 5, 7], [9, -23, 8, 5, 8],
   [-10, 23, 6, 4, 5], [10, 23, 7, 4, 6],
   [10.5, -13.8, 3.1, 4.5, 5.4], [7.8, -8, 3.2, 4.1, 4.5],

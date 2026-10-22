@@ -8,10 +8,12 @@ import {
   GROUND,
   BASE,
   PIECE_SCALE,
+  BOARD_BOUNDS,
 } from "./scene/board";
 import { createBattlefield } from "./scene/battlefield";
 import { getMarchPath, surfaceSpeed, type Surface } from "./scene/landscape-layout";
 import { createTacticalBoard } from "./ui/tactical-board";
+import { createBattleBanner } from "./ui/battle-banner";
 import { BattleDrums } from "./game/battle-drums";
 import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, type TroopRig } from "./scene/combat";
 import {
@@ -41,6 +43,8 @@ const resetButton = document.querySelector<HTMLButtonElement>("#reset-button")!;
 const viewButton = document.querySelector<HTMLButtonElement>("#view-button")!;
 const battleToast = document.querySelector<HTMLDivElement>("#battle-toast")!;
 const viewportWrap = document.querySelector<HTMLDivElement>(".viewport-wrap")!;
+const battleBanner = createBattleBanner(document.querySelector<HTMLElement>("#battle-banner")!);
+const ambienceButton = document.querySelector<HTMLButtonElement>("#ambience-button")!;
 
 const RED = new THREE.Color("#d83b2f");
 const drums = new BattleDrums();
@@ -51,6 +55,7 @@ let selectedId: string | null = null;
 let availableMoves: Position[] = [];
 let interactionLocked = false;
 let soundEnabled = true;
+let ambienceEnabled = true;
 let audioContext: AudioContext | null = null;
 
 function getAudioContext() {
@@ -265,7 +270,7 @@ function worldToGrid(p: THREE.Vector3) {
 }
 function addBoard() {
   const hit = new THREE.Mesh(
-    new THREE.PlaneGeometry(29, 35),
+    new THREE.PlaneGeometry(BOARD_BOUNDS.halfWidth * 2 + 3, BOARD_BOUNDS.halfDepth * 2 + 3),
     new THREE.MeshBasicMaterial({ visible: false }),
   );
   hit.rotation.x = -Math.PI / 2;
@@ -1308,6 +1313,7 @@ function stopLocomotion(g: THREE.Group) {
 }
 
 async function animateCombat(attacker: Piece, defender: Piece, epoch: number) {
+  battleBanner.show({ kind: "engage", side: attacker.side, actor: attacker.kind, target: defender.kind });
   const g = pieceGroups.get(attacker.id)!, target = pieceGroups.get(defender.id)!,
     troop = g.userData.troop as THREE.Group,
     defenderTroop = target.userData.troop as THREE.Group,
@@ -1484,11 +1490,15 @@ async function tryMove(to: Position) {
   interactionLocked = false;
 
   if (result.gameOver) {
+    battleBanner.show({ kind: "victory", side: piece.side });
     showToast("决胜！");
     playAlertSound(true);
   } else if (result.check) {
+    battleBanner.show({ kind: "check", side: piece.side });
     showToast("将军！");
     playAlertSound();
+  } else if (result.captured) {
+    battleBanner.show({ kind: "capture", side: piece.side, actor: piece.kind, target: result.captured.kind });
   }
   updateUI(
     result.check ? "主帅告急" : undefined,
@@ -1621,6 +1631,7 @@ document.querySelector("#landscape-button")!.addEventListener("click", () => {
 });
 
 function resetGame() {
+  battleBanner.clear();
   effectLayer.clear();
   drums.setState(initialState());
   animationEpoch++;
@@ -1664,12 +1675,22 @@ document
 document.addEventListener("visibilitychange", () => drums.visibility());
 window.addEventListener("pagehide", () => drums.dispose());
 resetButton.addEventListener("click", resetGame);
-viewButton.addEventListener("click", resetView);
+viewButton.addEventListener("click", () => {
+  overview = false;
+  document.querySelector("#landscape-button")!.textContent = "战场全景";
+  resetView();
+});
 soundButton.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
   soundButton.textContent = `音效：${soundEnabled ? "开启" : "关闭"}`;
   soundButton.setAttribute("aria-pressed", String(soundEnabled));
   if (soundEnabled) playSelectSound();
+});
+ambienceButton.addEventListener("click", () => {
+  ambienceEnabled = !ambienceEnabled;
+  ambienceButton.textContent = `风物：${ambienceEnabled ? "流动" : "静止"}`;
+  ambienceButton.setAttribute("aria-pressed", String(ambienceEnabled));
+  battlefield.update(performance.now(), reducedMotion.matches || !ambienceEnabled);
 });
 
 function resize() {
@@ -1713,7 +1734,7 @@ updateUI();
 resetView();
 
 renderer.setAnimationLoop((time) => {
-  battlefield.update(time, reducedMotion.matches);
+  battlefield.update(time, reducedMotion.matches || !ambienceEnabled);
   controls.update();
   renderer.render(scene, camera);
 });

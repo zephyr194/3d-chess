@@ -189,6 +189,42 @@ describe("restored continuous battlefield", () => {
     const ray = new T.Raycaster(acrossWater, new T.Vector3(0, -1, 0));
     expect(ray.intersectObjects(map.decks, true)).toEqual([]);
   });
+  it("moves actual foliage and water while keeping terrain, trunks and transport fixed", () => {
+    map.reset(); map.update(0, true);
+    const canopy = map.root.getObjectByName("pine-canopy") as T.InstancedMesh,
+      trunks = map.root.getObjectByName("forest-trunks") as T.InstancedMesh,
+      river = map.root.getObjectByName("river-flow-glint")!,
+      current = map.root.getObjectByName("tributary-current")!,
+      ripple = map.root.getObjectByName("lake-ripple")!,
+      leaf = map.root.getObjectByName("windborne-leaf")!,
+      boat = map.root.getObjectByName("working-ferry")!,
+      rest = Array.from(canopy.instanceMatrix.array),
+      staticTrunks = Array.from(trunks.instanceMatrix.array),
+      staticTerrain = Array.from(map.terrain.geometry.getAttribute("position").array),
+      boatPosition = boat.position.clone(),
+      riverPosition = river.position.clone(), currentPosition = current.position.clone();
+    map.update(2000, false);
+    expect(Array.from(canopy.instanceMatrix.array)).not.toEqual(rest);
+    expect(river.position.distanceTo(riverPosition)).toBeGreaterThan(.01);
+    expect(current.position.distanceTo(currentPosition)).toBeGreaterThan(.01);
+    expect(ripple.scale.x).not.toBe(1);
+    expect(leaf.visible).toBe(true);
+    expect(Array.from(trunks.instanceMatrix.array)).toEqual(staticTrunks);
+    expect(Array.from(map.terrain.geometry.getAttribute("position").array)).toEqual(staticTerrain);
+    expect(boat.position.equals(boatPosition)).toBe(true);
+    map.update(2500, true);
+    expect(Array.from(canopy.instanceMatrix.array)).toEqual(rest);
+    expect(river.position.equals(riverPosition)).toBe(true);
+    expect(current.position.equals(currentPosition)).toBe(true);
+    expect(ripple.scale.toArray()).toEqual([1, 1, 1]);
+    expect(leaf.visible).toBe(false);
+    map.update(9000, true);
+    expect(Array.from(canopy.instanceMatrix.array)).toEqual(rest);
+    expect(river.position.equals(riverPosition)).toBe(true);
+    map.update(9000, false);
+    expect(Array.from(canopy.instanceMatrix.array)).not.toEqual(rest);
+    map.update(9000, true);
+  });
   it("connects every station through independent roads, without logical grid edges", () => {
     const reached = new Set(["0,0"]),
       queue = ["0,0"];
