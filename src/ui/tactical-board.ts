@@ -139,6 +139,8 @@ export function createTacticalBoard(
   return {
     render() {
       const { state, selectedId, moves, locked, last } = read(),
+        selected = state.pieces.find((p) => p.id === selectedId),
+        crossedSoldier = selected?.kind === "soldier" && (selected.side === "red" ? selected.y <= 4 : selected.y >= 5),
         check = isInCheck(state, state.turn),
         same = (p: Position | undefined, x: number, y: number) =>
           p?.x === x && p?.y === y;
@@ -175,7 +177,7 @@ export function createTacticalBoard(
           : check
             ? "将军！请应对"
             : selectedId
-              ? "点亮处可落子 · 悬停/长按看道路"
+              ? crossedSoldier ? "已过河，可前进或横移 · 须保护主帅" : "点亮处可落子 · 悬停/长按看道路"
               : "点击选子 · 方向键移动焦点";
     },
   };

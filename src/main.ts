@@ -8,14 +8,18 @@ import {
   GROUND,
   BASE,
   PIECE_SCALE,
+  BOARD_BOUNDS,
 } from "./scene/board";
 import { createBattlefield } from "./scene/battlefield";
-import { getMarchPath, type Surface } from "./scene/landscape-layout";
+import { getMarchPath, surfaceSpeed, type Surface } from "./scene/landscape-layout";
 import { createTacticalBoard } from "./ui/tactical-board";
+import { createBattleBanner } from "./ui/battle-banner";
 import { BattleDrums } from "./game/battle-drums";
+import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, type TroopRig } from "./scene/combat";
 import {
   applyMove,
   initialState,
+  isInCheck,
   legalMoves,
   pieceAt,
   pieceLabels,
@@ -39,6 +43,8 @@ const resetButton = document.querySelector<HTMLButtonElement>("#reset-button")!;
 const viewButton = document.querySelector<HTMLButtonElement>("#view-button")!;
 const battleToast = document.querySelector<HTMLDivElement>("#battle-toast")!;
 const viewportWrap = document.querySelector<HTMLDivElement>(".viewport-wrap")!;
+const battleBanner = createBattleBanner(document.querySelector<HTMLElement>("#battle-banner")!);
+const ambienceButton = document.querySelector<HTMLButtonElement>("#ambience-button")!;
 
 const RED = new THREE.Color("#d83b2f");
 const drums = new BattleDrums();
@@ -49,6 +55,7 @@ let selectedId: string | null = null;
 let availableMoves: Position[] = [];
 let interactionLocked = false;
 let soundEnabled = true;
+let ambienceEnabled = true;
 let audioContext: AudioContext | null = null;
 
 function getAudioContext() {
@@ -228,8 +235,8 @@ controls.maxDistance = 150;
 controls.maxPolarAngle = Math.PI * 0.47;
 controls.target.set(0, 0.5, 0);
 
-scene.add(new THREE.HemisphereLight("#fff6dd", "#173c3b", 2.3));
-const sun = new THREE.DirectionalLight("#ffe8bf", 3.5);
+scene.add(new THREE.HemisphereLight("#f1f4dc", "#234b42", 1.9));
+const sun = new THREE.DirectionalLight("#ffe2af", 3.1);
 sun.position.set(-9, 17, 8);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -263,7 +270,7 @@ function worldToGrid(p: THREE.Vector3) {
 }
 function addBoard() {
   const hit = new THREE.Mesh(
-    new THREE.PlaneGeometry(29, 35),
+    new THREE.PlaneGeometry(BOARD_BOUNDS.halfWidth * 2 + 3, BOARD_BOUNDS.halfDepth * 2 + 3),
     new THREE.MeshBasicMaterial({ visible: false }),
   );
   hit.rotation.x = -Math.PI / 2;
@@ -368,12 +375,14 @@ function addHumanoid(group: THREE.Group, side: Side, height = 1) {
       woodMaterial,
     );
     leg.position.set(side * 0.1, 0.3, 0);
+    leg.name = `human-leg-${side}`;
     leg.userData.motionJoint = side;
     const arm = modelMesh(
       new THREE.CylinderGeometry(0.05, 0.06, 0.32, 6),
       steelMaterial,
     );
     arm.position.set(side * 0.26, 0.72, 0);
+    arm.name = `human-arm-${side}`;
     arm.userData.motionJoint = -side;
     group.add(leg, arm);
   }
@@ -398,6 +407,19 @@ function addFlag(group: THREE.Group, side: Side, x = 0.31, tall = false) {
 function createTroopModel(kind: PieceKind, side: Side) {
   const model = new THREE.Group();
   const wheels: THREE.Mesh[] = [];
+  let rig: TroopRig;
+  const pivot = (name: string, at: THREE.Vector3, ...parts: THREE.Object3D[]) => {
+    const joint = new THREE.Group();
+    joint.name = name;
+    joint.position.copy(at);
+    for (const part of parts) {
+      part.position.sub(at);
+      delete part.userData.motionJoint;
+      joint.add(part);
+    }
+    model.add(joint);
+    return joint;
+  };
 
   if (kind === "general") {
     addHumanoid(model, side, 1.2);
@@ -416,6 +438,16 @@ function createTroopModel(kind: PieceKind, side: Side) {
     crown.position.y = 1.36;
     model.add(crown);
     addFlag(model, side, 0.39, true);
+    const weaponShaft = modelMesh(new THREE.CylinderGeometry(0.035, 0.035, 0.8, 6), woodMaterial);
+    weaponShaft.position.set(0.31, 0.9, -0.08);
+    const blade = modelMesh(new THREE.BoxGeometry(0.1, 0.4, 0.055), steelMaterial);
+    blade.position.set(0.31, 1.49, -0.08);
+    const guard = modelMesh(new THREE.BoxGeometry(0.25, 0.055, 0.1), goldMaterial);
+    guard.position.set(0.31, 1.25, -0.08);
+    const weaponArm = model.getObjectByName("human-arm-1")!;
+    const torso = pivot("general-torso", new THREE.Vector3(0, 0.5, 0), ...model.children.filter((o) => !o.name.startsWith("human-leg") && o !== weaponArm));
+    const weapon = pivot("general-weapon", new THREE.Vector3(0.28, 0.78, 0), weaponArm, weaponShaft, blade, guard);
+    rig = createTroopRig(kind, { torso, weapon });
   }
 
   if (kind === "advisor") {
@@ -434,6 +466,8 @@ function createTroopModel(kind: PieceKind, side: Side) {
     const gem = modelMesh(new THREE.OctahedronGeometry(0.13), creamMaterial);
     gem.position.set(0, 1.37, 0);
     model.add(hat, tablet, gem);
+    const tabletArm = pivot("advisor-tablet-arm", new THREE.Vector3(0.2, 0.85, 0), tablet, model.getObjectByName("human-arm-1")!);
+    rig = createTroopRig(kind, { tabletArm });
   }
 
   if (kind === "elephant") {
@@ -467,6 +501,10 @@ function createTroopModel(kind: PieceKind, side: Side) {
     trunk.rotation.x = Math.PI / 2.65;
     trunk.position.set(0, 0.59, -0.67);
     model.add(body, head, trunk);
+    const headJoint = pivot("elephant-head", new THREE.Vector3(0, 0.85, -0.3), head, ...model.children.filter((o) => o instanceof THREE.Mesh && o.geometry instanceof THREE.SphereGeometry && o !== body && o !== head));
+    const trunkJoint = pivot("elephant-trunk", new THREE.Vector3(0, 0.79, -0.55), trunk);
+    const foot = model.children.find((o) => o.userData.motionJoint === 1)!;
+    rig = createTroopRig(kind, { head: headJoint, trunk: trunkJoint, foot });
     for (const direction of [-1, 1]) {
       const leg = modelMesh(
         new THREE.CylinderGeometry(0.09, 0.11, 0.38, 7),
@@ -508,6 +546,9 @@ function createTroopModel(kind: PieceKind, side: Side) {
     const tip = modelMesh(new THREE.ConeGeometry(0.065, 0.2, 5), steelMaterial);
     tip.position.set(0.28, 1.96, -0.02);
     model.add(lance, tip);
+    const lanceJoint = pivot("horse-lance", new THREE.Vector3(0.28, 1.1, 0), lance, tip);
+    const headJoint = pivot("horse-head", new THREE.Vector3(0, 0.9, -0.35), head, neck);
+    rig = createTroopRig(kind, { rider, lance: lanceJoint, head: headJoint });
     for (const direction of [-1, 1]) {
       const leg = modelMesh(
         new THREE.CylinderGeometry(0.055, 0.075, 0.47, 6),
@@ -544,6 +585,15 @@ function createTroopModel(kind: PieceKind, side: Side) {
     roof.rotation.y = Math.PI / 4;
     roof.position.y = 0.99;
     model.add(carriage, roof);
+    const chassis = pivot("chariot-chassis", new THREE.Vector3(0, 0.45, 0), carriage, roof);
+    const ramBeam = modelMesh(new THREE.CylinderGeometry(0.1, 0.1, 0.65, 8), woodMaterial);
+    ramBeam.rotation.x = Math.PI / 2;
+    ramBeam.position.set(0, 0.54, -0.49);
+    const ramTip = modelMesh(new THREE.ConeGeometry(0.14, 0.24, 6), steelMaterial);
+    ramTip.rotation.x = -Math.PI / 2;
+    ramTip.position.set(0, 0.54, -0.93);
+    const ram = pivot("chariot-ram", new THREE.Vector3(0, 0.54, -0.15), ramBeam, ramTip);
+    rig = createTroopRig(kind, { chassis, ram });
     [-1, 1].forEach((x) =>
       [-1, 1].forEach((z) => {
         const wheel = modelMesh(
@@ -577,6 +627,9 @@ function createTroopModel(kind: PieceKind, side: Side) {
     );
     muzzle.position.set(0, 0.67, -0.58);
     model.add(cradle, barrel, muzzle);
+    const barrelSlide = pivot("cannon-recoil-slide", new THREE.Vector3(0, 0.67, 0), barrel, muzzle);
+    const trunnion = pivot("cannon-trunnion", new THREE.Vector3(0, 0.67, 0), barrelSlide);
+    rig = createTroopRig(kind, { trunnion, barrel: barrelSlide });
     [-1, 1].forEach((direction) => {
       const wheel = modelMesh(
         new THREE.CylinderGeometry(0.23, 0.23, 0.12, 12),
@@ -613,6 +666,9 @@ function createTroopModel(kind: PieceKind, side: Side) {
     shield.rotation.x = Math.PI / 2;
     shield.position.set(-0.23, 0.65, -0.2);
     model.add(shield, helmet, spear, spearTip);
+    const spearJoint = pivot("soldier-spear", new THREE.Vector3(0.3, 0.78, 0), spear, spearTip, model.getObjectByName("human-arm-1")!);
+    const shieldJoint = pivot("soldier-shield", new THREE.Vector3(-0.25, 0.78, 0), shield, model.getObjectByName("human-arm--1")!);
+    rig = createTroopRig(kind, { spear: spearJoint, shield: shieldJoint });
   }
 
   const label = pieceLabels[side][kind];
@@ -663,6 +719,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
   model.add(badge);
   if (side === "black") model.rotation.y = Math.PI;
   model.userData.wheels = wheels;
+  model.userData.combatRig = rig!;
   return model;
 }
 
@@ -706,6 +763,9 @@ function createPiece(piece: Piece) {
   group.userData.troop = troop;
   group.userData.restY = troop.position.y;
   group.userData.wheels = troop.userData.wheels;
+  group.userData.combatRig = troop.userData.combatRig;
+  group.userData.combatPhase = "idle";
+  group.userData.combatProgress = 0;
   group.userData.modelBaseYaw = piece.side === "black" ? Math.PI : 0;
 
   group.add(base, halo, rim, troop);
@@ -751,6 +811,16 @@ function renderPieces() {
     const g = pieceGroups.get(p.id);
     if (!g) createPiece(p);
     else {
+      restoreCombatRig(g.userData.combatRig as TroopRig);
+      const troop = g.userData.troop as THREE.Group;
+      troop.position.y = Number(g.userData.restY);
+      troop.rotation.y = Number(g.userData.modelBaseYaw);
+      troop.rotation.x = troop.rotation.z = 0;
+      troop.traverse((o) => { if (o.userData.motionJoint) o.rotation.x = 0; });
+      g.visible = true;
+      g.userData.combatPhase = "idle";
+      g.userData.combatProgress = 0;
+      g.userData.marchMotion = "idle";
       g.position.copy(gridToWorld(p));
       g.scale.setScalar(PIECE_SCALE);
       g.rotation.set(0, 0, 0);
@@ -874,18 +944,20 @@ function renderMarkers() {
   availableMoves.forEach((move) => {
     const occupied = pieceAt(state, move);
     const marker = new THREE.Mesh(
-      occupied
-        ? new THREE.TorusGeometry(0.32, 0.075, 12, 32)
-        : new THREE.CylinderGeometry(0.14, 0.2, 0.07, 16),
-      new THREE.MeshStandardMaterial({
+      new THREE.TorusGeometry(occupied ? 0.5 : 0.34, occupied ? 0.065 : 0.055, 8, 32),
+      new THREE.MeshBasicMaterial({
         color: occupied ? "#ffcf66" : "#57e59b",
-        emissive: occupied ? "#6f3d00" : "#0a6c40",
-        emissiveIntensity: 1.4,
+        depthTest: false,
+        depthWrite: false,
+        transparent: true,
+        opacity: 0.95,
+        toneMapped: false,
       }),
     );
     marker.position.copy(gridToWorld(move));
     marker.position.y += 0.1;
-    if (occupied) marker.rotation.x = Math.PI / 2;
+    marker.rotation.x = Math.PI / 2;
+    marker.renderOrder = 20;
     marker.userData.move = move;
     markerLayer.add(marker);
   });
@@ -930,7 +1002,7 @@ function selectPiece(piece: Piece) {
   renderMarkers();
   updateUI(
     `${pieceLabels[piece.side][piece.kind]}已列阵`,
-    `共有 ${availableMoves.length} 个合法落点。`,
+    `共有 ${availableMoves.length} 个合法落点。${piece.kind === "soldier" && (piece.side === "red" ? piece.y <= 4 : piece.y >= 5) ? "已过河，可前进或横移。不能使己方主帅受将。" : ""}`,
   );
 }
 
@@ -943,10 +1015,6 @@ function clearSelection() {
   });
   renderMarkers();
   updateUI();
-}
-
-function easeInOut(value: number) {
-  return value < 0.5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2;
 }
 
 function createDustPuff(position: THREE.Vector3, strength = 1) {
@@ -1229,34 +1297,86 @@ function createImpact(
   requestAnimationFrame(tick);
 }
 
-function animateCannonShot(
-  from: THREE.Vector3,
-  to: THREE.Vector3,
-  duration: number,
-) {
-  return new Promise<void>((resolve) => {
-    playCannonSound();
-    const projectile = new THREE.Mesh(
-      new THREE.SphereGeometry(0.15, 10, 8),
-      new THREE.MeshStandardMaterial({
-        color: "#fff09b",
-        emissive: "#ff7100",
-        emissiveIntensity: 3,
-      }),
-    );
-    projectile.position.copy(from).add(new THREE.Vector3(0, 0.75, 0));
-    scene.add(projectile);
-    const start = performance.now();
-    const tick = (time: number) => {
-      const progress = Math.min(1, (time - start) / duration);
-      projectile.position.lerpVectors(from, to, progress);
-      projectile.position.y += 0.8 + Math.sin(progress * Math.PI) * 1.9;
-      projectile.scale.setScalar(1 + Math.sin(progress * Math.PI) * 1.2);
-      if (progress < 1) requestAnimationFrame(tick);
-      else {
-        scene.remove(projectile);
-        resolve();
+function readPresentationRate() {
+  return Number(speedSelect.value);
+}
+
+speedSelect.addEventListener("change", () => {
+  document.querySelector("#speed-feedback")!.textContent = `${speedSelect.value}× · 当前行军、渡船与交锋即时生效`;
+});
+
+function stopLocomotion(g: THREE.Group) {
+  const troop = g.userData.troop as THREE.Group;
+  troop.position.y = Number(g.userData.restY);
+  troop.traverse((o) => { if (o.userData.motionJoint) o.rotation.x = 0; });
+  g.userData.marchMotion = "idle";
+}
+
+async function animateCombat(attacker: Piece, defender: Piece, epoch: number) {
+  battleBanner.show({ kind: "engage", side: attacker.side, actor: attacker.kind, target: defender.kind });
+  const g = pieceGroups.get(attacker.id)!, target = pieceGroups.get(defender.id)!,
+    troop = g.userData.troop as THREE.Group,
+    defenderTroop = target.userData.troop as THREE.Group,
+    rig = g.userData.combatRig as TroopRig,
+    profile = attackProfiles[attacker.kind],
+    restPosition = defenderTroop.position.clone(),
+    restRotation = defenderTroop.quaternion.clone(),
+    direction = target.position.clone().sub(g.position);
+  stopLocomotion(g);
+  stopLocomotion(target);
+  g.rotation.y = Math.atan2(direction.x, direction.z) + Math.PI - Number(g.userData.modelBaseYaw);
+  g.userData.combatPhase = "attacking";
+  g.userData.combatProgress = 0;
+  g.userData.combatImpacts = 0;
+  target.userData.combatPhase = "defending";
+  const localRecoil = direction.clone().normalize().applyQuaternion(target.quaternion.clone().invert()).multiplyScalar(0.19);
+  let projectile: THREE.Mesh | undefined;
+  if (attacker.kind === "cannon") {
+    projectile = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 6), new THREE.MeshBasicMaterial({ color: "#ffda78", toneMapped: false }));
+    projectile.visible = false;
+    world.add(projectile);
+  }
+  await new Promise<void>((resolve) => {
+    let previousTime: number | undefined, elapsed = 0, impacted = false;
+    const finish = () => {
+      restoreCombatRig(rig);
+      troop.position.y = Number(g.userData.restY);
+      defenderTroop.position.copy(restPosition);
+      defenderTroop.quaternion.copy(restRotation);
+      g.userData.combatPhase = "idle";
+      target.userData.combatPhase = "idle";
+      if (projectile) {
+        world.remove(projectile);
+        projectile.geometry.dispose();
+        (projectile.material as THREE.Material).dispose();
       }
+      resolve();
+    };
+    const tick = (time: number) => {
+      if (epoch !== animationEpoch) { finish(); return; }
+      const delta = previousTime === undefined ? 0 : (time - previousTime) / 1000;
+      previousTime = time;
+      elapsed += delta * readPresentationRate() * (reducedMotion.matches ? 1.8 : 1);
+      const phase = Math.min(1, elapsed / profile.duration);
+      g.userData.combatProgress = phase;
+      applyCombatPose(rig, sampleCombat(attacker.kind, phase), reducedMotion.matches ? 0.45 : 1);
+      if (projectile) {
+        const flight = Math.max(0, Math.min(1, (phase - 0.22) / (profile.impact - 0.22)));
+        projectile.visible = phase >= 0.22 && phase < profile.impact;
+        projectile.position.lerpVectors(g.position, target.position, flight);
+        projectile.position.y += 0.6 + Math.sin(flight * Math.PI) * 0.18;
+      }
+      if (!impacted && phase >= profile.impact) {
+        impacted = true;
+        g.userData.combatImpacts = 1;
+        if (attacker.kind === "cannon") playCannonSound();
+        createImpact(target.position, attacker.kind, defender.kind);
+      }
+      const reaction = phase < profile.impact ? 0 : Math.sin(((phase - profile.impact) / (1 - profile.impact)) * Math.PI);
+      defenderTroop.position.copy(restPosition).addScaledVector(localRecoil, reaction);
+      defenderTroop.quaternion.copy(restRotation).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.24 * reaction, 0, 0.09 * reaction)));
+      if (phase < 1) requestAnimationFrame(tick);
+      else { target.visible = false; finish(); }
     };
     requestAnimationFrame(tick);
   });
@@ -1268,106 +1388,68 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
     troop = g.userData.troop as THREE.Group,
     path = getMarchPath(piece, to, state.pieces, piece.kind),
     length = path.getLength(),
-    speed = Number(speedSelect.value);
-  const end = gridToWorld(to),
-    duration = reducedMotion.matches
-      ? 120
-      : (450 + path.travelSeconds(piece.kind) * 900) / speed;
-  if (piece.kind === "cannon" && captured) {
-    await animateCannonShot(g.position.clone(), end, 430 / speed);
-    if (epoch !== animationEpoch) return;
-  }
-  await new Promise<void>((resolve) => {
-    const started = performance.now();
-    let dust = -1,
-      impact = false;
-    let lastDistance = 0,
-      groundDistance = 0;
+    end = gridToWorld(to),
+    march = battlefield.startMarch(path, piece.kind);
+  let dust = -1, lastDistance = 0, groundDistance = 0, resumingAfterAttack = false;
+  const advanceMarch = (stopDistance: number) => new Promise<void>((resolve) => {
+    let previousTime: number | undefined;
     const tick = (time: number) => {
-      if (epoch !== animationEpoch) {
-        resolve();
-        return;
-      }
-      const t = Math.min(1, (time - started) / duration),
-        u = path.progressAtTime(easeInOut(t), piece.kind),
-        p = path.getPointAt(u),
-        surface = path.surfaceAt(u);
-      g.position.copy(p).setY(BASE);
-      battlefield.followMarch(p);
+      if (epoch !== animationEpoch) { stopLocomotion(g); resolve(); return; }
+      const elapsed = previousTime === undefined ? 0 : (time - previousTime) / 1000;
+      previousTime = time;
+      const simulationDelta = elapsed * readPresentationRate() * (reducedMotion.matches ? 5 : 1),
+        frame = march.advance(simulationDelta);
+      if (frame.status === "cancelled") { stopLocomotion(g); resolve(); return; }
+      const distance = resumingAfterAttack
+          ? Math.min(stopDistance, frame.distance, lastDistance + simulationDelta * surfaceSpeed(piece.kind, path.surfaceAt(lastDistance / length)))
+          : Math.min(stopDistance, frame.distance),
+        u = distance / length,
+        surface = resumingAfterAttack ? path.surfaceAt(u) : frame.surface,
+        walking = resumingAfterAttack ? distance > lastDistance : frame.motion === "walking" && !frame.done;
+      g.userData.marchMotion = resumingAfterAttack ? (walking ? "walking" : "idle") : frame.motion;
+      g.position.copy(path.getPointAt(u)).setY(BASE);
       const d = path.getTangentAt(Math.min(0.9999, u)),
         yaw = Math.atan2(d.x, d.z) + Math.PI - Number(g.userData.modelBaseYaw);
-      const turn = Math.atan2(
-        Math.sin(yaw - g.rotation.y),
-        Math.cos(yaw - g.rotation.y),
-      );
+      const turn = Math.atan2(Math.sin(yaw - g.rotation.y), Math.cos(yaw - g.rotation.y));
       g.rotation.y += turn * 0.32;
-      const distance = u * length;
-      if (surface !== "ferry") groundDistance += distance - lastDistance;
+      if (walking) groundDistance += distance - lastDistance;
       lastDistance = distance;
-      const stride =
-          piece.kind === "horse"
-            ? 0.85
-            : piece.kind === "elephant"
-              ? 0.65
-              : 0.5,
+      const stride = piece.kind === "horse" ? 0.85 : piece.kind === "elephant" ? 0.65 : 0.5,
         phase = (groundDistance / stride) * Math.PI * 2,
-        limb =
-          surface === "ferry" || reducedMotion.matches
-            ? 0
-            : Math.sin(t * Math.PI) * (surface === "boardwalk" ? 0.16 : 0.32);
+        limb = !walking || reducedMotion.matches ? 0 : Math.sin(u * Math.PI) * (surface === "boardwalk" ? 0.16 : 0.32);
       troop.traverse((o) => {
         if (o.userData.motionJoint)
-          o.rotation.x =
-            Math.sin(phase + (Number(o.userData.motionJoint) * Math.PI) / 2) *
-            limb;
+          o.rotation.x = Math.sin(phase + (Number(o.userData.motionJoint) * Math.PI) / 2) * limb;
       });
-      troop.position.y =
-        Number(g.userData.restY) +
-        (surface === "ferry" || reducedMotion.matches
-          ? 0
-          : Math.abs(Math.sin(phase)) * 0.025);
-      if (surface !== "ferry")
-        for (const wheel of (g.userData.wheels ?? []) as THREE.Mesh[]) {
-          if (!wheel.userData.rest)
-            wheel.userData.rest = wheel.quaternion.clone();
-          wheel.quaternion
-            .copy(wheel.userData.rest)
-            .multiply(
-              new THREE.Quaternion().setFromAxisAngle(
-                new THREE.Vector3(0, 1, 0),
-                groundDistance / (0.2 * PIECE_SCALE),
-              ),
-            );
-        }
+      troop.position.y = Number(g.userData.restY) + (!walking || reducedMotion.matches ? 0 : Math.abs(Math.sin(phase)) * 0.025);
+      if (walking) for (const wheel of (g.userData.wheels ?? []) as THREE.Mesh[]) {
+        if (!wheel.userData.rest) wheel.userData.rest = wheel.quaternion.clone();
+        wheel.quaternion.copy(wheel.userData.rest).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), groundDistance / (0.2 * PIECE_SCALE)));
+      }
       const step = Math.floor(groundDistance / 0.9);
-      if (step > dust && t > 0.05 && t < 0.95 && surface !== "ferry") {
+      if (step > dust && u > 0.05 && u < 0.95 && walking) {
         dust = step;
-        if (
-          !reducedMotion.matches &&
-          !["bridge", "boardwalk"].includes(surface)
-        )
-          createDustPuff(g.position, 0.6);
-        if (surface === "boardwalk")
-          playTone(step % 2 ? 145 : 180, 80, 0.065, "triangle", 0.05);
+        if (!reducedMotion.matches && !["bridge", "boardwalk"].includes(surface)) createDustPuff(g.position, 0.6);
+        if (surface === "boardwalk") playTone(step % 2 ? 145 : 180, 80, 0.065, "triangle", 0.05);
         else if (surface === "mud") playNoise(0.06, 0.045, 380);
         else playStepSound(piece.kind, step);
       }
-      if (captured && t > 0.92 && !impact) {
-        impact = true;
-        createImpact(end, piece.kind, captured.kind);
-      }
-      if (t < 1) requestAnimationFrame(tick);
-      else {
-        g.position.copy(end);
-        troop.position.y = Number(g.userData.restY);
-        troop.traverse((o) => {
-          if (o.userData.motionJoint) o.rotation.x = 0;
-        });
-        resolve();
-      }
+      if (distance < stopDistance - 1e-9) requestAnimationFrame(tick);
+      else { stopLocomotion(g); resolve(); }
     };
     requestAnimationFrame(tick);
   });
+  await advanceMarch(captured ? Math.max(0, length - 0.8) : length);
+  if (epoch !== animationEpoch) return;
+  if (captured) {
+    await animateCombat(piece, captured, epoch);
+    if (epoch !== animationEpoch) return;
+    resumingAfterAttack = true;
+    await advanceMarch(length);
+    if (epoch !== animationEpoch) return;
+  }
+  g.position.copy(end);
+  stopLocomotion(g);
 }
 
 async function tryMove(to: Position) {
@@ -1375,7 +1457,23 @@ async function tryMove(to: Position) {
   const piece = state.pieces.find((item) => item.id === selectedId);
   if (!piece) return;
   const result = applyMove(state, selectedId, to);
-  if (!result) return;
+  if (!result) {
+    const crossed = piece.kind === "soldier" && (piece.side === "red" ? piece.y <= 4 : piece.y >= 5),
+      target = pieceAt(state, to);
+    if (crossed && to.y === piece.y && Math.abs(to.x - piece.x) === 1 && target?.side !== piece.side) {
+      const next: GameState = { ...state, pieces: state.pieces.filter((p) => p.id === piece.id || p.x !== to.x || p.y !== to.y).map((p) => p.id === piece.id ? { ...p, ...to } : p) };
+      if (isInCheck(next, piece.side)) {
+        const generals = next.pieces.filter((p) => p.kind === "general");
+        const facing = generals.length === 2 && generals[0].x === generals[1].x && !next.pieces.some((p) => p.kind !== "general" && p.x === generals[0].x && p.y > Math.min(generals[0].y, generals[1].y) && p.y < Math.max(generals[0].y, generals[1].y));
+        const message = facing ? "兵卒已过河，但此处横移会使将帅照面。请先保护主帅。" : "兵卒已过河，但此处横移会使己方主帅受将。";
+        updateUI("这个落点不可行", message);
+        showToast(message);
+        return;
+      }
+    }
+    showToast("这个落点不符合当前棋子的行棋规则。");
+    return;
+  }
 
   const epoch = animationEpoch;
   drums.setState(result.state, result.check, Boolean(result.captured));
@@ -1392,11 +1490,15 @@ async function tryMove(to: Position) {
   interactionLocked = false;
 
   if (result.gameOver) {
+    battleBanner.show({ kind: "victory", side: piece.side });
     showToast("决胜！");
     playAlertSound(true);
   } else if (result.check) {
+    battleBanner.show({ kind: "check", side: piece.side });
     showToast("将军！");
     playAlertSound();
+  } else if (result.captured) {
+    battleBanner.show({ kind: "capture", side: piece.side, actor: piece.kind, target: result.captured.kind });
   }
   updateUI(
     result.check ? "主帅告急" : undefined,
@@ -1529,6 +1631,7 @@ document.querySelector("#landscape-button")!.addEventListener("click", () => {
 });
 
 function resetGame() {
+  battleBanner.clear();
   effectLayer.clear();
   drums.setState(initialState());
   animationEpoch++;
@@ -1572,12 +1675,22 @@ document
 document.addEventListener("visibilitychange", () => drums.visibility());
 window.addEventListener("pagehide", () => drums.dispose());
 resetButton.addEventListener("click", resetGame);
-viewButton.addEventListener("click", resetView);
+viewButton.addEventListener("click", () => {
+  overview = false;
+  document.querySelector("#landscape-button")!.textContent = "战场全景";
+  resetView();
+});
 soundButton.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
   soundButton.textContent = `音效：${soundEnabled ? "开启" : "关闭"}`;
   soundButton.setAttribute("aria-pressed", String(soundEnabled));
   if (soundEnabled) playSelectSound();
+});
+ambienceButton.addEventListener("click", () => {
+  ambienceEnabled = !ambienceEnabled;
+  ambienceButton.textContent = `风物：${ambienceEnabled ? "流动" : "静止"}`;
+  ambienceButton.setAttribute("aria-pressed", String(ambienceEnabled));
+  battlefield.update(performance.now(), reducedMotion.matches || !ambienceEnabled);
 });
 
 function resize() {
@@ -1621,7 +1734,7 @@ updateUI();
 resetView();
 
 renderer.setAnimationLoop((time) => {
-  battlefield.update(time, reducedMotion.matches);
+  battlefield.update(time, reducedMotion.matches || !ambienceEnabled);
   controls.update();
   renderer.render(scene, camera);
 });

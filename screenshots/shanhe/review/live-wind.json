@@ -1,0 +1,10 @@
+{
+  "commit": "2f3e89d5cbade4165a2229f1063251c75e4a2631",
+  "errors": [],
+  "checks": {
+    "normal_motion_changes": true,
+    "initial_frames_observed": 2,
+    "off_stays_still_after_three_actual_updates": true,
+    "on_resumes_motion": true
+  }
+}

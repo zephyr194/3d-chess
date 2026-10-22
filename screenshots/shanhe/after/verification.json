@@ -1,0 +1,150 @@
+{
+  "stage": "after",
+  "errors": [],
+  "viewport": [
+    1440,
+    1024
+  ],
+  "view_reset": {
+    "returns_default": true,
+    "label": "战场全景"
+  },
+  "mobile_overflow": false,
+  "board": {
+    "left": [
+      -17.6,
+      0.545,
+      -2.9400000000000004
+    ],
+    "right": [
+      17.6,
+      0.545,
+      -2.9400000000000004
+    ],
+    "scales": [
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68,
+      0.68
+    ]
+  },
+  "layout": {
+    "board": [
+      20,
+      169,
+      1400,
+      763
+    ],
+    "controls": [
+      20,
+      942,
+      1400,
+      66
+    ],
+    "separate": true
+  },
+  "visibility": {
+    "three_center_rays_blocked": [
+      "black-elephant-6",
+      "black-soldier-15"
+    ],
+    "limit_from_baseline": 4
+  },
+  "motion": {
+    "changed": [
+      "canopy",
+      "glint",
+      "ripple",
+      "mist",
+      "leaf"
+    ],
+    "restored": true,
+    "reduced_still": true,
+    "support_static": true
+  },
+  "pawn_checks": [
+    {
+      "side": "red",
+      "lateral": true,
+      "legal": [
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 3,
+          "y": 4
+        }
+      ]
+    },
+    {
+      "side": "black",
+      "lateral": true,
+      "legal": [
+        {
+          "x": 1,
+          "y": 5
+        },
+        {
+          "x": 3,
+          "y": 5
+        },
+        {
+          "x": 2,
+          "y": 6
+        }
+      ]
+    }
+  ],
+  "transport": [
+    {
+      "side": "red",
+      "frames": 258,
+      "footprint_rays": 2322,
+      "unsupported": 0,
+      "gait_failures": 0
+    },
+    {
+      "side": "black",
+      "frames": 313,
+      "footprint_rays": 2817,
+      "unsupported": 0,
+      "gait_failures": 0
+    }
+  ],
+  "attack_banner": "交锋\n兵出击\n\n红方兵迎战黑方馬",
+  "capture_banner": "破阵\n兵破阵\n\n红方兵击破黑方馬",
+  "reset_cancels_banner": true
+}

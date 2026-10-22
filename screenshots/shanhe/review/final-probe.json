@@ -1,0 +1,1010 @@
+{
+  "errors": [],
+  "versions": {
+    "head": {
+      "default": {
+        "camera": [
+          1.0339162626150693,
+          43.644652747434,
+          25.42665148629073
+        ],
+        "target": [
+          -0.9750906605876413,
+          -0.999945545959587,
+          1.988237382259106
+        ],
+        "overview": false,
+        "label": "战场全景"
+      },
+      "overview": {
+        "camera": [
+          2.242190988769889,
+          56.5158849149251,
+          42.7373612624415
+        ],
+        "target": [
+          -1.3157951827490437,
+          -0.8072256262132635,
+          1.2275225947206154
+        ],
+        "overview": true,
+        "label": "返回棋盘近景"
+      },
+      "reset": {
+        "camera": [
+          1.0339162626150695,
+          43.644652747434,
+          25.42665148629073
+        ],
+        "target": [
+          -0.975090660587641,
+          -0.999945545959587,
+          1.988237382259106
+        ],
+        "overview": false,
+        "label": "战场全景"
+      },
+      "reset_returns_default": false,
+      "visibility": [
+        {
+          "id": "black-chariot-0",
+          "kind": "chariot",
+          "x": 0,
+          "y": 0,
+          "hits": [
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                -16.664202043729,
+                3.1615659748443994,
+                -13.672604838163798
+              ]
+            },
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                -16.806142697523278,
+                3.1624026700487886,
+                -13.986184728946517
+              ]
+            },
+            null
+          ]
+        },
+        {
+          "id": "black-horse-1",
+          "kind": "horse",
+          "x": 1,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-elephant-2",
+          "kind": "elephant",
+          "x": 2,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-advisor-3",
+          "kind": "advisor",
+          "x": 3,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-general-4",
+          "kind": "general",
+          "x": 4,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-advisor-5",
+          "kind": "advisor",
+          "x": 5,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-elephant-6",
+          "kind": "elephant",
+          "x": 6,
+          "y": 0,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                8.388328349519526,
+                3.2804334634294534,
+                -13.5578005884054
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                8.403104450906396,
+                3.5219596474074564,
+                -13.63612611729343
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                8.448957419858196,
+                3.661863595433161,
+                -13.87918468532866
+              ]
+            }
+          ]
+        },
+        {
+          "id": "black-horse-7",
+          "kind": "horse",
+          "x": 7,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-chariot-8",
+          "kind": "chariot",
+          "x": 8,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-cannon-9",
+          "kind": "cannon",
+          "x": 1,
+          "y": 2,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-cannon-10",
+          "kind": "cannon",
+          "x": 7,
+          "y": 2,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-11",
+          "kind": "soldier",
+          "x": 0,
+          "y": 3,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-12",
+          "kind": "soldier",
+          "x": 2,
+          "y": 3,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-13",
+          "kind": "soldier",
+          "x": 4,
+          "y": 3,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-14",
+          "kind": "soldier",
+          "x": 6,
+          "y": 3,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-15",
+          "kind": "soldier",
+          "x": 8,
+          "y": 3,
+          "hits": [
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                16.629927063400267,
+                3.516946093523586,
+                -4.291527253431583
+              ]
+            },
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                16.717190236650985,
+                3.61430392307836,
+                -4.457807119045014
+              ]
+            },
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                16.82160381993914,
+                3.736625460119956,
+                -4.656767069166102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "red-chariot-16",
+          "kind": "chariot",
+          "x": 0,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-horse-17",
+          "kind": "horse",
+          "x": 1,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-elephant-18",
+          "kind": "elephant",
+          "x": 2,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-advisor-19",
+          "kind": "advisor",
+          "x": 3,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-general-20",
+          "kind": "general",
+          "x": 4,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-advisor-21",
+          "kind": "advisor",
+          "x": 5,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-elephant-22",
+          "kind": "elephant",
+          "x": 6,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-horse-23",
+          "kind": "horse",
+          "x": 7,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-chariot-24",
+          "kind": "chariot",
+          "x": 8,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-cannon-25",
+          "kind": "cannon",
+          "x": 1,
+          "y": 7,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-cannon-26",
+          "kind": "cannon",
+          "x": 7,
+          "y": 7,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                12.41327540058844,
+                3.777275302473818,
+                10.380249657951621
+              ]
+            },
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-27",
+          "kind": "soldier",
+          "x": 0,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-28",
+          "kind": "soldier",
+          "x": 2,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-29",
+          "kind": "soldier",
+          "x": 4,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-30",
+          "kind": "soldier",
+          "x": 6,
+          "y": 6,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                8.323374398934273,
+                3.636929057340211,
+                7.32367405864386
+              ]
+            },
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-31",
+          "kind": "soldier",
+          "x": 8,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        }
+      ],
+      "audio_toggles": [
+        "false",
+        "false"
+      ],
+      "ambience": "false",
+      "outer_selected": "red-soldier-27",
+      "outer_legal": 1,
+      "canvas_outer_selected": "red-chariot-24",
+      "mobile_overflow": false
+    },
+    "baseline": {
+      "default": {
+        "camera": [
+          1.2875119007100289,
+          35.324961495840206,
+          29.03614801901118
+        ],
+        "target": [
+          -1.0044342912539486,
+          -1.6008382635794294,
+          2.2967757794314547
+        ],
+        "overview": false,
+        "label": "战场全景"
+      },
+      "overview": {
+        "camera": [
+          2.1608750627804754,
+          57.02933609182052,
+          43.00624109363701
+        ],
+        "target": [
+          -1.4256679117113848,
+          -0.7538562749927862,
+          1.1632397245652997
+        ],
+        "overview": true,
+        "label": "返回棋盘近景"
+      },
+      "reset": {
+        "camera": [
+          2.1608750627804754,
+          57.02933609182052,
+          43.00624109363701
+        ],
+        "target": [
+          -1.4256679117113848,
+          -0.7538562749927862,
+          1.1632397245652997
+        ],
+        "overview": true,
+        "label": "返回棋盘近景"
+      },
+      "reset_returns_default": false,
+      "visibility": [
+        {
+          "id": "black-chariot-0",
+          "kind": "chariot",
+          "x": 0,
+          "y": 0,
+          "hits": [
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                -11.965197565945118,
+                3.0537954827146567,
+                -13.086640228783889
+              ]
+            },
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                -11.980928820848138,
+                3.335720744666348,
+                -13.136640896256404
+              ]
+            },
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                -12.071497383538883,
+                3.504267797456543,
+                -13.424506588757122
+              ]
+            }
+          ]
+        },
+        {
+          "id": "black-horse-1",
+          "kind": "horse",
+          "x": 1,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-elephant-2",
+          "kind": "elephant",
+          "x": 2,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-advisor-3",
+          "kind": "advisor",
+          "x": 3,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-general-4",
+          "kind": "general",
+          "x": 4,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-advisor-5",
+          "kind": "advisor",
+          "x": 5,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-elephant-6",
+          "kind": "elephant",
+          "x": 6,
+          "y": 0,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-horse-7",
+          "kind": "horse",
+          "x": 7,
+          "y": 0,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                9.162870700371034,
+                2.824944436859589,
+                -13.385354075718304
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                9.166892479909626,
+                3.1306322641550395,
+                -13.407017841581037
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                9.171980405375287,
+                3.4968351397482174,
+                -13.434424521872053
+              ]
+            }
+          ]
+        },
+        {
+          "id": "black-chariot-8",
+          "kind": "chariot",
+          "x": 8,
+          "y": 0,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                12.224377769689092,
+                2.736191594938795,
+                -13.501201057048284
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                12.235900996633752,
+                3.0251960160944407,
+                -13.546018972244447
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                12.249760961848875,
+                3.372806216211945,
+                -13.599925291074769
+              ]
+            }
+          ]
+        },
+        {
+          "id": "black-cannon-9",
+          "kind": "cannon",
+          "x": 1,
+          "y": 2,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-cannon-10",
+          "kind": "cannon",
+          "x": 7,
+          "y": 2,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                9.096373953863697,
+                3.0993630952130573,
+                -7.014916648072308
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                9.103656796714539,
+                3.389006686295211,
+                -7.048539247215274
+              ]
+            },
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                9.112414159785596,
+                3.7372929448703864,
+                -7.0889692433195535
+              ]
+            }
+          ]
+        },
+        {
+          "id": "black-soldier-11",
+          "kind": "soldier",
+          "x": 0,
+          "y": 3,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                -12.387209768847148,
+                2.026169705987094,
+                -5.1092736109701065
+              ]
+            },
+            null,
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                -12.130983723222563,
+                3.3625734132371794,
+                -4.469483890064036
+              ]
+            }
+          ]
+        },
+        {
+          "id": "black-soldier-12",
+          "kind": "soldier",
+          "x": 2,
+          "y": 3,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-13",
+          "kind": "soldier",
+          "x": 4,
+          "y": 3,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-14",
+          "kind": "soldier",
+          "x": 6,
+          "y": 3,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "black-soldier-15",
+          "kind": "soldier",
+          "x": 8,
+          "y": 3,
+          "hits": [
+            {
+              "name": "continuous-valley-terrain",
+              "point": [
+                12.420451300215007,
+                2.15194787772451,
+                -4.980297498775826
+              ]
+            },
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-chariot-16",
+          "kind": "chariot",
+          "x": 0,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-horse-17",
+          "kind": "horse",
+          "x": 1,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-elephant-18",
+          "kind": "elephant",
+          "x": 2,
+          "y": 9,
+          "hits": [
+            {
+              "name": "broadleaf-canopy",
+              "point": [
+                -5.866683398093036,
+                3.4008170868807515,
+                16.66241242310091
+              ]
+            },
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-advisor-19",
+          "kind": "advisor",
+          "x": 3,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-general-20",
+          "kind": "general",
+          "x": 4,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-advisor-21",
+          "kind": "advisor",
+          "x": 5,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-elephant-22",
+          "kind": "elephant",
+          "x": 6,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-horse-23",
+          "kind": "horse",
+          "x": 7,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-chariot-24",
+          "kind": "chariot",
+          "x": 8,
+          "y": 9,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-cannon-25",
+          "kind": "cannon",
+          "x": 1,
+          "y": 7,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-cannon-26",
+          "kind": "cannon",
+          "x": 7,
+          "y": 7,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-27",
+          "kind": "soldier",
+          "x": 0,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-28",
+          "kind": "soldier",
+          "x": 2,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-29",
+          "kind": "soldier",
+          "x": 4,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-30",
+          "kind": "soldier",
+          "x": 6,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "red-soldier-31",
+          "kind": "soldier",
+          "x": 8,
+          "y": 6,
+          "hits": [
+            null,
+            null,
+            null
+          ]
+        }
+      ]
+    }
+  },
+  "source_sha256": {
+    "index.html": "801b42e54f51c5ef66d340981cf8d7add40260a2b1de229c9ff716e97f1d0928",
+    "src/main.ts": "ab45ce83e880465fd14581bb3c4c36fbd5aa289b37b87389c661f7475b8eedc5",
+    "src/styles.css": "05d670daf99854c8143ccdc061787d25439a3d94489d8ac38295a544b2e9bdd2",
+    "src/scene/board.ts": "fc6881aa8cd6f507b1a4b38b5e3073561b1c73b844bcf6f5fe15a997bd73a9a3",
+    "src/scene/battlefield.ts": "452cf8e7758d07fe0ffb8c44c04dad92b0f065d8b5297129e7be42a02fd40112",
+    "src/scene/landscape-layout.ts": "82a0b83a12b01f06db72eb618ed5c17b49774e6f676ce111d82a51e8b2d1ac6e",
+    "src/ui/battle-banner.ts": "3ccccc57a2de91c5bcc5c03431574e4bf5b1d1170149d19759851414b0d414e9"
+  },
+  "reset_tolerance_check": {
+    "max_pose_error": 2.220446049250313e-16,
+    "tolerance": 1e-09,
+    "semantic_state_matches": true,
+    "passed": true
+  },
+  "verified_commit": "2f3e89d5cbade4165a2229f1063251c75e4a2631"
+}

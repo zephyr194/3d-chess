@@ -1,0 +1,12 @@
+{
+  "errors": [],
+  "wind_moves": true,
+  "wind_off_still": true,
+  "engage": "engage",
+  "engage_visible": true,
+  "capture": "capture",
+  "impacts": 1,
+  "victim_removed": true,
+  "banner_reset_hidden": true,
+  "banner_stays_hidden": true
+}

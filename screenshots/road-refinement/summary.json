@@ -1,0 +1,29 @@
+{
+  "browser_frames": 1536,
+  "browser_footprint_rays": 13824,
+  "unsupported_browser_samples": 0,
+  "matched_cameras": 4,
+  "checks": [
+    "All 16 initial red pieces selectable; 32 physical pieces",
+    "Animation uses its first RAF timestamp; an earlier frame-clock origin cannot lock a move",
+    "Illegal horse endpoint rejected; keyboard legal move and route preview",
+    "Real legal soldier ferry and cliff crossings finish at their logical stations",
+    "Normal-motion cannon capture through the real ferry in both directions",
+    "390px mobile layout and synchronized move without horizontal overflow",
+    "Reset cancels in-flight transport with no stale logical move"
+  ],
+  "finite_sampling": true,
+  "source_sha256": {
+    "src/main.ts": "c73461b2a7e47b7058947ac261e7bbfe200c5834b7289c489cf54b66121fe6b1",
+    "src/scene/battlefield.ts": "f5d932c972807434675271f6d715e74a1b1772a6557048bc6cee799918b7e872",
+    "tests/battlefield.test.ts": "2d5bd6ec88791ec68d2f4bd01eaf23ceb287598534f0a050308957fb77a0df08",
+    "scripts/capture-road-refinement.py": "2c6f528e784ab142a77af96120041558a58d719338eeea6fb5ae0c2e87d61660"
+  },
+  "source_commit": "855eb0c2b3b9c5c16cec534d3d8d0251c0fe3201",
+  "road_connectivity": {
+    "logical_stations_reachable": 90,
+    "total_logical_stations": 90,
+    "graph_nodes": 198,
+    "routes": 203
+  }
+}
