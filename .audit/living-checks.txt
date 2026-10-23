@@ -1,0 +1,45 @@
+Commands run against final product source
+
+npm test
+
+> 3d-chess@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/3d-chess
+
+ ✓ tests/combat.test.ts (21 tests) 610ms
+ ✓ tests/locomotion.test.ts (14 tests) 1116ms
+   ✓ troop ground contact > plants soldier soles on the support plane while the body advances  317ms
+ ✓ tests/board.test.ts (3 tests) 22ms
+ ✓ tests/xiangqi.test.ts (16 tests) 14ms
+ ✓ tests/atmosphere-depth.test.ts (4 tests) 68ms
+ ✓ tests/battlefield.test.ts (13 tests) 2459ms
+   ✓ restored continuous battlefield > keeps all 90 logical stations aligned and physically level, with small troops  1069ms
+   ✓ restored continuous battlefield > keeps every legal endpoint routable across 10 real turns without changing chess rules  322ms
+
+ Test Files  6 passed (6)
+      Tests  71 passed (71)
+   Start at  08:13:30
+   Duration  5.25s (transform 380ms, setup 0ms, collect 5.18s, tests 4.29s, environment 1ms, prepare 489ms)
+
+
+npm run build
+
+> 3d-chess@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 18 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   5.81 kB │ gzip:   2.21 kB
+dist/assets/index-BnvnFPac.css   15.48 kB │ gzip:   4.63 kB
+dist/assets/index-Dufylpak.js   618.65 kB │ gzip: 168.95 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.82s

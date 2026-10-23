@@ -25,15 +25,23 @@
         </section>
 
         <div class="viewport-wrap">
-          <canvas id="game-canvas" aria-label="可操作的3D中国象棋棋盘"></canvas>
+          <canvas id="game-canvas" tabindex="0" aria-label="可操作的3D中国象棋棋盘，WASD或方向键平移视角" aria-keyshortcuts="W A S D ArrowUp ArrowDown ArrowLeft ArrowRight"></canvas>
           <div class="map-compass" aria-hidden="true"><span>北</span><i></i><span>南</span></div>
           <section id="battle-banner" class="battle-banner" role="status" aria-live="polite" aria-atomic="true" hidden>
-            <span class="banner-seal" data-banner-label></span><div class="banner-copy"><strong data-banner-title></strong><p data-banner-detail></p></div>
+            <span class="banner-plate banner-plate-left" aria-hidden="true"></span><span class="banner-plate banner-plate-right" aria-hidden="true"></span>
+            <span class="banner-seal" data-banner-label></span>
+            <div class="banner-copy"><span class="banner-kicker" aria-hidden="true">山河战报</span><strong data-banner-title></strong><p data-banner-detail></p></div>
+            <span class="banner-weapons" aria-hidden="true"><i></i><i></i></span>
+            <span class="banner-clash" aria-hidden="true"><i></i><i></i></span>
+            <span class="banner-sparks" aria-hidden="true">
+              <i style="--dx:-130px;--dy:-30px;--turn:-20deg"></i><i style="--dx:-110px;--dy:22px;--turn:20deg"></i><i style="--dx:-80px;--dy:-50px;--turn:40deg"></i><i style="--dx:-45px;--dy:38px;--turn:-25deg"></i><i style="--dx:-20px;--dy:-44px;--turn:70deg"></i>
+              <i style="--dx:25px;--dy:37px;--turn:80deg"></i><i style="--dx:50px;--dy:-42px;--turn:-70deg"></i><i style="--dx:85px;--dy:28px;--turn:25deg"></i><i style="--dx:115px;--dy:-31px;--turn:-20deg"></i><i style="--dx:140px;--dy:12px;--turn:15deg"></i>
+            </span>
           </section>
           <div class="battle-toast" id="battle-toast" role="status"></div>
           <section class="tactical-map" aria-label="棋局图"><div id="tactical-panel" hidden><div class="tactical-heading"><strong>棋局</strong><span>黑方在上 · 红方在下</span></div><div class="tactical-paper"><div id="tactical-board" role="group" aria-label="标准象棋布局"></div></div><p id="tactical-caption" aria-live="polite"></p></div><button id="tactical-toggle" aria-expanded="false" aria-controls="tactical-panel">看棋局 · M</button></section>
           <div id="route-caption" class="route-caption" hidden></div>
-          <div class="hint">选择棋子 · 悬停落点看道路 · 拖动旋转</div>
+          <div class="hint">WASD / 方向键平移 · 滚轮缩放 · 拖动旋转 · 悬停落点看道路</div>
         </div>
 
         <aside class="control-panel" aria-label="行军操作台">

@@ -1,0 +1,537 @@
+{
+  "source_sha256": {
+    "src/game/battle-drums.ts": "935e3ae9d7c52c8ed383dcd68ebaf9005e559107e00350f2ae52504e53e7d0a7",
+    "src/game/metal-impact.ts": "68aef77e43a6c4e3fe28c595bb4aaad1bed5aad9b8436065248e779a388b22eb",
+    "src/game/xiangqi.ts": "ee3257e3428e6d7652991e99c27fe774ff75a850916c531a1db539952bef04f4",
+    "src/main.ts": "84dece07994ee3d7a12db2c36847f5ac1a0106df84f0a44c8df2a9c648c03db5",
+    "src/scene/battlefield.ts": "6ede4b03d6c06300ecae418270db8329c057e0ff9625faf5f18bb16ec60dee36",
+    "src/scene/board.ts": "fc6881aa8cd6f507b1a4b38b5e3073561b1c73b844bcf6f5fe15a997bd73a9a3",
+    "src/scene/combat.ts": "8459b7dfb1c5049e28230d3c3bd651bdc2b6c1d2dce8bb99eb4f3fcae88ca62f",
+    "src/scene/landscape-layout.ts": "82a0b83a12b01f06db72eb618ed5c17b49774e6f676ce111d82a51e8b2d1ac6e",
+    "src/scene/locomotion.ts": "f9bc446b31eef1221da397ee82d7aa23c6a944d8f890753491726710ff3adb3e",
+    "src/styles.css": "395f73579540a6aae8e0e4263a0677c92bd227e7bb6b01d7dea979a798ecf161",
+    "src/ui/battle-banner.ts": "4b8a592fc7ffe01760ba29319ac942b72134f9ba8d579ab172836100e63b275d",
+    "src/ui/camera-pan.ts": "b91b9d8963d48612d71403448922ec28bc4213b361d8d621e0371c09a34c6cce",
+    "src/ui/tactical-board.ts": "250b654307da749c7acc106bbba08bb7302a4ab722b68bc0edbba9b987a685df",
+    "index.html": "07a214c03909e9583d92ca788cf176e725d230e9d208ba8c87409addbac41cc7"
+  },
+  "clock": "Actual application callbacks at controlled browser time, native WebGL frames; not a real-time performance measurement",
+  "errors": [],
+  "clips": [
+    {
+      "file": "screenshots/living-troops/after/06-waterfall-and-breeze.gif",
+      "frames": 32,
+      "unique_frames": 32,
+      "seconds": 4.0,
+      "bytes": 5171017,
+      "sha256": "8d9bee522f7ff1ac9de951a833adf86de8dcd8041b373f706636de1096eff513"
+    },
+    {
+      "file": "screenshots/living-troops/after/07-seven-troop-marches.gif",
+      "frames": 112,
+      "unique_frames": 112,
+      "seconds": 14.0,
+      "bytes": 20198775,
+      "sha256": "51e3f3ff7512367584923c18d5b1ca6d10b1b390d26fc783c635492b4af7daf8"
+    },
+    {
+      "file": "screenshots/living-troops/after/08-metal-impact.gif",
+      "frames": 16,
+      "unique_frames": 16,
+      "seconds": 2.0,
+      "bytes": 2299235,
+      "sha256": "aac9a0d5119a34e87dc8019cad6bec1f9e5298010b434d30bb819873310fbcf1"
+    }
+  ],
+  "keyboard": [
+    {
+      "key": "w",
+      "yaw": 0,
+      "delta": [
+        0,
+        -2.220446049250313e-16,
+        -1.2705501170752769
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "a",
+      "yaw": 0,
+      "delta": [
+        -1.34113623469057,
+        -2.220446049250313e-16,
+        0
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "s",
+      "yaw": 0,
+      "delta": [
+        0,
+        -2.220446049250313e-16,
+        1.2705501170752769
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "d",
+      "yaw": 0,
+      "delta": [
+        1.34113623469057,
+        -2.220446049250313e-16,
+        0
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowUp",
+      "yaw": 0,
+      "delta": [
+        0,
+        -2.220446049250313e-16,
+        -1.34113623469057
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowLeft",
+      "yaw": 0,
+      "delta": [
+        -1.34113623469057,
+        -2.220446049250313e-16,
+        0
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowDown",
+      "yaw": 0,
+      "delta": [
+        0,
+        -2.220446049250313e-16,
+        1.2705501170752769
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowRight",
+      "yaw": 0,
+      "delta": [
+        1.34113623469057,
+        -2.220446049250313e-16,
+        0
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "w",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        -1.34113623469057,
+        -2.220446049250313e-16,
+        -3.164040694689188e-16
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "a",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        -3.164040694689188e-16,
+        -2.220446049250313e-16,
+        1.34113623469057
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "s",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        1.2705501170752769,
+        -2.220446049250313e-16,
+        2.997512237073967e-16
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "d",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        3.164040694689188e-16,
+        -2.220446049250313e-16,
+        -1.34113623469057
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowUp",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        -1.34113623469057,
+        -2.220446049250313e-16,
+        -3.164040694689188e-16
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowLeft",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        -3.164040694689188e-16,
+        -2.220446049250313e-16,
+        1.34113623469057
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowDown",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        1.2705501170752769,
+        -2.220446049250313e-16,
+        2.997512237073967e-16
+      ],
+      "orbit_preserved": true
+    },
+    {
+      "key": "ArrowRight",
+      "yaw": 1.5707963267948966,
+      "delta": [
+        3.164040694689188e-16,
+        -2.220446049250313e-16,
+        -1.34113623469057
+      ],
+      "orbit_preserved": true
+    }
+  ],
+  "diagonal_distances": [
+    1.34113623469057,
+    1.3411362346905706
+  ],
+  "form_guards": [
+    {
+      "selector": "#speed-select",
+      "before": {
+        "at": [
+          0.9483265260446957,
+          9,
+          11.051673473955303
+        ],
+        "target": [
+          0.9483265260446957,
+          0.49999999999999994,
+          -0.9483265260446957
+        ]
+      },
+      "after": {
+        "at": [
+          0.9483265260446957,
+          9,
+          11.051673473955303
+        ],
+        "target": [
+          0.9483265260446957,
+          0.49999999999999994,
+          -0.9483265260446957
+        ]
+      }
+    },
+    {
+      "selector": "#music-volume",
+      "before": {
+        "at": [
+          0.9483265260446957,
+          9,
+          11.051673473955303
+        ],
+        "target": [
+          0.9483265260446957,
+          0.49999999999999994,
+          -0.9483265260446957
+        ]
+      },
+      "after": {
+        "at": [
+          0.9483265260446957,
+          9,
+          11.051673473955303
+        ],
+        "target": [
+          0.9483265260446957,
+          0.49999999999999994,
+          -0.9483265260446957
+        ]
+      }
+    }
+  ],
+  "focus_blur_reset": true,
+  "atmosphere": {
+    "moving": [
+      "cascade",
+      "river",
+      "pine",
+      "reeds",
+      "ripple",
+      "mist",
+      "leaf"
+    ],
+    "descending_traces": 17,
+    "total_traces": 18,
+    "support_static": true,
+    "ambience_off_frozen": true,
+    "reduced_motion_frozen": true
+  },
+  "metal_audio": {
+    "early_rms": 0.019293572247740302,
+    "tail_rms": 0,
+    "peak": 0.10717780888080597
+  },
+  "troops": [
+    {
+      "kind": "soldier",
+      "frames": 16,
+      "legs": 2,
+      "lowest_sole": 0.5450000001013279,
+      "max_planted_error": 1.0132805705609371e-10,
+      "arrived": true,
+      "framing": {
+        "at": [
+          -6.884942452842115,
+          3.3449999999999998,
+          2.436913835054387
+        ],
+        "target": [
+          -9.284942452842115,
+          1.045,
+          5.736913835054387
+        ],
+        "clear": 3,
+        "total": 3
+      }
+    },
+    {
+      "kind": "horse",
+      "frames": 16,
+      "legs": 4,
+      "lowest_sole": 0.5449999995440243,
+      "max_planted_error": 4.559757016409094e-10,
+      "arrived": true,
+      "framing": {
+        "at": [
+          -8.134355468350012,
+          3.3449999999999998,
+          5.582212216659863
+        ],
+        "target": [
+          -10.534355468350013,
+          1.045,
+          8.882212216659862
+        ],
+        "clear": 3,
+        "total": 3
+      }
+    },
+    {
+      "kind": "chariot",
+      "frames": 16,
+      "legs": 0,
+      "lowest_sole": null,
+      "max_planted_error": null,
+      "arrived": true,
+      "framing": {
+        "at": [
+          -12.226010585886716,
+          3.3449999999999998,
+          6.213959707426041
+        ],
+        "target": [
+          -14.626010585886716,
+          1.045,
+          9.513959707426041
+        ],
+        "clear": 3,
+        "total": 3
+      }
+    },
+    {
+      "kind": "cannon",
+      "frames": 16,
+      "legs": 0,
+      "lowest_sole": null,
+      "max_planted_error": null,
+      "arrived": true,
+      "framing": {
+        "at": [
+          -8.454014806612903,
+          3.3449999999999998,
+          6.188973528819301
+        ],
+        "target": [
+          -10.854014806612904,
+          1.045,
+          9.488973528819301
+        ],
+        "clear": 3,
+        "total": 3
+      }
+    },
+    {
+      "kind": "elephant",
+      "frames": 16,
+      "legs": 4,
+      "lowest_sole": 0.5449999993920327,
+      "max_planted_error": 6.079673431358401e-10,
+      "arrived": true,
+      "framing": {
+        "at": [
+          -8.076873554273288,
+          3.3449999999999998,
+          11.780071898895326
+        ],
+        "target": [
+          -10.476873554273288,
+          1.045,
+          15.080071898895326
+        ],
+        "clear": 3,
+        "total": 3
+      }
+    },
+    {
+      "kind": "advisor",
+      "frames": 16,
+      "legs": 2,
+      "lowest_sole": 0.5450000001013279,
+      "max_planted_error": 1.0132805705609371e-10,
+      "arrived": true,
+      "framing": {
+        "at": [
+          -1.899223071517627,
+          3.3449999999999998,
+          10.6084378813541
+        ],
+        "target": [
+          -4.299223071517627,
+          1.045,
+          13.9084378813541
+        ],
+        "clear": 3,
+        "total": 3
+      }
+    },
+    {
+      "kind": "general",
+      "frames": 16,
+      "legs": 2,
+      "lowest_sole": 0.5450000001013279,
+      "max_planted_error": 1.0132805705609371e-10,
+      "arrived": true,
+      "framing": {
+        "at": [
+          3.5859025849122714,
+          3.3449999999999998,
+          11.69381115122767
+        ],
+        "target": [
+          1.1859025849122713,
+          1.045,
+          14.99381115122767
+        ],
+        "clear": 3,
+        "total": 3
+      }
+    }
+  ],
+  "ferry": [
+    {
+      "side": "red",
+      "frames": 307,
+      "support_rays": 2763,
+      "unsupported": 0,
+      "gait_failures": 0
+    },
+    {
+      "side": "black",
+      "frames": 334,
+      "support_rays": 3006,
+      "unsupported": 0,
+      "gait_failures": 0
+    }
+  ],
+  "combat": [
+    {
+      "kind": "soldier",
+      "engage": "engage",
+      "impacts": 1,
+      "captured": true,
+      "metal_strikes": 1
+    },
+    {
+      "kind": "horse",
+      "engage": "engage",
+      "impacts": 1,
+      "captured": true,
+      "metal_strikes": 1
+    },
+    {
+      "kind": "chariot",
+      "engage": "engage",
+      "impacts": 1,
+      "captured": true,
+      "metal_strikes": 1
+    },
+    {
+      "kind": "cannon",
+      "engage": "engage",
+      "impacts": 1,
+      "captured": true,
+      "metal_strikes": 1
+    },
+    {
+      "kind": "elephant",
+      "engage": "engage",
+      "impacts": 1,
+      "captured": true,
+      "metal_strikes": 0
+    },
+    {
+      "kind": "advisor",
+      "engage": "engage",
+      "impacts": 1,
+      "captured": true,
+      "metal_strikes": 0
+    },
+    {
+      "kind": "general",
+      "engage": "engage",
+      "impacts": 1,
+      "captured": true,
+      "metal_strikes": 1
+    }
+  ],
+  "battle_framing": {
+    "at": [
+      -6.888560973020233,
+      3.3449999999999998,
+      -6.630029497525119
+    ],
+    "target": [
+      -4.488560973020233,
+      1.045,
+      -3.3300294975251195
+    ],
+    "clear": 6,
+    "total": 6
+  },
+  "banner_bounds": {
+    "x": 221.0859375,
+    "y": 187,
+    "width": 841.828125,
+    "height": 102
+  },
+  "sound_off_mutes_metal": true,
+  "reset_cancels_combat": true,
+  "mobile_reduced_motion": true,
+  "status": "PASS"
+}

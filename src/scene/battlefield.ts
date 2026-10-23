@@ -209,7 +209,10 @@ export function createBattlefield(parent: T.Group) {
             : road.surface === "mountain" ? "#9b8e6c"
             : "#a48459",
         );
-        const wear = 0.95 + 0.05 * Math.sin(x * 4.1 - z * 3.2);
+        const paved = road.surface === "imperial" || road.surface === "courtyard";
+        const block = Math.floor(x / .52) + Math.floor(z / .7);
+        const wear = paved ? (block % 3 ? .98 : .88)
+          : 0.95 + 0.05 * Math.sin(x * 4.1 - z * 3.2);
         rc.multiplyScalar(wear);
         c.lerp(rc, 1 - T.MathUtils.smoothstep(road.distance,
           .52, shoulder));
@@ -236,15 +239,11 @@ export function createBattlefield(parent: T.Group) {
   terrain.name = "continuous-valley-terrain";
   terrain.userData.grid = { nx, nz, extent: EXTENT };
   terrain.receiveShadow = true;
-  terrain.material.polygonOffset = true;
-  terrain.material.polygonOffsetFactor = 1;
-  terrain.material.polygonOffsetUnits = 4;
   root.add(terrain);
   const water = Array.from({ length: 180 }, (_, i) => {
     const x = -38 + (i * 42) / 179;
     return new T.Vector3(x, WATER, riverCentre(x));
   });
-  // Variable-width river, tapering into the headwater valley.
   for (let i = 1; i < water.length; i++) {
     const a = water[i - 1],
       b = water[i];
@@ -270,18 +269,51 @@ export function createBattlefield(parent: T.Group) {
   );
   watercourses.forEach((course) => ribbon(course.points, course.width, "#7abcb2", course.id));
   ribbon(falls, 1.35, "#9bd7ca", "headwater-cascade");
-  for (const dx of [-0.35, -0.1, 0.15, 0.4])
-    ribbon(
-      falls.map((p) => p.clone().add(new T.Vector3(dx, 0.015, 0.01))),
-      0.035,
-      "#e1f3e8",
-      "cascade-whitewater",
-    );
+  const cascadePath = new T.CurvePath<T.Vector3>();
+  for (let i = 1; i < falls.length; i++)
+    cascadePath.add(new T.LineCurve3(falls[i - 1], falls[i]));
+  const cascadeLength = cascadePath.getLength();
+  const cascadeTraces: { mesh: T.Mesh<T.BufferGeometry, T.MeshBasicMaterial>; phase: number; lane: number }[] = [];
+  const placeCascade = (trace: typeof cascadeTraces[number], progress: number) => {
+    const distance = progress * cascadeLength,
+      center = cascadePath.getPointAt(progress),
+      positions = trace.mesh.geometry.getAttribute("position") as T.BufferAttribute;
+    trace.mesh.position.copy(center);
+    for (let i = 0; i < 5; i++) {
+      const u = T.MathUtils.clamp((distance + (i / 4 - .5) * .78) / cascadeLength, 0, 1),
+        point = cascadePath.getPointAt(u), tangent = cascadePath.getTangentAt(u),
+        across = new T.Vector3(-tangent.z, 0, tangent.x).normalize();
+      point.addScaledVector(across, trace.lane).add(new T.Vector3(-.025, .025, .012));
+      for (let side = 0; side < 2; side++) {
+        const v = point.clone().addScaledVector(across, (side ? -1 : 1) * .045).sub(center);
+        positions.setXYZ(i * 2 + side, v.x, v.y, v.z);
+      }
+    }
+    positions.needsUpdate = true;
+    trace.mesh.geometry.computeBoundingSphere();
+    trace.mesh.material.opacity = .35 + Math.sin(progress * Math.PI) * .45;
+  };
+  for (let i = 0; i < 18; i++) {
+    const geometry = new T.BufferGeometry();
+    geometry.setAttribute("position", new T.Float32BufferAttribute(new Float32Array(30), 3));
+    const indices: number[] = [];
+    for (let j = 0; j < 4; j++) indices.push(j * 2, j * 2 + 2, j * 2 + 1, j * 2 + 1, j * 2 + 2, j * 2 + 3);
+    geometry.setIndex(indices);
+    const streak = new T.Mesh(geometry, new T.MeshBasicMaterial({ color: "#effbf0",
+      transparent: true, opacity: .7, depthWrite: false, side: T.DoubleSide }));
+    streak.name = "cascade-whitewater";
+    const trace = { mesh: streak, phase: i / 18, lane: ((i * 7) % 5 - 2) * .22 };
+    placeCascade(trace, trace.phase);
+    root.add(streak);
+    cascadeTraces.push(trace);
+  }
   const waterMotion: {
     mesh: T.Mesh<T.BufferGeometry, T.MeshBasicMaterial>;
     origin: T.Vector3;
     phase: number;
     kind: "flow" | "spray";
+    lateral: number;
+    rotationZ: number;
   }[] = [];
   for (let i = 0; i < 34; i++) {
     const x = -27 + (i * 29) / 33,
@@ -294,7 +326,8 @@ export function createBattlefield(parent: T.Group) {
     m.rotation.z = Math.sin(i) * 0.18;
     m.position.set(x, WATER + .025, z);
     root.add(m);
-    waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 0.73, kind: "flow" });
+    waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 0.73, kind: "flow",
+      lateral: (z - riverCentre(x)) / riverWidth(x), rotationZ: m.rotation.z });
   }
   for (let i = 0; i < 12; i++) {
     const m = new T.Mesh(new T.IcosahedronGeometry(1, 0),
@@ -307,7 +340,7 @@ export function createBattlefield(parent: T.Group) {
     m.scale.set(i < 5 ? 0.34 : 0.13, i < 5 ? 0.035 : 0.17,
       i < 5 ? 0.22 : 0.11);
     root.add(m);
-    waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 1.21, kind: "spray" });
+    waterMotion.push({ mesh: m, origin: m.position.clone(), phase: i * 1.21, kind: "spray", lateral: 0, rotationZ: m.rotation.z });
   }
   const streamGlints: {
     mesh: T.Mesh<T.PlaneGeometry, T.MeshBasicMaterial>;
@@ -364,10 +397,10 @@ export function createBattlefield(parent: T.Group) {
         n = new T.Vector3(-d.z, 0, d.x).normalize().multiplyScalar(r.width / 2);
       v.push(
         p.x + n.x,
-        r.crossing === undefined ? GROUND : 0.539,
+        GROUND + .002,
         p.z + n.z,
         p.x - n.x,
-        r.crossing === undefined ? GROUND : 0.539,
+        GROUND + .002,
         p.z - n.z,
         p.x + n.x,
         r.crossing === undefined ? -1.9 : GROUND - 0.16,
@@ -412,42 +445,34 @@ export function createBattlefield(parent: T.Group) {
     g.addGroup(0, top.length, 0);
     g.addGroup(top.length, sides.length, 1);
     g.computeVertexNormals();
-    const cap = mat(roadColors[r.surface]);
-    cap.polygonOffset = true;
-    cap.polygonOffsetFactor = -2;
-    cap.polygonOffsetUnits = -3;
-    const wall = cap.clone();
-    wall.polygonOffsetFactor = 2;
-    wall.polygonOffsetUnits = 4;
-    const m = new T.Mesh(g, [cap, wall]);
+    const cap = mat("#ffffff").clone();
+    cap.vertexColors = true;
+    const colors: number[] = [];
+    for (let i = 0; i < ps.length; i++) {
+      const color = new T.Color(roadColors[r.surface]).multiplyScalar(i % 3 ? 1 : .89);
+      for (let j = 0; j < 4; j++) colors.push(color.r, color.g, color.b);
+    }
+    g.setAttribute("color", new T.Float32BufferAttribute(colors, 3));
+    const wall = mat(r.surface === "bridge" ? "#8e9b84" : "#87795e").clone();
+    const capGeometry = g.clone();
+    capGeometry.setIndex(top);
+    capGeometry.clearGroups();
+    g.setIndex(sides);
+    g.clearGroups();
+    const m = new T.Mesh(g, wall);
+    const paving = new T.Mesh(capGeometry, cap);
+    paving.name = r.surface === "bridge" ? "bridge-paving" : "cliff-plank";
+    paving.receiveShadow = true;
+    m.add(paving);
     m.name = name;
     m.receiveShadow = true;
     m.userData.route = r;
     owner.add(m);
     return m;
   }
-  // Land roads are carved into and colored on the actual heightfield. This avoids
-  // coplanar overlays while preserving exactly the same route graph and level footing.
-  for (const r of routes) {
-    if (r.surface !== "imperial" && r.surface !== "courtyard") continue;
-    const path = new T.CurvePath<T.Vector3>();
-    for (let i = 1; i < r.points.length; i++)
-      path.add(new T.LineCurve3(r.points[i - 1], r.points[i]));
-    const steps = Math.ceil(r.length / 0.78);
-    for (let i = 0; i < steps; i++) {
-      const u = (i + 0.5) / steps, p = path.getPoint(u),
-        d = path.getTangent(u), yaw = Math.atan2(d.x, d.z);
-      if (stationDistance(p.x, p.z) < 0.65) continue;
-      for (const side of [-1, 1]) {
-        const n = new T.Vector3(-d.z, 0, d.x).normalize(),
-          offset = side * Math.min(0.28, r.width * 0.2);
-        box(i % 3 ? "#b7ad8e" : "#9f9d85", "inset-road-masonry",
-          p.x + n.x * offset, GROUND - 0.045, p.z + n.z * offset,
-          Math.min(0.46, r.width * 0.35), 0.09, 0.43 + (i % 2) * 0.12,
-          yaw + Math.sin(i * 7.1) * 0.055, roadGroup);
-      }
-    }
-  }
+  const deckCellSize = .14;
+  const deckCells = new Map<string, { x: number; z: number; owner: number }>();
+  let deckOwner = 0;
   for (const r of routes) {
     if (r.crossing !== undefined) continue;
     const path = new T.CurvePath<T.Vector3>();
@@ -469,16 +494,58 @@ export function createBattlefield(parent: T.Group) {
       const start = Math.max(0, i - 7), finish = Math.min(steps, end + 7),
         points = Array.from({ length: finish - start + 1 }, (_, j) => path.getPoint((start + j) / steps)),
         crossing = { ...r, points, width: 1.32, crossing: 3 };
-      const deck = solidRoad(crossing, roadGroup, "stream-crossing-deck");
-      deck.material = [mat("#b6aa87"), mat("#87795e")];
-      deck.userData.waterCrossing = true;
-      for (let j = 0; j < points.length; j += 2) {
-        const p = points[j], d = path.getTangent((start + j) / steps);
-        box(j % 3 ? "#ac9875" : "#bca784", "stream-crossing-planks",
-          p.x, GROUND - .015, p.z, 1.32, .03, .24, Math.atan2(d.x, d.z), roadGroup);
+      const owner = deckOwner++;
+      for (let j = 1; j < points.length; j++) {
+        const a = points[j - 1], b = points[j], dx = b.x - a.x, dz = b.z - a.z;
+        const radius = crossing.width / 2 + deckCellSize * Math.SQRT1_2;
+        for (let gx = Math.floor((Math.min(a.x, b.x) - radius) / deckCellSize);
+          gx <= Math.ceil((Math.max(a.x, b.x) + radius) / deckCellSize); gx++)
+          for (let gz = Math.floor((Math.min(a.z, b.z) - radius) / deckCellSize);
+            gz <= Math.ceil((Math.max(a.z, b.z) + radius) / deckCellSize); gz++) {
+            const x = (gx + .5) * deckCellSize, z = (gz + .5) * deckCellSize,
+              t = T.MathUtils.clamp(((x - a.x) * dx + (z - a.z) * dz) / (dx * dx + dz * dz), 0, 1);
+            if (Math.hypot(x - a.x - t * dx, z - a.z - t * dz) > radius) continue;
+            const key = `${gx}/${gz}`;
+            if (!deckCells.has(key)) deckCells.set(key, { x: gx, z: gz, owner });
+          }
       }
       i = end;
     }
+  }
+  const streamGeometry = Array.from({ length: deckOwner }, () => ({ vertices: [] as number[], colors: [] as number[] }));
+  for (const { x, z, owner } of deckCells.values()) {
+    const { vertices, colors } = streamGeometry[owner],
+      x0 = x * deckCellSize, x1 = (x + 1) * deckCellSize,
+      z0 = z * deckCellSize, z1 = (z + 1) * deckCellSize,
+      y = GROUND + .002, bottom = GROUND - .16,
+      color = new T.Color((z % 3) ? "#ac9875" : "#bca784");
+    const face = (a: number[], b: number[], c: number[], d: number[]) => {
+      vertices.push(...a, ...b, ...c, ...a, ...c, ...d);
+      for (let i = 0; i < 6; i++) colors.push(color.r, color.g, color.b);
+    };
+    face([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0]);
+    if (!deckCells.has(`${x - 1}/${z}`))
+      face([x0, bottom, z0], [x0, bottom, z1], [x0, y, z1], [x0, y, z0]);
+    if (!deckCells.has(`${x + 1}/${z}`))
+      face([x1, bottom, z1], [x1, bottom, z0], [x1, y, z0], [x1, y, z1]);
+    if (!deckCells.has(`${x}/${z - 1}`))
+      face([x1, bottom, z0], [x0, bottom, z0], [x0, y, z0], [x1, y, z0]);
+    if (!deckCells.has(`${x}/${z + 1}`))
+      face([x0, bottom, z1], [x1, bottom, z1], [x1, y, z1], [x0, y, z1]);
+  }
+  for (const { vertices, colors } of streamGeometry) {
+    if (!vertices.length) continue;
+    const geometry = new T.BufferGeometry();
+    geometry.setAttribute("position", new T.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute("color", new T.Float32BufferAttribute(colors, 3));
+    geometry.computeVertexNormals();
+    const material = mat("#ffffff").clone();
+    material.vertexColors = true;
+    const deck = new T.Mesh(geometry, material);
+    deck.name = "stream-crossing-deck";
+    deck.userData.waterCrossing = true;
+    deck.receiveShadow = true;
+    roadGroup.add(deck);
   }
   const ferryBerthOffset = 1.7;
   let marchGeneration = 0;
@@ -555,7 +622,7 @@ export function createBattlefield(parent: T.Group) {
           "#a58d65",
           "ferry-landing",
           c.x,
-          0.43,
+          0.426,
           c.z + end * 2.6,
           2.8,
           0.22,
@@ -602,7 +669,7 @@ export function createBattlefield(parent: T.Group) {
       const hull = mesh(hullGeometry, "#715b40", "ferry-hull", boat);
       hull.material.side = T.DoubleSide;
       hull.userData.waterline = WATER;
-      box("#a58b62", "continuous-ferry-deck", 0, .459, 0, 2.16, .16, 2.38, 0, boat);
+      box("#a58b62", "continuous-ferry-deck", 0, .456, 0, 2.16, .16, 2.38, 0, boat);
       for (let p = 0; p < 13; p++)
         box(p % 3 ? "#af986f" : "#bca67e", "ferry-plank",
           0, .5275, (p - 6) * .18, 2.14, .025, .17, 0, boat);
@@ -623,7 +690,7 @@ export function createBattlefield(parent: T.Group) {
       bowShape.moveTo(-1.06, 1.08); bowShape.lineTo(1.06, 1.08);
       bowShape.lineTo(.08, 1.5); bowShape.lineTo(-.08, 1.5); bowShape.closePath();
       const bowGeometry = new T.ShapeGeometry(bowShape); bowGeometry.rotateX(-Math.PI / 2);
-      const bow = mesh(bowGeometry, "#bca57b", "ferry-pointed-bow", boat); bow.position.y = GROUND;
+      const bow = mesh(bowGeometry, "#bca57b", "ferry-pointed-bow", boat); bow.position.y = GROUND + .002;
       for (const side of [-1, 1])
         ribbon([new T.Vector3(side * .93, WATER + .025, -1),
           new T.Vector3(side * 1.25, WATER + .025, 0),
@@ -647,21 +714,6 @@ export function createBattlefield(parent: T.Group) {
     const r = routes.find((r) => r.crossing === i)!;
     solidRoad(r, g, i === 1 ? "bridge-deck" : "continuous-cliff-deck");
     if (i === 1) {
-      const deck = g.getObjectByName("bridge-deck") as T.Mesh;
-      deck.material = [mat("#bdc5a8"), mat("#8e9b84")];
-      for (let j = 0; j < 18; j++)
-        box(
-          j % 2 ? "#bdc6a7" : "#cbd0b2",
-          "bridge-paving",
-          0,
-          0.53,
-          ((j - 8.5) * c.length) / 18,
-          c.width - 0.1,
-          0.02,
-          c.length / 18 - 0.018,
-          0,
-          g,
-        );
       for (const s of [-1, 1]) {
         box(
           "#9daa91",
@@ -724,25 +776,10 @@ export function createBattlefield(parent: T.Group) {
           b = sp[j],
           d = b.clone().sub(a),
           n = new T.Vector3(-d.z, 0, d.x).normalize(),
-          steps = Math.ceil(d.length() / 0.24);
-        for (let k = 0; k < steps; k++) {
-          const p = a.clone().lerp(b, (k + 0.5) / steps);
-          box(
-            k % 3 ? "#ab9268" : "#b59d73",
-            "cliff-plank",
-            p.x,
-            0.5275,
-            p.z,
-            c.width,
-            0.025,
-            d.length() / steps - 0.01,
-            Math.atan2(d.x, d.z),
-            g,
-          );
-        }
+          width = c.width / 2 + 0.06;
         for (const s of [-1, 1]) {
-          const aa = a.clone().addScaledVector(n, s * (c.width / 2 + 0.06)),
-            bb = b.clone().addScaledVector(n, s * (c.width / 2 + 0.06));
+          const aa = a.clone().addScaledVector(n, s * width),
+            bb = b.clone().addScaledVector(n, s * width);
           beam(
             aa.clone().setY(1.45),
             bb.clone().setY(1.45),
@@ -773,7 +810,6 @@ export function createBattlefield(parent: T.Group) {
       }
     }
   });
-  // The river banks are military frontiers, with actual gaps at crossing approaches.
   for (const sign of [-1, 1])
     for (let x = -14; x < 4; x += 0.55) {
       if (crossings.slice(0, 2).some((c) => Math.abs(x - c.x) < 1.9)) continue;
@@ -1065,7 +1101,7 @@ export function createBattlefield(parent: T.Group) {
     m.receiveShadow = true;
     m.computeBoundingSphere();
     b.owner.add(m);
-    if (b.name === "pine-canopy" || b.name === "broadleaf-canopy") {
+    if (b.name === "pine-canopy" || b.name === "broadleaf-canopy" || b.name === "meadow-reeds") {
       m.instanceMatrix.setUsage(T.DynamicDrawUsage);
       m.frustumCulled = false;
       foliage.push({ mesh: m, rests: b.ms.map((matrix) => {
@@ -1153,14 +1189,16 @@ export function createBattlefield(parent: T.Group) {
           rests.forEach((rest, i) => m.setMatrixAt(i, rest.matrix));
           m.instanceMatrix.needsUpdate = true;
         });
+        cascadeTraces.forEach((trace) => placeCascade(trace, trace.phase));
         cloths.forEach((f) => { f.rotation.y = 0; });
         mist.forEach(({ mesh: m, origin }) => {
           m.position.copy(origin);
           m.material.opacity = m.name === "mountain-drift" ? .07 : .13;
         });
-        waterMotion.forEach(({ mesh: m, origin, kind }) => {
+        waterMotion.forEach(({ mesh: m, origin, kind, rotationZ }) => {
           m.position.copy(origin);
           m.material.opacity = kind === "flow" ? .48 : .32;
+          m.rotation.z = rotationZ;
         });
         streamGlints.forEach(({ mesh: m, from, to }) => {
           m.position.copy(from).lerp(to, .5); m.material.opacity = .28;
@@ -1173,6 +1211,7 @@ export function createBattlefield(parent: T.Group) {
         return;
       }
       motionActive = true;
+      cascadeTraces.forEach((trace) => placeCascade(trace, (time * .00022 + trace.phase) % 1));
       foliage.forEach(({ mesh: m, rests }) => {
         rests.forEach((rest, i) => {
           const phase = rest.position.x * .41 + rest.position.z * .23,
@@ -1196,11 +1235,13 @@ export function createBattlefield(parent: T.Group) {
         m.position.x = origin.x + Math.sin(time * .00012 + i) * 1.4;
         m.position.z = origin.z + Math.cos(time * .0001 + i) * .3;
       });
-      waterMotion.forEach(({ mesh: m, origin, phase, kind }) => {
+      waterMotion.forEach(({ mesh: m, origin, phase, kind, lateral }) => {
         m.position.copy(origin);
         if (kind === "flow") {
           const progress = (time * .00016 + phase) % 1;
-          m.position.x -= (progress - .5) * 1.4;
+          m.position.x -= (progress - .5) * 2.6;
+          m.position.z = riverCentre(m.position.x) + lateral * riverWidth(m.position.x);
+          m.rotation.z = -Math.atan(.35 * .19 * Math.cos(m.position.x * .19));
           m.material.opacity = Math.sin(progress * Math.PI) ** 2 * .55;
         } else {
           m.position.y += Math.sin(time * 0.0015 + phase) * 0.06;

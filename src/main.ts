@@ -14,8 +14,11 @@ import { createBattlefield } from "./scene/battlefield";
 import { getMarchPath, surfaceSpeed, type Surface } from "./scene/landscape-layout";
 import { createTacticalBoard } from "./ui/tactical-board";
 import { createBattleBanner } from "./ui/battle-banner";
+import { createCameraPan } from "./ui/camera-pan";
 import { BattleDrums } from "./game/battle-drums";
+import { playMetalClash } from "./game/metal-impact";
 import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, type TroopRig } from "./scene/combat";
+import { addJointedLeg, applyLocomotion, createLocomotionRig, poseLeg, restoreLocomotion, type LegChain, type LocomotionRig, type WheelJoint } from "./scene/locomotion";
 import {
   applyMove,
   initialState,
@@ -46,9 +49,7 @@ const viewportWrap = document.querySelector<HTMLDivElement>(".viewport-wrap")!;
 const battleBanner = createBattleBanner(document.querySelector<HTMLElement>("#battle-banner")!);
 const ambienceButton = document.querySelector<HTMLButtonElement>("#ambience-button")!;
 
-const RED = new THREE.Color("#d83b2f");
 const drums = new BattleDrums();
-const BLACK = new THREE.Color("#24343b");
 
 let state: GameState = initialState();
 let selectedId: string | null = null;
@@ -164,6 +165,8 @@ function playCannonSound() {
 }
 
 function playImpactSound(attacker: PieceKind, defender: PieceKind) {
+  const context = getAudioContext();
+  if (context && attacker !== "advisor" && attacker !== "elephant") playMetalClash(context);
   const armorCutoff =
     defender === "chariot" || defender === "cannon" ? 1900 : 1100;
   switch (attacker) {
@@ -234,6 +237,7 @@ controls.minDistance = 7.2;
 controls.maxDistance = 150;
 controls.maxPolarAngle = Math.PI * 0.47;
 controls.target.set(0, 0.5, 0);
+const cameraPan = createCameraPan(camera, controls.target, canvas);
 
 scene.add(new THREE.HemisphereLight("#f1f4dc", "#234b42", 1.9));
 const sun = new THREE.DirectionalLight("#ffe2af", 3.1);
@@ -354,7 +358,7 @@ function modelMesh(geometry: THREE.BufferGeometry, material: THREE.Material) {
   return mesh;
 }
 
-function addHumanoid(group: THREE.Group, side: Side, height = 1) {
+function addHumanoid(group: THREE.Group, side: Side, legs: LegChain[], height = 1, seated = false) {
   const torso = modelMesh(
     new THREE.CylinderGeometry(0.22, 0.32, 0.55 * height, 8),
     troopMaterial(side),
@@ -370,21 +374,24 @@ function addHumanoid(group: THREE.Group, side: Side, height = 1) {
   belt.position.y = 0.52;
   group.add(torso, head, belt);
   for (const side of [-1, 1]) {
-    const leg = modelMesh(
-      new THREE.CylinderGeometry(0.055, 0.065, 0.3, 6),
-      woodMaterial,
-    );
-    leg.position.set(side * 0.1, 0.3, 0);
-    leg.name = `human-leg-${side}`;
-    leg.userData.motionJoint = side;
+    const leg = addJointedLeg(group, {
+      role: side < 0 ? "left" : "right",
+      at: new THREE.Vector3(side * (seated ? .33 : .13), .43, 0),
+      upper: .23, lower: .23, width: .067, ankleHeight: .07,
+      upperMaterial: steelMaterial, lowerMaterial: woodMaterial, footMaterial: blackTroopMaterial,
+    });
+    leg.hip.name = `human-leg-${side}`;
+    if (seated) {
+      poseLeg(leg, -.08, .04);
+      leg.hip.rotation.z = side * .8;
+    } else legs.push(leg);
     const arm = modelMesh(
       new THREE.CylinderGeometry(0.05, 0.06, 0.32, 6),
       steelMaterial,
     );
     arm.position.set(side * 0.26, 0.72, 0);
     arm.name = `human-arm-${side}`;
-    arm.userData.motionJoint = -side;
-    group.add(leg, arm);
+    group.add(arm);
   }
 }
 
@@ -404,9 +411,29 @@ function addFlag(group: THREE.Group, side: Side, x = 0.31, tall = false) {
   group.add(pole, cloth, tip);
 }
 
+function addSpokedWheel(parent: THREE.Group, radius: number, width: number, at: THREE.Vector3): WheelJoint {
+  const wheel = new THREE.Group();
+  wheel.name = "spoked-wheel";
+  wheel.position.copy(at);
+  wheel.rotation.z = Math.PI / 2;
+  const rim = modelMesh(new THREE.TorusGeometry(radius - .025, .025, 6, 16), woodMaterial);
+  rim.rotation.x = Math.PI / 2;
+  rim.scale.z = width / .05;
+  const hub = modelMesh(new THREE.CylinderGeometry(.055, .055, width * 1.25, 8), goldMaterial);
+  wheel.add(rim, hub);
+  for (let index = 0; index < 6; index++) {
+    const spoke = modelMesh(new THREE.BoxGeometry(.026, width * .6, radius * 1.65), steelMaterial);
+    spoke.rotation.y = index * Math.PI / 6;
+    wheel.add(spoke);
+  }
+  parent.add(wheel);
+  return { node: wheel, radius, rest: wheel.quaternion.clone() };
+}
+
 function createTroopModel(kind: PieceKind, side: Side) {
   const model = new THREE.Group();
-  const wheels: THREE.Mesh[] = [];
+  const wheels: WheelJoint[] = [];
+  const legs: LegChain[] = [];
   let rig: TroopRig;
   const pivot = (name: string, at: THREE.Vector3, ...parts: THREE.Object3D[]) => {
     const joint = new THREE.Group();
@@ -414,7 +441,6 @@ function createTroopModel(kind: PieceKind, side: Side) {
     joint.position.copy(at);
     for (const part of parts) {
       part.position.sub(at);
-      delete part.userData.motionJoint;
       joint.add(part);
     }
     model.add(joint);
@@ -422,7 +448,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
   };
 
   if (kind === "general") {
-    addHumanoid(model, side, 1.2);
+    addHumanoid(model, side, legs, 1.2);
     [-1, 1].forEach((direction) => {
       const shoulder = modelMesh(
         new THREE.SphereGeometry(0.15, 8, 6),
@@ -451,7 +477,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
   }
 
   if (kind === "advisor") {
-    addHumanoid(model, side, 1.08);
+    addHumanoid(model, side, legs, 1.08);
     const hat = modelMesh(
       new THREE.CylinderGeometry(0.28, 0.18, 0.18, 6),
       blackTroopMaterial,
@@ -486,13 +512,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
       const ear = modelMesh(new THREE.SphereGeometry(0.21, 9, 6), goldMaterial);
       ear.scale.set(0.35, 1, 0.8);
       ear.position.set(direction * 0.25, 0.82, -0.39);
-      const leg = modelMesh(
-        new THREE.CylinderGeometry(0.09, 0.11, 0.38, 7),
-        troopMaterial(side),
-      );
-      leg.position.set(direction * 0.24, 0.35, -0.18);
-      leg.userData.motionJoint = direction;
-      model.add(ear, leg);
+      model.add(ear);
     });
     const trunk = modelMesh(
       new THREE.CylinderGeometry(0.075, 0.11, 0.5, 7),
@@ -503,17 +523,21 @@ function createTroopModel(kind: PieceKind, side: Side) {
     model.add(body, head, trunk);
     const headJoint = pivot("elephant-head", new THREE.Vector3(0, 0.85, -0.3), head, ...model.children.filter((o) => o instanceof THREE.Mesh && o.geometry instanceof THREE.SphereGeometry && o !== body && o !== head));
     const trunkJoint = pivot("elephant-trunk", new THREE.Vector3(0, 0.79, -0.55), trunk);
-    const foot = model.children.find((o) => o.userData.motionJoint === 1)!;
-    rig = createTroopRig(kind, { head: headJoint, trunk: trunkJoint, foot });
-    for (const direction of [-1, 1]) {
-      const leg = modelMesh(
-        new THREE.CylinderGeometry(0.09, 0.11, 0.38, 7),
-        troopMaterial(side),
-      );
-      leg.position.set(direction * 0.24, 0.35, 0.22);
-      leg.userData.motionJoint = -direction;
-      model.add(leg);
+    const foot = new THREE.Group();
+    foot.name = "elephant-strike-foot";
+    foot.position.set(.24, .55, -.21);
+    model.add(foot);
+    for (const [index, role] of (["frontLeft", "frontRight", "rearLeft", "rearRight"] as const).entries()) {
+      const front = index < 2, right = index % 2 === 1;
+      const parent = role === "frontRight" ? foot : model;
+      legs.push(addJointedLeg(parent, {
+        role, at: parent === foot ? new THREE.Vector3() : new THREE.Vector3(right ? .24 : -.24, .55, front ? -.21 : .24),
+        upper: .3, lower: .27, width: .105, ankleHeight: .08,
+        groundY: parent === foot ? -.55 : 0, bend: front ? 1 : -1,
+        upperMaterial: troopMaterial(side), lowerMaterial: creamMaterial, footMaterial: blackTroopMaterial,
+      }));
     }
+    rig = createTroopRig(kind, { head: headJoint, trunk: trunkJoint, foot });
   }
 
   if (kind === "horse") {
@@ -534,7 +558,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
     head.position.set(0, 1.12, -0.49);
     model.add(body, neck, head);
     const rider = new THREE.Group();
-    addHumanoid(rider, side, 0.7);
+    addHumanoid(rider, side, [], 0.7, true);
     rider.scale.setScalar(0.62);
     rider.position.set(0, 0.72, 0.08);
     model.add(rider);
@@ -549,30 +573,19 @@ function createTroopModel(kind: PieceKind, side: Side) {
     const lanceJoint = pivot("horse-lance", new THREE.Vector3(0.28, 1.1, 0), lance, tip);
     const headJoint = pivot("horse-head", new THREE.Vector3(0, 0.9, -0.35), head, neck);
     rig = createTroopRig(kind, { rider, lance: lanceJoint, head: headJoint });
-    for (const direction of [-1, 1]) {
-      const leg = modelMesh(
-        new THREE.CylinderGeometry(0.055, 0.075, 0.47, 6),
-        woodMaterial,
-      );
-      leg.position.set(direction * 0.19, 0.34, direction > 0 ? -0.2 : 0.2);
-      leg.userData.motionJoint = -direction;
-      model.add(leg);
+    for (const [index, role] of (["frontLeft", "frontRight", "rearLeft", "rearRight"] as const).entries()) {
+      const front = index < 2, right = index % 2 === 1;
+      legs.push(addJointedLeg(model, {
+        role, at: new THREE.Vector3(right ? .19 : -.19, .55, front ? -.24 : .24),
+        upper: .31, lower: .3, width: .062, ankleHeight: .06, bend: front ? 1 : -1,
+        upperMaterial: woodMaterial, lowerMaterial: creamMaterial, footMaterial: blackTroopMaterial,
+      }));
     }
-
-    [-1, 1].forEach((direction) => {
-      const leg = modelMesh(
-        new THREE.CylinderGeometry(0.055, 0.075, 0.47, 6),
-        woodMaterial,
-      );
-      leg.position.set(direction * 0.19, 0.34, direction > 0 ? 0.2 : -0.2);
-      const ear = modelMesh(
-        new THREE.ConeGeometry(0.055, 0.2, 5),
-        woodMaterial,
-      );
-      ear.position.set(direction * 0.08, 1.34, -0.49);
-      leg.userData.motionJoint = direction;
-      model.add(leg, ear);
-    });
+    for (const direction of [-1, 1]) {
+      const ear = modelMesh(new THREE.ConeGeometry(.055, .2, 5), woodMaterial);
+      ear.position.set(direction * .08, 1.34, -.49);
+      model.add(ear);
+    }
   }
 
   if (kind === "chariot") {
@@ -596,14 +609,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
     rig = createTroopRig(kind, { chassis, ram });
     [-1, 1].forEach((x) =>
       [-1, 1].forEach((z) => {
-        const wheel = modelMesh(
-          new THREE.CylinderGeometry(0.18, 0.18, 0.11, 12),
-          woodMaterial,
-        );
-        wheel.rotation.z = Math.PI / 2;
-        wheel.position.set(x * 0.4, 0.36, z * 0.24);
-        wheels.push(wheel);
-        model.add(wheel);
+        wheels.push(addSpokedWheel(model, .18, .11, new THREE.Vector3(x * .4, .36, z * .24)));
       }),
     );
     addFlag(model, side, 0.22, false);
@@ -631,19 +637,12 @@ function createTroopModel(kind: PieceKind, side: Side) {
     const trunnion = pivot("cannon-trunnion", new THREE.Vector3(0, 0.67, 0), barrelSlide);
     rig = createTroopRig(kind, { trunnion, barrel: barrelSlide });
     [-1, 1].forEach((direction) => {
-      const wheel = modelMesh(
-        new THREE.CylinderGeometry(0.23, 0.23, 0.12, 12),
-        woodMaterial,
-      );
-      wheel.rotation.z = Math.PI / 2;
-      wheel.position.set(direction * 0.39, 0.36, 0.03);
-      wheels.push(wheel);
-      model.add(wheel);
+      wheels.push(addSpokedWheel(model, .23, .12, new THREE.Vector3(direction * .39, .36, .03)));
     });
   }
 
   if (kind === "soldier") {
-    addHumanoid(model, side, 0.88);
+    addHumanoid(model, side, legs, 0.88);
     const helmet = modelMesh(
       new THREE.SphereGeometry(0.23, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2),
       goldMaterial,
@@ -718,7 +717,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
   }
   model.add(badge);
   if (side === "black") model.rotation.y = Math.PI;
-  model.userData.wheels = wheels;
+  model.userData.locomotionRig = createLocomotionRig(kind, legs, wheels);
   model.userData.combatRig = rig!;
   return model;
 }
@@ -729,20 +728,6 @@ function createPiece(piece: Piece) {
   group.userData.kind = piece.kind;
   group.userData.side = piece.side;
 
-  const sideColor = piece.side === "red" ? RED : BLACK;
-  const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.51, 0.58, 0.2, 18),
-    new THREE.MeshStandardMaterial({
-      color: sideColor,
-      roughness: 0.52,
-      metalness: 0.04,
-      flatShading: true,
-    }),
-  );
-  base.position.y = 0.1;
-  base.castShadow = true;
-  base.receiveShadow = true;
-
   const halo = new THREE.Mesh(
     new THREE.RingGeometry(0.62, 0.7, 32),
     new THREE.MeshBasicMaterial({ color: "#79e6a4", side: THREE.DoubleSide }),
@@ -751,24 +736,18 @@ function createPiece(piece: Piece) {
   halo.rotation.x = -Math.PI / 2;
   halo.position.y = 0.025;
   halo.visible = false;
-  const rim = modelMesh(
-    new THREE.TorusGeometry(0.48, 0.035, 8, 24),
-    goldMaterial,
-  );
-  rim.rotation.x = Math.PI / 2;
-  rim.position.y = 0.21;
 
   const troop = createTroopModel(piece.kind, piece.side);
-  troop.position.y = 0.2 - new THREE.Box3().setFromObject(troop).min.y;
+  troop.position.y = -new THREE.Box3().setFromObject(troop).min.y;
   group.userData.troop = troop;
   group.userData.restY = troop.position.y;
-  group.userData.wheels = troop.userData.wheels;
+  group.userData.locomotionRig = troop.userData.locomotionRig;
   group.userData.combatRig = troop.userData.combatRig;
   group.userData.combatPhase = "idle";
   group.userData.combatProgress = 0;
   group.userData.modelBaseYaw = piece.side === "black" ? Math.PI : 0;
 
-  group.add(base, halo, rim, troop);
+  group.add(halo, troop);
   group.position.copy(gridToWorld(piece));
   group.scale.setScalar(PIECE_SCALE);
   group.traverse((child) => {
@@ -816,7 +795,7 @@ function renderPieces() {
       troop.position.y = Number(g.userData.restY);
       troop.rotation.y = Number(g.userData.modelBaseYaw);
       troop.rotation.x = troop.rotation.z = 0;
-      troop.traverse((o) => { if (o.userData.motionJoint) o.rotation.x = 0; });
+      restoreLocomotion(g.userData.locomotionRig as LocomotionRig, true);
       g.visible = true;
       g.userData.combatPhase = "idle";
       g.userData.combatProgress = 0;
@@ -1308,7 +1287,7 @@ speedSelect.addEventListener("change", () => {
 function stopLocomotion(g: THREE.Group) {
   const troop = g.userData.troop as THREE.Group;
   troop.position.y = Number(g.userData.restY);
-  troop.traverse((o) => { if (o.userData.motionJoint) o.rotation.x = 0; });
+  restoreLocomotion(g.userData.locomotionRig as LocomotionRig);
   g.userData.marchMotion = "idle";
 }
 
@@ -1369,6 +1348,7 @@ async function animateCombat(attacker: Piece, defender: Piece, epoch: number) {
       if (!impacted && phase >= profile.impact) {
         impacted = true;
         g.userData.combatImpacts = 1;
+        battleBanner.impact();
         if (attacker.kind === "cannon") playCannonSound();
         createImpact(target.position, attacker.kind, defender.kind);
       }
@@ -1390,6 +1370,7 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
     length = path.getLength(),
     end = gridToWorld(to),
     march = battlefield.startMarch(path, piece.kind);
+  restoreLocomotion(g.userData.locomotionRig as LocomotionRig, true);
   let dust = -1, lastDistance = 0, groundDistance = 0, resumingAfterAttack = false;
   const advanceMarch = (stopDistance: number) => new Promise<void>((resolve) => {
     let previousTime: number | undefined;
@@ -1414,18 +1395,12 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
       g.rotation.y += turn * 0.32;
       if (walking) groundDistance += distance - lastDistance;
       lastDistance = distance;
-      const stride = piece.kind === "horse" ? 0.85 : piece.kind === "elephant" ? 0.65 : 0.5,
-        phase = (groundDistance / stride) * Math.PI * 2,
-        limb = !walking || reducedMotion.matches ? 0 : Math.sin(u * Math.PI) * (surface === "boardwalk" ? 0.16 : 0.32);
-      troop.traverse((o) => {
-        if (o.userData.motionJoint)
-          o.rotation.x = Math.sin(phase + (Number(o.userData.motionJoint) * Math.PI) / 2) * limb;
+      troop.position.y = Number(g.userData.restY);
+      applyLocomotion(g.userData.locomotionRig as LocomotionRig, {
+        distance: groundDistance, surface,
+        motion: walking ? "walking" : frame.motion === "riding" ? "riding" : "waiting",
+        reduced: reducedMotion.matches,
       });
-      troop.position.y = Number(g.userData.restY) + (!walking || reducedMotion.matches ? 0 : Math.abs(Math.sin(phase)) * 0.025);
-      if (walking) for (const wheel of (g.userData.wheels ?? []) as THREE.Mesh[]) {
-        if (!wheel.userData.rest) wheel.userData.rest = wheel.quaternion.clone();
-        wheel.quaternion.copy(wheel.userData.rest).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), groundDistance / (0.2 * PIECE_SCALE)));
-      }
       const step = Math.floor(groundDistance / 0.9);
       if (step > dust && u > 0.05 && u < 0.95 && walking) {
         dust = step;
@@ -1649,6 +1624,7 @@ function resetGame() {
 }
 
 function resetView() {
+  cameraPan.clear();
   controls.enableDamping = false;
   controls.target.copy(frameCamera(camera, overview));
   controls.update();
@@ -1693,12 +1669,16 @@ ambienceButton.addEventListener("click", () => {
   battlefield.update(performance.now(), reducedMotion.matches || !ambienceEnabled);
 });
 
+let framedWindowWidth = 0, framedWindowHeight = 0;
 function resize() {
   const { clientWidth, clientHeight } = canvas;
   renderer.setSize(clientWidth, clientHeight, false);
   camera.aspect = clientWidth / clientHeight;
   camera.updateProjectionMatrix();
-  if (!interactionLocked) resetView();
+  const windowChanged = framedWindowWidth !== window.innerWidth || framedWindowHeight !== window.innerHeight;
+  if (!interactionLocked && windowChanged) resetView();
+  framedWindowWidth = window.innerWidth;
+  framedWindowHeight = window.innerHeight;
 }
 
 const resizeObserver = new ResizeObserver(resize);
@@ -1733,7 +1713,10 @@ renderPieces();
 updateUI();
 resetView();
 
+let previousRenderTime: number | undefined;
 renderer.setAnimationLoop((time) => {
+  cameraPan.update(previousRenderTime === undefined ? 0 : (time - previousRenderTime) / 1000);
+  previousRenderTime = time;
   battlefield.update(time, reducedMotion.matches || !ambienceEnabled);
   controls.update();
   renderer.render(scene, camera);

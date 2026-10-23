@@ -63,3 +63,6 @@ python scripts/record-shanhe.py
 | [七种兵种交锋](../screenshots/shanhe/gifs/03-seven-troop-attacks.gif) | 24.51 秒 | 兵、马、车、炮、象、士、将的独立攻击和战报 |
 
 七次吃子均只触发一次命中并完成移除守方；录制过程没有浏览器错误。三段 GIF 已完整解码，分别包含 48、64、196 个不同画面，另各有一帧用于收尾。[录制记录](../screenshots/shanhe/gifs/recording.json) 保存源码与脚本哈希和攻击结果；[文件验证](../screenshots/shanhe/gifs/validation.json) 保存解码帧数、时长与 SHA-256。
+## 后续改造
+
+关节步态、道路重叠修复、键盘平移、瀑布流动和金属横幅见[棋子步态与战场反馈](living-troops.md)。
