@@ -9,15 +9,24 @@ export function createBattleBanner(element: HTMLElement) {
     title = element.querySelector<HTMLElement>("[data-banner-title]")!,
     detail = element.querySelector<HTMLElement>("[data-banner-detail]")!;
   let timer: number | undefined;
+  let struck = false;
   const clear = () => {
     window.clearTimeout(timer);
     timer = undefined;
+    struck = false;
     element.hidden = true;
-    element.classList.remove("show");
+    element.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
+    element.classList.remove("show", "impact");
     title.textContent = detail.textContent = label.textContent = "";
   };
   return {
     clear,
+    impact() {
+      if (element.hidden || struck || element.dataset.event !== "engage") return false;
+      struck = true;
+      element.classList.add("impact");
+      return true;
+    },
     show(event: BattleEvent) {
       clear();
       const side = event.side === "red" ? "红方" : "黑方";
@@ -47,7 +56,7 @@ export function createBattleBanner(element: HTMLElement) {
       }
       element.hidden = false;
       element.classList.add("show");
-      timer = window.setTimeout(clear, event.kind === "victory" ? 3200 : 2200);
+      if (event.kind !== "engage") timer = window.setTimeout(clear, event.kind === "victory" ? 3200 : 2200);
     },
   };
 }

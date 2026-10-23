@@ -1,0 +1,72 @@
+{
+  "source_css_sha256": "395f73579540a6aae8e0e4263a0677c92bd227e7bb6b01d7dea979a798ecf161",
+  "errors": [],
+  "fast_rate": 3,
+  "earliest_impact_ms": 168,
+  "entrance": [
+    {
+      "name": "metal-left",
+      "duration": 160,
+      "state": "paused"
+    },
+    {
+      "name": "metal-right",
+      "duration": 160,
+      "state": "paused"
+    },
+    {
+      "name": "banner-reveal",
+      "duration": 160,
+      "state": "paused"
+    },
+    {
+      "name": "banner-reveal",
+      "duration": 160,
+      "state": "paused"
+    },
+    {
+      "name": "banner-reveal",
+      "duration": 160,
+      "state": "paused"
+    }
+  ],
+  "impact_names": [
+    "metal-jolt",
+    "metal-flash",
+    "metal-sheen",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark",
+    "metal-spark"
+  ],
+  "mobile_seal": {
+    "text": "交锋",
+    "whiteSpace": "nowrap",
+    "lineHeight": "18.7px",
+    "writingMode": "vertical-rl",
+    "width": 34,
+    "height": 48,
+    "scrollWidth": 32,
+    "clientWidth": 32,
+    "scrollHeight": 46,
+    "clientHeight": 46
+  },
+  "mobile_banner": {
+    "x": 34,
+    "y": 157.5,
+    "width": 322,
+    "height": 78
+  },
+  "reduced_motion": {
+    "animations": 0,
+    "sparks": "none",
+    "clash": "none"
+  },
+  "status": "PASS"
+}

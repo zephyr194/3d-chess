@@ -1,0 +1,16 @@
+{
+  "src/game/battle-drums.ts": "935e3ae9d7c52c8ed383dcd68ebaf9005e559107e00350f2ae52504e53e7d0a7",
+  "src/game/metal-impact.ts": "68aef77e43a6c4e3fe28c595bb4aaad1bed5aad9b8436065248e779a388b22eb",
+  "src/game/xiangqi.ts": "ee3257e3428e6d7652991e99c27fe774ff75a850916c531a1db539952bef04f4",
+  "src/main.ts": "84dece07994ee3d7a12db2c36847f5ac1a0106df84f0a44c8df2a9c648c03db5",
+  "src/scene/battlefield.ts": "6ede4b03d6c06300ecae418270db8329c057e0ff9625faf5f18bb16ec60dee36",
+  "src/scene/board.ts": "fc6881aa8cd6f507b1a4b38b5e3073561b1c73b844bcf6f5fe15a997bd73a9a3",
+  "src/scene/combat.ts": "8459b7dfb1c5049e28230d3c3bd651bdc2b6c1d2dce8bb99eb4f3fcae88ca62f",
+  "src/scene/landscape-layout.ts": "82a0b83a12b01f06db72eb618ed5c17b49774e6f676ce111d82a51e8b2d1ac6e",
+  "src/scene/locomotion.ts": "f9bc446b31eef1221da397ee82d7aa23c6a944d8f890753491726710ff3adb3e",
+  "src/styles.css": "eaa257ee54a1d3b13b33aebcb732d2d8e16a152830f28cbdb74e2ca5844d9d3b",
+  "src/ui/battle-banner.ts": "4b8a592fc7ffe01760ba29319ac942b72134f9ba8d579ab172836100e63b275d",
+  "src/ui/camera-pan.ts": "b91b9d8963d48612d71403448922ec28bc4213b361d8d621e0371c09a34c6cce",
+  "src/ui/tactical-board.ts": "250b654307da749c7acc106bbba08bb7302a4ab722b68bc0edbba9b987a685df",
+  "index.html": "07a214c03909e9583d92ca788cf176e725d230e9d208ba8c87409addbac41cc7"
+}
