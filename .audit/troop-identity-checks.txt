@@ -1,0 +1,48 @@
+npm test
+
+> 3d-chess@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/3d-chess
+
+ ✓ tests/combat.test.ts (36 tests) 431ms
+ ✓ tests/atmosphere-depth.test.ts (4 tests) 64ms
+ ✓ tests/troop-details.test.ts (30 tests) 94ms
+ ✓ tests/board.test.ts (3 tests) 9ms
+ ✓ tests/xiangqi.test.ts (16 tests) 9ms
+ ✓ tests/battlefield.test.ts (13 tests) 2384ms
+   ✓ restored continuous battlefield > keeps all 90 logical stations aligned and physically level, with small troops  976ms
+   ✓ restored continuous battlefield > keeps every legal endpoint routable across 10 real turns without changing chess rules  347ms
+   ✓ restored continuous battlefield > waits for the opposite-bank ferry and supports walking aboard, riding and exiting in both directions  316ms
+ ✓ tests/locomotion.test.ts (44 tests) 4920ms
+   ✓ troop ground contact > keeps soldier soles flat above mud and narrow surfaces in both paces and sides  338ms
+   ✓ troop ground contact > keeps advisor soles flat above mud and narrow surfaces in both paces and sides  312ms
+   ✓ troop ground contact > keeps horse soles flat above mud and narrow surfaces in both paces and sides  578ms
+   ✓ troop ground contact > keeps elephant soles flat above mud and narrow surfaces in both paces and sides  595ms
+
+ Test Files  7 passed (7)
+      Tests  146 passed (146)
+   Start at  03:59:22
+   Duration  5.42s (transform 392ms, setup 0ms, collect 4.10s, tests 7.91s, environment 1ms, prepare 576ms)
+
+
+npm run build
+
+> 3d-chess@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 19 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   6.21 kB │ gzip:   2.31 kB
+dist/assets/index-CK4g2CgD.css   15.91 kB │ gzip:   4.68 kB
+dist/assets/index-k-KrsCaq.js   629.03 kB │ gzip: 172.64 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.46s

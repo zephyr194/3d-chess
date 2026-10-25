@@ -99,6 +99,9 @@ h1 { margin: 0; font-family: "Songti SC", "Noto Serif CJK SC", serif; font-size:
 .speed-control > span { grid-column: 1; }
 .speed-control select { grid-column: 2; grid-row: 1 / 3; width: 100%; padding: 9px 13px; color: #f0e5c3; background: #1c3225; font-size: 13px; }
 #speed-feedback { grid-column: 1; font-size: 9px; line-height: 1.6; color: #b6c3a3; max-width: 140px; }
+.pace-control { display: grid; grid-template-columns: auto minmax(84px, 1fr); align-items: center; column-gap: 9px; row-gap: 3px; flex: 0 1 198px; font-size: 12px; color: #d7d7b6; }
+.pace-control select { grid-column: 2; grid-row: 1 / 3; width: 100%; padding: 9px; color: #f0e5c3; background: #1c3225; font-size: 13px; }
+#pace-feedback { grid-column: 1; max-width: 92px; font-size: 9px; line-height: 1.6; color: #b6c3a3; }
 .secondary { color: #e8dfbf; background: #263d2d; white-space: nowrap; box-shadow: inset 0 1px #dbcca511; }
 .primary { color: #303b29; background: #d5b16b; border-color: #e5c483; font-weight: 800; white-space: nowrap; }
 .view-controls { display: flex; gap: 7px; }
@@ -155,6 +158,8 @@ button.tactical-cell.in-check { outline: 3px solid #c03622; }
   .control-panel { padding: 10px; }
   .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: start; }
   .speed-control { grid-column: 1 / -1; max-width: none; width: 100%; }
+  .pace-control { grid-column: 1 / -1; width: 100%; }
+  #pace-feedback { max-width: none; font-size: 10px; }
   #speed-feedback { max-width: none; font-size: 10px; }
   .view-controls { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .sound-settings { grid-column: 1 / -1; grid-row: 4; }

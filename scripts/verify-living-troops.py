@@ -31,8 +31,9 @@ def run():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base-url', default='http://127.0.0.1:5173')
     parser.add_argument('--record', action='store_true')
+    parser.add_argument('--output', type=Path)
     args = parser.parse_args()
-    out = ROOT / 'screenshots/living-troops/after'
+    out = args.output or ROOT / 'screenshots/living-troops/after'
     out.mkdir(parents=True, exist_ok=True)
     source_paths = sorted((ROOT / 'src').rglob('*.*')) + [ROOT / 'index.html']
     hashes = lambda: {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_paths}

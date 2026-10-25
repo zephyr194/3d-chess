@@ -18,6 +18,7 @@ export type LegChain = {
   planted: boolean;
 };
 export type WheelJoint = { node: THREE.Object3D; radius: number; rest: THREE.Quaternion };
+export type LocomotionPace = "walk" | "run";
 export type LocomotionRig = {
   kind: PieceKind;
   legs: LegChain[];
@@ -25,12 +26,15 @@ export type LocomotionRig = {
   distance: number;
   cycle: number;
   narrow: number;
+  pace: LocomotionPace;
+  stepOffsets: { z: number; until: number }[];
 };
 export type LocomotionInput = {
   distance: number;
   surface: Surface;
   motion: "walking" | "riding" | "waiting" | "idle";
   reduced: boolean;
+  pace?: LocomotionPace;
 };
 export type JointedLegSpec = {
   role: LegRole;
@@ -91,6 +95,16 @@ export const gaitProfiles: Record<PieceKind, GaitProfile> = {
   cannon: { stride: 1, stance: 1, lift: 0, phases: [] },
 };
 
+export const runGaitProfiles: Record<PieceKind, GaitProfile> = {
+  soldier: { stride: .7, stance: .55, lift: .17, phases: [0, .5] },
+  general: { stride: .64, stance: .6, lift: .14, phases: [0, .5] },
+  advisor: { stride: .52, stance: .66, lift: .105, phases: [0, .5] },
+  horse: { stride: .98, stance: .58, lift: .23, phases: [0, .48, .58, .08] },
+  elephant: { stride: .58, stance: .8, lift: .105, phases: [0, .5, .75, .25] },
+  chariot: { stride: 1, stance: 1, lift: 0, phases: [] },
+  cannon: { stride: 1, stance: 1, lift: 0, phases: [] },
+};
+
 export function poseLeg(leg: LegChain, z: number, lift: number) {
   const down = leg.hip.position.y - leg.groundY - leg.ankleHeight - lift;
   const reach = Math.hypot(down, z);
@@ -104,18 +118,20 @@ export function poseLeg(leg: LegChain, z: number, lift: number) {
 }
 
 export function createLocomotionRig(kind: PieceKind, legs: LegChain[], wheels: WheelJoint[]): LocomotionRig {
-  const rig = { kind, legs, wheels, distance: 0, cycle: 0, narrow: 0 };
+  const rig: LocomotionRig = { kind, legs, wheels, distance: 0, cycle: 0, narrow: 0, pace: "walk", stepOffsets: [] };
   restoreLocomotion(rig, true);
   return rig;
 }
 
 export function restoreLocomotion(rig: LocomotionRig, resetDistance = false) {
+  rig.stepOffsets = [];
   for (const leg of rig.legs) {
     poseLeg(leg, 0, 0);
     leg.planted = true;
   }
   if (resetDistance) {
     rig.distance = rig.cycle = rig.narrow = 0;
+    rig.pace = "walk";
     for (const wheel of rig.wheels) wheel.node.quaternion.copy(wheel.rest);
   }
 }
@@ -123,10 +139,29 @@ export function restoreLocomotion(rig: LocomotionRig, resetDistance = false) {
 const axle = new THREE.Vector3(0, 1, 0);
 const wheelTurn = new THREE.Quaternion();
 
+function gaitStep(kind: PieceKind, profile: GaitProfile, index: number, cycle: number, narrow: number, mud: boolean) {
+  const stride = profile.stride * THREE.MathUtils.lerp(1, .72, narrow);
+  const stance = kind === "horse" ? THREE.MathUtils.lerp(profile.stance, .76, narrow) : profile.stance;
+  const offset = kind === "horse" ? THREE.MathUtils.lerp(profile.phases[index], [0, .5, .25, .75][index], narrow) : profile.phases[index];
+  const phase = (cycle + offset) % 1;
+  const planted = phase < stance;
+  const u = planted ? 0 : (phase - stance) / (1 - stance);
+  const smooth = u * u * (3 - 2 * u);
+  return {
+    z: planted ? (phase - stance / 2) * stride : stride * stance * (.5 - smooth),
+    lift: Math.sin(u * Math.PI) ** 2 * profile.lift * THREE.MathUtils.lerp(1, .48, narrow) * (mud ? 1.2 : 1),
+    planted, offset, correction: 1 - smooth,
+  };
+}
+
+function stepCorrection(rig: LocomotionRig, index: number, cycle: number, correction: number) {
+  const offset = rig.stepOffsets[index];
+  return offset && cycle < offset.until ? offset.z * correction : 0;
+}
+
 export function applyLocomotion(rig: LocomotionRig, input: LocomotionInput) {
   const localDistance = input.distance / PIECE_SCALE;
   const delta = Math.max(0, localDistance - rig.distance);
-  const profile = gaitProfiles[rig.kind];
   rig.distance = localDistance;
   if (input.motion !== "walking" || input.reduced) {
     restoreLocomotion(rig);
@@ -134,25 +169,29 @@ export function applyLocomotion(rig: LocomotionRig, input: LocomotionInput) {
   }
   const narrowTarget = input.surface === "boardwalk" || input.surface === "bridge" ? 1 : 0;
   rig.narrow += THREE.MathUtils.clamp(narrowTarget - rig.narrow, -delta * 4, delta * 4);
+  const requested = narrowTarget ? "walk" : input.pace ?? "walk";
+  let profile = (rig.pace === "run" ? runGaitProfiles : gaitProfiles)[rig.kind];
   const stride = profile.stride * THREE.MathUtils.lerp(1, .72, rig.narrow);
-  rig.cycle += delta / stride;
-  const stance = rig.kind === "horse" ? THREE.MathUtils.lerp(profile.stance, .76, rig.narrow) : profile.stance;
-  const lift = profile.lift * THREE.MathUtils.lerp(1, .48, rig.narrow) * (input.surface === "mud" ? 1.2 : 1);
+  const nextCycle = rig.cycle + delta / stride;
+  const boundary = Math.ceil(rig.cycle - 1e-10);
+  if (requested !== rig.pace && (narrowTarget || nextCycle >= boundary)) {
+    const switchCycle = narrowTarget ? rig.cycle : boundary;
+    const oldProfile = profile;
+    profile = (requested === "run" ? runGaitProfiles : gaitProfiles)[rig.kind];
+    rig.legs.forEach((_, index) => {
+      const before = gaitStep(rig.kind, oldProfile, index, switchCycle, rig.narrow, input.surface === "mud");
+      const after = gaitStep(rig.kind, profile, index, switchCycle, rig.narrow, input.surface === "mud");
+      const z = before.z + stepCorrection(rig, index, switchCycle, before.correction) - after.z;
+      rig.stepOffsets[index] = { z, until: Math.floor(switchCycle + after.offset) + 1 - after.offset };
+    });
+    const remaining = delta - (switchCycle - rig.cycle) * stride;
+    rig.cycle = switchCycle + remaining / (profile.stride * THREE.MathUtils.lerp(1, .72, rig.narrow));
+    rig.pace = requested;
+  } else rig.cycle = nextCycle;
   rig.legs.forEach((leg, index) => {
-    const offset = rig.kind === "horse" ? THREE.MathUtils.lerp(profile.phases[index], [0, .5, .25, .75][index], rig.narrow) : profile.phases[index];
-    const phase = (rig.cycle + offset) % 1;
-    const planted = phase < stance;
-    let z: number, y = 0;
-    const sweep = stride * stance;
-    if (planted) z = (phase - stance / 2) * stride;
-    else {
-      const u = (phase - stance) / (1 - stance);
-      const smooth = u * u * (3 - 2 * u);
-      z = sweep * (.5 - smooth);
-      y = Math.sin(u * Math.PI) ** 2 * lift;
-    }
-    poseLeg(leg, z, y);
-    leg.planted = planted;
+    const step = gaitStep(rig.kind, profile, index, rig.cycle, rig.narrow, input.surface === "mud");
+    poseLeg(leg, step.z + stepCorrection(rig, index, rig.cycle, step.correction), step.lift);
+    leg.planted = step.planted;
   });
   for (const wheel of rig.wheels) {
     wheelTurn.setFromAxisAngle(axle, localDistance / wheel.radius);

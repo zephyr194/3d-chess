@@ -1,0 +1,419 @@
+{
+  "stage": "after",
+  "viewport": [
+    1280,
+    960
+  ],
+  "errors": [],
+  "models": [
+    {
+      "kind": "soldier",
+      "bounds": {
+        "min": [
+          -9.099199995541573,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.547496119499206,
+          1.6941999996960164,
+          6.366440000000001
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "soldier-spear",
+        "human-arm-1",
+        "soldier-shield",
+        "human-arm--1",
+        "soldier-shield-rim",
+        "soldier-shield-face",
+        "soldier-shield-boss",
+        "identity-mark",
+        "identity-mark",
+        "soldier-lamellar",
+        "soldier-lamellar",
+        "soldier-lamellar",
+        "soldier-lamellar",
+        "soldier-lamellar",
+        "soldier-lamellar",
+        "soldier-helmet-crest",
+        "soldier-eye",
+        "soldier-eye",
+        "soldier-standard-red",
+        "standard-pole",
+        "standard-finial",
+        "soldier-cloth",
+        "standard-mark"
+      ]
+    },
+    {
+      "kind": "horse",
+      "bounds": {
+        "min": [
+          -9.07778695322452,
+          0.545,
+          5.646079373645783
+        ],
+        "max": [
+          -8.522213046775482,
+          1.9458000005573033,
+          6.486373675594294
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-arm--1",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "human-arm-1",
+        "horse-lance",
+        "horse-standard-red",
+        "standard-pole",
+        "standard-finial",
+        "horse-cloth",
+        "standard-mark",
+        "horse-head",
+        "horse-mane",
+        "horse-mane",
+        "horse-mane",
+        "horse-mane",
+        "horse-mane",
+        "horse-muzzle",
+        "horse-bridle",
+        "horse-eye",
+        "horse-bridle",
+        "horse-eye",
+        "frontLeft-hip",
+        "frontLeft-knee",
+        "frontLeft-ankle",
+        "frontLeft-boot",
+        "frontLeft-sole",
+        "frontRight-hip",
+        "frontRight-knee",
+        "frontRight-ankle",
+        "frontRight-boot",
+        "frontRight-sole",
+        "rearLeft-hip",
+        "rearLeft-knee",
+        "rearLeft-ankle",
+        "rearLeft-boot",
+        "rearLeft-sole",
+        "rearRight-hip",
+        "rearRight-knee",
+        "rearRight-ankle",
+        "rearRight-boot",
+        "rearRight-sole",
+        "identity-mark",
+        "identity-mark",
+        "horse-saddle",
+        "horse-tail"
+      ]
+    },
+    {
+      "kind": "chariot",
+      "bounds": {
+        "min": [
+          -9.26159929644103,
+          0.545,
+          5.426000001823902
+        ],
+        "max": [
+          -8.338400703558971,
+          1.3895600058972837,
+          6.60159929644103
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "chariot-chassis",
+        "identity-mark",
+        "identity-mark",
+        "chariot-rail",
+        "chariot-rail-post",
+        "chariot-rail-post",
+        "chariot-rail",
+        "chariot-rail-post",
+        "chariot-rail-post",
+        "chariot-front-armor",
+        "chariot-armor-rivet",
+        "chariot-armor-rivet",
+        "chariot-standard-red",
+        "standard-pole",
+        "standard-finial",
+        "chariot-cloth",
+        "standard-mark",
+        "chariot-ram",
+        "spoked-wheel",
+        "spoked-wheel",
+        "spoked-wheel",
+        "spoked-wheel"
+      ]
+    },
+    {
+      "kind": "cannon",
+      "bounds": {
+        "min": [
+          -9.11620000202656,
+          0.545,
+          5.718400000607968
+        ],
+        "max": [
+          -8.483799997973442,
+          1.0580492182254793,
+          6.371200005674363
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "cannon-trunnion",
+        "cannon-recoil-slide",
+        "cannon-barrel-band",
+        "cannon-barrel-band",
+        "cannon-barrel-band",
+        "cannon-dark-bore",
+        "cannon-trunnion-cap",
+        "cannon-trunnion-cap",
+        "spoked-wheel",
+        "spoked-wheel",
+        "identity-mark",
+        "cannon-cradle-cheek",
+        "cannon-cradle-cheek",
+        "cannon-standard-red",
+        "standard-pole",
+        "standard-finial",
+        "cannon-cloth",
+        "standard-mark"
+      ]
+    },
+    {
+      "kind": "elephant",
+      "bounds": {
+        "min": [
+          -9.1128,
+          0.5450000000000002,
+          5.501534817929378
+        ],
+        "max": [
+          -8.487200000000001,
+          1.2658000002026562,
+          6.513607673723306
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "elephant-head",
+        "elephant-fan-ear",
+        "elephant-tusk",
+        "elephant-brow-trim",
+        "elephant-fan-ear",
+        "elephant-tusk",
+        "elephant-brow-trim",
+        "elephant-forehead-cloth",
+        "elephant-forehead-jewel",
+        "elephant-trunk",
+        "elephant-strike-foot",
+        "frontRight-hip",
+        "frontRight-knee",
+        "frontRight-ankle",
+        "frontRight-boot",
+        "frontRight-sole",
+        "frontLeft-hip",
+        "frontLeft-knee",
+        "frontLeft-ankle",
+        "frontLeft-boot",
+        "frontLeft-sole",
+        "rearLeft-hip",
+        "rearLeft-knee",
+        "rearLeft-ankle",
+        "rearLeft-boot",
+        "rearLeft-sole",
+        "rearRight-hip",
+        "rearRight-knee",
+        "rearRight-ankle",
+        "rearRight-boot",
+        "rearRight-sole",
+        "identity-mark",
+        "identity-mark",
+        "elephant-standard-red",
+        "standard-pole",
+        "standard-finial",
+        "elephant-cloth",
+        "standard-mark"
+      ]
+    },
+    {
+      "kind": "advisor",
+      "bounds": {
+        "min": [
+          -9.01759999908805,
+          0.5449999999999999,
+          5.885604424671919
+        ],
+        "max": [
+          -8.582400000911951,
+          1.5649999968588355,
+          6.366440000000001
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-arm--1",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "advisor-tablet-arm",
+        "human-arm-1",
+        "identity-mark",
+        "advisor-tablet-cuff",
+        "advisor-tablet-inlay",
+        "identity-mark",
+        "advisor-long-robe",
+        "advisor-winged-hat",
+        "advisor-winged-hat",
+        "advisor-left-cuff",
+        "advisor-standard-red",
+        "standard-pole",
+        "standard-finial",
+        "advisor-cloth",
+        "standard-mark"
+      ]
+    },
+    {
+      "kind": "general",
+      "bounds": {
+        "min": [
+          -9.112800004053117,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.487199995946884,
+          1.694200002127886,
+          6.366440000000001
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "general-torso",
+        "human-arm--1",
+        "identity-mark",
+        "identity-mark",
+        "general-command-armor",
+        "general-command-armor",
+        "general-command-armor",
+        "general-command-armor",
+        "general-command-armor",
+        "general-command-armor",
+        "general-cape",
+        "general-crown-band",
+        "general-crown-point",
+        "general-crown-point",
+        "general-crown-point",
+        "general-crown-jewel",
+        "general-standard-red",
+        "standard-pole",
+        "standard-finial",
+        "general-cloth",
+        "standard-mark",
+        "general-weapon",
+        "human-arm-1"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "src/game/battle-drums.ts": "935e3ae9d7c52c8ed383dcd68ebaf9005e559107e00350f2ae52504e53e7d0a7",
+    "src/game/metal-impact.ts": "68aef77e43a6c4e3fe28c595bb4aaad1bed5aad9b8436065248e779a388b22eb",
+    "src/game/xiangqi.ts": "ee3257e3428e6d7652991e99c27fe774ff75a850916c531a1db539952bef04f4",
+    "src/main.ts": "635f5f49fa6d80a198db2c445ee6468da3db4d1f03daf2af4c0c326aab26858b",
+    "src/scene/battlefield.ts": "6ede4b03d6c06300ecae418270db8329c057e0ff9625faf5f18bb16ec60dee36",
+    "src/scene/board.ts": "fc6881aa8cd6f507b1a4b38b5e3073561b1c73b844bcf6f5fe15a997bd73a9a3",
+    "src/scene/combat.ts": "7ee4622645e18564bd967d768c75a6e2821ec89c5648784af63a5ddf8bbf898f",
+    "src/scene/landscape-layout.ts": "82a0b83a12b01f06db72eb618ed5c17b49774e6f676ce111d82a51e8b2d1ac6e",
+    "src/scene/locomotion.ts": "2d9476e06fbc4b7d56f651a4d253fed63c46e65d37d204ce0c3ee1efd11db412",
+    "src/scene/troop-details.ts": "4620bf29206560852d8cad1422f2d2c58b15e09f31b939256cf9f0f99486fe04",
+    "src/styles.css": "2836e8ba43cfed586b8fc111d25aac86cce1208976a174fd98b3d46be7f81196",
+    "src/ui/battle-banner.ts": "4b8a592fc7ffe01760ba29319ac942b72134f9ba8d579ab172836100e63b275d",
+    "src/ui/camera-pan.ts": "b91b9d8963d48612d71403448922ec28bc4213b361d8d621e0371c09a34c6cce",
+    "src/ui/tactical-board.ts": "250b654307da749c7acc106bbba08bb7302a4ab722b68bc0edbba9b987a685df",
+    "index.html": "2c415b51b9ed1c6c4c5a8db575e714cf2a0b297ffcd610c7933caed27e734699"
+  },
+  "capture_script_sha256": "60e7ea319ebbfb200113da9ba75f1f903abdd816991f956e2324bb1962e5169e"
+}

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, type TroopRig } from "../src/scene/combat";
+import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, sampleMarchPose, type TroopRig } from "../src/scene/combat";
 import type { PieceKind } from "../src/game/xiangqi";
 
 const kinds: PieceKind[] = ["soldier", "horse", "chariot", "cannon", "elephant", "advisor", "general"];
@@ -127,5 +127,59 @@ describe("physical troop combat", () => {
     expect(initialYaw).toBeGreaterThan(0.1);
     expect(nodes.weapon.rotation.y).toBeLessThan(-0.3);
     expect(nodes.torso.rotation.y).toBeLessThan(0);
+  });
+});
+
+describe("upper body march poses", () => {
+  it.each(kinds)("moves actual %s parts differently for walk and run and restores without drift", (kind) => {
+    const { root, nodes, rig } = rigFor(kind);
+    applyCombatPose(rig, sampleMarchPose(kind, .17, "walk"));
+    const walk = Object.values(nodes).map((node) => node.quaternion.clone());
+    applyCombatPose(rig, sampleMarchPose(kind, .17, "run"));
+    const run = Object.values(nodes).map((node) => ({ position: node.position.clone(), quaternion: node.quaternion.clone() }));
+    expect(Object.values(nodes).some((node, index) => node.quaternion.angleTo(walk[index]) > .01)).toBe(true);
+    for (let repeat = 0; repeat < 50; repeat++) applyCombatPose(rig, sampleMarchPose(kind, .17, "run"));
+    Object.values(nodes).forEach((node, index) => {
+      expect(node.position.distanceTo(run[index].position)).toBeLessThan(1e-10);
+      expect(node.quaternion.angleTo(run[index].quaternion)).toBeLessThan(1e-7);
+    });
+    applyCombatPose(rig, sampleMarchPose(kind, 1.17, "run"));
+    Object.values(nodes).forEach((node, index) => expect(node.quaternion.angleTo(run[index].quaternion)).toBeLessThan(1e-7));
+    restoreCombatRig(rig);
+    for (const node of Object.values(nodes)) {
+      expect(node.position.length()).toBe(0);
+      expect(node.quaternion.angleTo(new THREE.Quaternion())).toBe(0);
+    }
+    expect(root.position.toArray()).toEqual([3, .545, -5]);
+    expect(root.scale.toArray()).toEqual([.68, .68, .68]);
+  });
+
+  it.each(kinds)("restores %s travel offsets before the existing attack and after recovery", (kind) => {
+    const marching = rigFor(kind), fresh = rigFor(kind);
+    applyCombatPose(marching.rig, sampleMarchPose(kind, .31, "run"));
+    applyCombatPose(marching.rig, sampleCombat(kind, attackProfiles[kind].impact));
+    applyCombatPose(fresh.rig, sampleCombat(kind, attackProfiles[kind].impact));
+    for (const name of Object.keys(marching.nodes)) {
+      expect(marching.nodes[name].position.distanceTo(fresh.nodes[name].position)).toBeLessThan(1e-10);
+      expect(marching.nodes[name].quaternion.angleTo(fresh.nodes[name].quaternion)).toBeLessThan(1e-7);
+    }
+    applyCombatPose(marching.rig, sampleCombat(kind, 1));
+    for (const node of Object.values(marching.nodes)) {
+      expect(node.position.length()).toBeCloseTo(0, 10);
+      expect(node.quaternion.angleTo(new THREE.Quaternion())).toBeCloseTo(0, 7);
+    }
+  });
+
+  it("leaves the elephant strike foot and vehicle weapons at their resting transforms during travel", () => {
+    const elephant = rigFor("elephant"), chariot = rigFor("chariot"), cannon = rigFor("cannon");
+    for (let frame = 0; frame < 100; frame++) {
+      for (const pace of ["walk", "run"] as const) {
+        for (const sample of [elephant, chariot, cannon]) applyCombatPose(sample.rig, sampleMarchPose(sample.rig.kind, frame / 100, pace));
+        for (const node of [elephant.nodes.foot, chariot.nodes.ram, cannon.nodes.barrel]) {
+          expect(node.position.length()).toBe(0);
+          expect(node.quaternion.angleTo(new THREE.Quaternion())).toBe(0);
+        }
+      }
+    }
   });
 });
