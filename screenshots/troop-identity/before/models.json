@@ -1,0 +1,301 @@
+{
+  "stage": "before",
+  "viewport": [
+    1280,
+    960
+  ],
+  "errors": [],
+  "models": [
+    {
+      "kind": "soldier",
+      "bounds": {
+        "min": [
+          -9.099199995541573,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.547496119499206,
+          1.6941999996960164,
+          6.366440000000001
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "soldier-spear",
+        "human-arm-1",
+        "soldier-shield",
+        "human-arm--1",
+        "identity-mark",
+        "identity-mark"
+      ]
+    },
+    {
+      "kind": "horse",
+      "bounds": {
+        "min": [
+          -9.07778695322452,
+          0.545,
+          5.646079373645783
+        ],
+        "max": [
+          -8.522213046775482,
+          1.9458000005573033,
+          6.486373675594294
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-arm--1",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "human-arm-1",
+        "horse-lance",
+        "horse-head",
+        "frontLeft-hip",
+        "frontLeft-knee",
+        "frontLeft-ankle",
+        "frontLeft-boot",
+        "frontLeft-sole",
+        "frontRight-hip",
+        "frontRight-knee",
+        "frontRight-ankle",
+        "frontRight-boot",
+        "frontRight-sole",
+        "rearLeft-hip",
+        "rearLeft-knee",
+        "rearLeft-ankle",
+        "rearLeft-boot",
+        "rearLeft-sole",
+        "rearRight-hip",
+        "rearRight-knee",
+        "rearRight-ankle",
+        "rearRight-boot",
+        "rearRight-sole",
+        "identity-mark",
+        "identity-mark"
+      ]
+    },
+    {
+      "kind": "chariot",
+      "bounds": {
+        "min": [
+          -9.26159929644103,
+          0.545,
+          5.426000001823902
+        ],
+        "max": [
+          -8.338400703558971,
+          1.4664000054717063,
+          6.60159929644103
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "chariot-chassis",
+        "chariot-ram",
+        "spoked-wheel",
+        "spoked-wheel",
+        "spoked-wheel",
+        "spoked-wheel",
+        "identity-mark",
+        "identity-mark"
+      ]
+    },
+    {
+      "kind": "cannon",
+      "bounds": {
+        "min": [
+          -9.11620000202656,
+          0.545,
+          5.718400000607968
+        ],
+        "max": [
+          -8.483799997973442,
+          1.0580492182254793,
+          6.371200005674363
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "cannon-trunnion",
+        "cannon-recoil-slide",
+        "spoked-wheel",
+        "spoked-wheel",
+        "identity-mark"
+      ]
+    },
+    {
+      "kind": "elephant",
+      "bounds": {
+        "min": [
+          -9.1128,
+          0.5450000000000002,
+          5.501534817929378
+        ],
+        "max": [
+          -8.487200000000001,
+          1.2658000002026562,
+          6.513607673723306
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "elephant-head",
+        "elephant-trunk",
+        "elephant-strike-foot",
+        "frontRight-hip",
+        "frontRight-knee",
+        "frontRight-ankle",
+        "frontRight-boot",
+        "frontRight-sole",
+        "frontLeft-hip",
+        "frontLeft-knee",
+        "frontLeft-ankle",
+        "frontLeft-boot",
+        "frontLeft-sole",
+        "rearLeft-hip",
+        "rearLeft-knee",
+        "rearLeft-ankle",
+        "rearLeft-boot",
+        "rearLeft-sole",
+        "rearRight-hip",
+        "rearRight-knee",
+        "rearRight-ankle",
+        "rearRight-boot",
+        "rearRight-sole",
+        "identity-mark",
+        "identity-mark"
+      ]
+    },
+    {
+      "kind": "advisor",
+      "bounds": {
+        "min": [
+          -9.017599995136262,
+          0.5449999999999999,
+          5.885604424671919
+        ],
+        "max": [
+          -8.58240000486374,
+          1.5649999968588355,
+          6.366440000000001
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-arm--1",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "advisor-tablet-arm",
+        "human-arm-1",
+        "identity-mark",
+        "identity-mark"
+      ]
+    },
+    {
+      "kind": "general",
+      "bounds": {
+        "min": [
+          -9.112800004053117,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.487199995946884,
+          1.7792000007092954,
+          6.366440000000001
+        ]
+      },
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "nodes": [
+        "selection-halo",
+        "human-leg--1",
+        "left-knee",
+        "left-ankle",
+        "left-boot",
+        "left-sole",
+        "human-leg-1",
+        "right-knee",
+        "right-ankle",
+        "right-boot",
+        "right-sole",
+        "general-torso",
+        "human-arm--1",
+        "general-weapon",
+        "human-arm-1",
+        "identity-mark",
+        "identity-mark"
+      ]
+    }
+  ],
+  "baseline_commit": "047a50b72123956333b4ce14f59955ed344dcac2",
+  "capture_script_sha256": "70b42ec887f1ea348201cf6e0c8f9443e46d8812b682ba5ef0d4f8a04a8b2657"
+}

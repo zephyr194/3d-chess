@@ -17,7 +17,8 @@ import { createBattleBanner } from "./ui/battle-banner";
 import { createCameraPan } from "./ui/camera-pan";
 import { BattleDrums } from "./game/battle-drums";
 import { playMetalClash } from "./game/metal-impact";
-import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, type TroopRig } from "./scene/combat";
+import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, sampleMarchPose, type TroopRig } from "./scene/combat";
+import { createTroopDetails, updateTroopDetails, restoreTroopDetails, type TroopDetailsRig } from "./scene/troop-details";
 import { addJointedLeg, applyLocomotion, createLocomotionRig, poseLeg, restoreLocomotion, type LegChain, type LocomotionRig, type WheelJoint } from "./scene/locomotion";
 import {
   applyMove,
@@ -41,6 +42,7 @@ const statusTitle =
 const statusDetail =
   document.querySelector<HTMLParagraphElement>("#status-detail")!;
 const speedSelect = document.querySelector<HTMLSelectElement>("#speed-select")!;
+const paceSelect = document.querySelector<HTMLSelectElement>("#pace-select");
 const soundButton = document.querySelector<HTMLButtonElement>("#sound-button")!;
 const resetButton = document.querySelector<HTMLButtonElement>("#reset-button")!;
 const viewButton = document.querySelector<HTMLButtonElement>("#view-button")!;
@@ -395,22 +397,6 @@ function addHumanoid(group: THREE.Group, side: Side, legs: LegChain[], height = 
   }
 }
 
-function addFlag(group: THREE.Group, side: Side, x = 0.31, tall = false) {
-  const pole = modelMesh(
-    new THREE.CylinderGeometry(0.025, 0.025, tall ? 1.35 : 1.05, 6),
-    woodMaterial,
-  );
-  pole.position.set(x, tall ? 0.98 : 0.83, 0.03);
-  const cloth = modelMesh(
-    new THREE.BoxGeometry(0.34, 0.25, 0.035),
-    troopMaterial(side),
-  );
-  cloth.position.set(x - 0.16, tall ? 1.46 : 1.18, 0.03);
-  const tip = modelMesh(new THREE.ConeGeometry(0.07, 0.17, 5), goldMaterial);
-  tip.position.set(x, tall ? 1.73 : 1.45, 0.03);
-  group.add(pole, cloth, tip);
-}
-
 function addSpokedWheel(parent: THREE.Group, radius: number, width: number, at: THREE.Vector3): WheelJoint {
   const wheel = new THREE.Group();
   wheel.name = "spoked-wheel";
@@ -457,13 +443,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
       shoulder.position.set(direction * 0.31, 0.86, 0);
       model.add(shoulder);
     });
-    const crown = modelMesh(
-      new THREE.ConeGeometry(0.25, 0.34, 5),
-      goldMaterial,
-    );
-    crown.position.y = 1.36;
-    model.add(crown);
-    addFlag(model, side, 0.39, true);
+
     const weaponShaft = modelMesh(new THREE.CylinderGeometry(0.035, 0.035, 0.8, 6), woodMaterial);
     weaponShaft.position.set(0.31, 0.9, -0.08);
     const blade = modelMesh(new THREE.BoxGeometry(0.1, 0.4, 0.055), steelMaterial);
@@ -508,12 +488,6 @@ function createTroopModel(kind: PieceKind, side: Side) {
       creamMaterial,
     );
     head.position.set(0, 0.78, -0.43);
-    [-1, 1].forEach((direction) => {
-      const ear = modelMesh(new THREE.SphereGeometry(0.21, 9, 6), goldMaterial);
-      ear.scale.set(0.35, 1, 0.8);
-      ear.position.set(direction * 0.25, 0.82, -0.39);
-      model.add(ear);
-    });
     const trunk = modelMesh(
       new THREE.CylinderGeometry(0.075, 0.11, 0.5, 7),
       creamMaterial,
@@ -584,7 +558,8 @@ function createTroopModel(kind: PieceKind, side: Side) {
     for (const direction of [-1, 1]) {
       const ear = modelMesh(new THREE.ConeGeometry(.055, .2, 5), woodMaterial);
       ear.position.set(direction * .08, 1.34, -.49);
-      model.add(ear);
+      ear.position.sub(headJoint.position);
+      headJoint.add(ear);
     }
   }
 
@@ -612,7 +587,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
         wheels.push(addSpokedWheel(model, .18, .11, new THREE.Vector3(x * .4, .36, z * .24)));
       }),
     );
-    addFlag(model, side, 0.22, false);
+
   }
 
   if (kind === "cannon") {
@@ -658,15 +633,9 @@ function createTroopModel(kind: PieceKind, side: Side) {
       steelMaterial,
     );
     spearTip.position.set(0.3, 1.58, -0.02);
-    const shield = modelMesh(
-      new THREE.CylinderGeometry(0.21, 0.21, 0.065, 8),
-      troopMaterial(side),
-    );
-    shield.rotation.x = Math.PI / 2;
-    shield.position.set(-0.23, 0.65, -0.2);
-    model.add(shield, helmet, spear, spearTip);
+    model.add(helmet, spear, spearTip);
     const spearJoint = pivot("soldier-spear", new THREE.Vector3(0.3, 0.78, 0), spear, spearTip, model.getObjectByName("human-arm-1")!);
-    const shieldJoint = pivot("soldier-shield", new THREE.Vector3(-0.25, 0.78, 0), shield, model.getObjectByName("human-arm--1")!);
+    const shieldJoint = pivot("soldier-shield", new THREE.Vector3(-0.25, 0.78, 0), model.getObjectByName("human-arm--1")!);
     rig = createTroopRig(kind, { spear: spearJoint, shield: shieldJoint });
   }
 
@@ -685,6 +654,13 @@ function createTroopModel(kind: PieceKind, side: Side) {
     }),
   );
   badge.name = "identity-mark";
+  const combat = rig!;
+  const bodyMarkOwner = combat.kind === "general" ? combat.joints.torso.node
+    : combat.kind === "chariot" ? combat.joints.chassis.node : model;
+  const attachMark = (mark: THREE.Object3D, owner = bodyMarkOwner) => {
+    if (owner !== model) mark.position.sub(owner.position);
+    owner.add(mark);
+  };
   badge.position.set(
     0,
     kind === "horse" ? 0.76 : kind === "elephant" ? 0.77 : 0.66,
@@ -697,13 +673,13 @@ function createTroopModel(kind: PieceKind, side: Side) {
           : -0.333,
   );
   if (kind === "elephant" || kind === "cannon") badge.rotation.y = Math.PI;
-  if (kind === "horse" || kind === "elephant") {
-    badge.position.set(kind === "horse" ? 0.285 : 0.46, 0.75, 0.04);
+  if (kind === "horse" || kind === "elephant" || kind === "chariot") {
+    badge.position.set(kind === "horse" ? 0.285 : kind === "chariot" ? .355 : 0.46, kind === "chariot" ? .62 : .75, 0.04);
     badge.rotation.y = Math.PI / 2;
     const other = badge.clone();
     other.position.x = -badge.position.x;
     other.rotation.y = -Math.PI / 2;
-    model.add(other);
+    attachMark(other);
   } else if (kind === "cannon") {
     badge.scale.y = 0.5;
     badge.position.y = 0.43;
@@ -712,10 +688,18 @@ function createTroopModel(kind: PieceKind, side: Side) {
   } else {
     const back = badge.clone();
     back.position.z = 0.333;
-    model.add(back);
+    attachMark(back);
     badge.rotation.y = Math.PI;
   }
-  model.add(badge);
+  if (combat.kind === "advisor") {
+    badge.position.z = -.37;
+    attachMark(badge, combat.joints.tabletArm.node);
+  } else attachMark(badge);
+  model.userData.detailsRig = createTroopDetails(kind, side, { model, combat: rig! }, {
+    faction: troopMaterial(side), cream: creamMaterial, gold: goldMaterial,
+    wood: woodMaterial, steel: steelMaterial, dark: blackTroopMaterial,
+    mark: textTexture(label, "#f9e5b7", "900 100px serif"),
+  });
   if (side === "black") model.rotation.y = Math.PI;
   model.userData.locomotionRig = createLocomotionRig(kind, legs, wheels);
   model.userData.combatRig = rig!;
@@ -743,6 +727,8 @@ function createPiece(piece: Piece) {
   group.userData.restY = troop.position.y;
   group.userData.locomotionRig = troop.userData.locomotionRig;
   group.userData.combatRig = troop.userData.combatRig;
+  group.userData.detailsRig = troop.userData.detailsRig;
+  group.userData.pace = "walk";
   group.userData.combatPhase = "idle";
   group.userData.combatProgress = 0;
   group.userData.modelBaseYaw = piece.side === "black" ? Math.PI : 0;
@@ -791,6 +777,7 @@ function renderPieces() {
     if (!g) createPiece(p);
     else {
       restoreCombatRig(g.userData.combatRig as TroopRig);
+      restoreTroopDetails(g.userData.detailsRig as TroopDetailsRig);
       const troop = g.userData.troop as THREE.Group;
       troop.position.y = Number(g.userData.restY);
       troop.rotation.y = Number(g.userData.modelBaseYaw);
@@ -1276,6 +1263,17 @@ function createImpact(
   requestAnimationFrame(tick);
 }
 
+function readPace(): "walk" | "run" {
+  return paceSelect?.value === "run" ? "run" : "walk";
+}
+
+paceSelect?.addEventListener("change", () => {
+  const feedback = document.querySelector("#pace-feedback");
+  if (feedback) feedback.textContent = readPace() === "run"
+    ? "跑步动作 · 播放速度单独调节，窄桥仍谨慎通行"
+    : "步行动作 · 播放速度单独调节";
+});
+
 function readPresentationRate() {
   return Number(speedSelect.value);
 }
@@ -1285,6 +1283,8 @@ speedSelect.addEventListener("change", () => {
 });
 
 function stopLocomotion(g: THREE.Group) {
+  restoreCombatRig(g.userData.combatRig as TroopRig);
+  restoreTroopDetails(g.userData.detailsRig as TroopDetailsRig);
   const troop = g.userData.troop as THREE.Group;
   troop.position.y = Number(g.userData.restY);
   restoreLocomotion(g.userData.locomotionRig as LocomotionRig);
@@ -1400,7 +1400,13 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
         distance: groundDistance, surface,
         motion: walking ? "walking" : frame.motion === "riding" ? "riding" : "waiting",
         reduced: reducedMotion.matches,
+        pace: readPace(),
       });
+      const locomotion = g.userData.locomotionRig as LocomotionRig;
+      g.userData.pace = locomotion.pace;
+      if (walking && !reducedMotion.matches) {
+        applyCombatPose(g.userData.combatRig as TroopRig, sampleMarchPose(piece.kind, locomotion.cycle, locomotion.pace, locomotion.narrow));
+      } else restoreCombatRig(g.userData.combatRig as TroopRig);
       const step = Math.floor(groundDistance / 0.9);
       if (step > dust && u > 0.05 && u < 0.95 && walking) {
         dust = step;
@@ -1718,6 +1724,15 @@ renderer.setAnimationLoop((time) => {
   cameraPan.update(previousRenderTime === undefined ? 0 : (time - previousRenderTime) / 1000);
   previousRenderTime = time;
   battlefield.update(time, reducedMotion.matches || !ambienceEnabled);
+  for (const group of pieceGroups.values()) {
+    updateTroopDetails(group.userData.detailsRig as TroopDetailsRig, {
+      time: time / 1000,
+      moving: group.userData.marchMotion === "walking",
+      pace: group.userData.pace === "run" ? "run" : "walk",
+      reduced: reducedMotion.matches || !ambienceEnabled,
+      attackProgress: group.userData.combatPhase === "attacking" ? Number(group.userData.combatProgress) : 0,
+    });
+  }
   controls.update();
   renderer.render(scene, camera);
 });

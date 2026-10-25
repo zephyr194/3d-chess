@@ -1,0 +1,2759 @@
+{
+  "source_sha256": {
+    "src/game/battle-drums.ts": "935e3ae9d7c52c8ed383dcd68ebaf9005e559107e00350f2ae52504e53e7d0a7",
+    "src/game/metal-impact.ts": "68aef77e43a6c4e3fe28c595bb4aaad1bed5aad9b8436065248e779a388b22eb",
+    "src/game/xiangqi.ts": "ee3257e3428e6d7652991e99c27fe774ff75a850916c531a1db539952bef04f4",
+    "src/main.ts": "635f5f49fa6d80a198db2c445ee6468da3db4d1f03daf2af4c0c326aab26858b",
+    "src/scene/battlefield.ts": "6ede4b03d6c06300ecae418270db8329c057e0ff9625faf5f18bb16ec60dee36",
+    "src/scene/board.ts": "fc6881aa8cd6f507b1a4b38b5e3073561b1c73b844bcf6f5fe15a997bd73a9a3",
+    "src/scene/combat.ts": "7ee4622645e18564bd967d768c75a6e2821ec89c5648784af63a5ddf8bbf898f",
+    "src/scene/landscape-layout.ts": "82a0b83a12b01f06db72eb618ed5c17b49774e6f676ce111d82a51e8b2d1ac6e",
+    "src/scene/locomotion.ts": "2d9476e06fbc4b7d56f651a4d253fed63c46e65d37d204ce0c3ee1efd11db412",
+    "src/scene/troop-details.ts": "4620bf29206560852d8cad1422f2d2c58b15e09f31b939256cf9f0f99486fe04",
+    "src/styles.css": "2836e8ba43cfed586b8fc111d25aac86cce1208976a174fd98b3d46be7f81196",
+    "src/ui/battle-banner.ts": "4b8a592fc7ffe01760ba29319ac942b72134f9ba8d579ab172836100e63b275d",
+    "src/ui/camera-pan.ts": "b91b9d8963d48612d71403448922ec28bc4213b361d8d621e0371c09a34c6cce",
+    "src/ui/tactical-board.ts": "250b654307da749c7acc106bbba08bb7302a4ab722b68bc0edbba9b987a685df",
+    "index.html": "2c415b51b9ed1c6c4c5a8db575e714cf2a0b297ffcd610c7933caed27e734699"
+  },
+  "errors": [],
+  "models": [
+    {
+      "kind": "soldier",
+      "side": "red",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": 1.490116086078075e-10,
+      "bounds": {
+        "min": [
+          -9.099199995541573,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.547496119499206,
+          1.6941999996960164,
+          6.366440000000001
+        ]
+      },
+      "color": "d33c30",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "spear": "soldier-spear",
+        "shield": "soldier-shield"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.66,
+            0.333
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.66,
+            -0.333
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "soldier-spear",
+          "parent": ""
+        },
+        {
+          "name": "human-arm-1",
+          "parent": "soldier-spear"
+        },
+        {
+          "name": "soldier-shield",
+          "parent": ""
+        },
+        {
+          "name": "human-arm--1",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "soldier-shield-rim",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "soldier-shield-face",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "soldier-shield-boss",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-helmet-crest",
+          "parent": ""
+        },
+        {
+          "name": "soldier-eye",
+          "parent": ""
+        },
+        {
+          "name": "soldier-eye",
+          "parent": ""
+        },
+        {
+          "name": "soldier-standard-red",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "soldier-standard-red"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "soldier-standard-red"
+        },
+        {
+          "name": "soldier-cloth",
+          "parent": "soldier-standard-red"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "soldier-cloth"
+        }
+      ],
+      "pinned_vertices": 11,
+      "flutter": true
+    },
+    {
+      "kind": "soldier",
+      "side": "black",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": 1.490116086078075e-10,
+      "bounds": {
+        "min": [
+          -9.052503880500796,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.500800004458428,
+          1.6941999996960164,
+          6.366440000000001
+        ]
+      },
+      "color": "243a40",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "spear": "soldier-spear",
+        "shield": "soldier-shield"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.66,
+            0.333
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.66,
+            -0.333
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "soldier-spear",
+          "parent": ""
+        },
+        {
+          "name": "human-arm-1",
+          "parent": "soldier-spear"
+        },
+        {
+          "name": "soldier-shield",
+          "parent": ""
+        },
+        {
+          "name": "human-arm--1",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "soldier-shield-rim",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "soldier-shield-face",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "soldier-shield-boss",
+          "parent": "soldier-shield"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-lamellar",
+          "parent": ""
+        },
+        {
+          "name": "soldier-helmet-crest",
+          "parent": ""
+        },
+        {
+          "name": "soldier-eye",
+          "parent": ""
+        },
+        {
+          "name": "soldier-eye",
+          "parent": ""
+        },
+        {
+          "name": "soldier-standard-black",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "soldier-standard-black"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "soldier-standard-black"
+        },
+        {
+          "name": "soldier-cloth",
+          "parent": "soldier-standard-black"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "soldier-cloth"
+        }
+      ],
+      "pinned_vertices": 11,
+      "flutter": true
+    },
+    {
+      "kind": "general",
+      "side": "red",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": 1.490116086078075e-10,
+      "bounds": {
+        "min": [
+          -9.112800004053117,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.487199995946884,
+          1.694200002127886,
+          6.366440000000001
+        ]
+      },
+      "color": "d33c30",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "general-torso",
+      "joints": {
+        "torso": "general-torso",
+        "weapon": "general-weapon"
+      },
+      "marks": [
+        {
+          "parent": "general-torso",
+          "local": [
+            0,
+            0.16000000000000003,
+            0.333
+          ]
+        },
+        {
+          "parent": "general-torso",
+          "local": [
+            0,
+            0.16000000000000003,
+            -0.333
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "general-torso",
+          "parent": ""
+        },
+        {
+          "name": "human-arm--1",
+          "parent": "general-torso"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "general-torso"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-cape",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-band",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-point",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-point",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-point",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-jewel",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-standard-red",
+          "parent": "general-torso"
+        },
+        {
+          "name": "standard-pole",
+          "parent": "general-standard-red"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "general-standard-red"
+        },
+        {
+          "name": "general-cloth",
+          "parent": "general-standard-red"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "general-cloth"
+        },
+        {
+          "name": "general-weapon",
+          "parent": ""
+        },
+        {
+          "name": "human-arm-1",
+          "parent": "general-weapon"
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    },
+    {
+      "kind": "general",
+      "side": "black",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": 1.490116086078075e-10,
+      "bounds": {
+        "min": [
+          -9.112800004053117,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.487199995946884,
+          1.694200002127886,
+          6.366440000000001
+        ]
+      },
+      "color": "243a40",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "general-torso",
+      "joints": {
+        "torso": "general-torso",
+        "weapon": "general-weapon"
+      },
+      "marks": [
+        {
+          "parent": "general-torso",
+          "local": [
+            0,
+            0.16000000000000003,
+            0.333
+          ]
+        },
+        {
+          "parent": "general-torso",
+          "local": [
+            0,
+            0.16000000000000003,
+            -0.333
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "general-torso",
+          "parent": ""
+        },
+        {
+          "name": "human-arm--1",
+          "parent": "general-torso"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "general-torso"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-command-armor",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-cape",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-band",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-point",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-point",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-point",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-crown-jewel",
+          "parent": "general-torso"
+        },
+        {
+          "name": "general-standard-black",
+          "parent": "general-torso"
+        },
+        {
+          "name": "standard-pole",
+          "parent": "general-standard-black"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "general-standard-black"
+        },
+        {
+          "name": "general-cloth",
+          "parent": "general-standard-black"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "general-cloth"
+        },
+        {
+          "name": "general-weapon",
+          "parent": ""
+        },
+        {
+          "name": "human-arm-1",
+          "parent": "general-weapon"
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    },
+    {
+      "kind": "advisor",
+      "side": "red",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": 1.490116086078075e-10,
+      "bounds": {
+        "min": [
+          -9.01759999908805,
+          0.5449999999999999,
+          5.885604424671919
+        ],
+        "max": [
+          -8.582400000911951,
+          1.5649999968588355,
+          6.366440000000001
+        ]
+      },
+      "color": "d33c30",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "tabletArm": "advisor-tablet-arm"
+      },
+      "marks": [
+        {
+          "parent": "advisor-tablet-arm",
+          "local": [
+            -0.2,
+            -0.18999999999999995,
+            -0.37
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.66,
+            0.333
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-arm--1",
+          "parent": ""
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "advisor-tablet-arm",
+          "parent": ""
+        },
+        {
+          "name": "human-arm-1",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "advisor-tablet-cuff",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "advisor-tablet-inlay",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "advisor-long-robe",
+          "parent": ""
+        },
+        {
+          "name": "advisor-winged-hat",
+          "parent": ""
+        },
+        {
+          "name": "advisor-winged-hat",
+          "parent": ""
+        },
+        {
+          "name": "advisor-left-cuff",
+          "parent": ""
+        },
+        {
+          "name": "advisor-standard-red",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "advisor-standard-red"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "advisor-standard-red"
+        },
+        {
+          "name": "advisor-cloth",
+          "parent": "advisor-standard-red"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "advisor-cloth"
+        }
+      ],
+      "pinned_vertices": 14,
+      "flutter": true
+    },
+    {
+      "kind": "advisor",
+      "side": "black",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": 1.490116086078075e-10,
+      "bounds": {
+        "min": [
+          -9.01759999908805,
+          0.5449999999999999,
+          5.91356
+        ],
+        "max": [
+          -8.582400000911951,
+          1.5649999968588355,
+          6.394395575328083
+        ]
+      },
+      "color": "243a40",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "tabletArm": "advisor-tablet-arm"
+      },
+      "marks": [
+        {
+          "parent": "advisor-tablet-arm",
+          "local": [
+            -0.2,
+            -0.18999999999999995,
+            -0.37
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.66,
+            0.333
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-arm--1",
+          "parent": ""
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "advisor-tablet-arm",
+          "parent": ""
+        },
+        {
+          "name": "human-arm-1",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "advisor-tablet-cuff",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "advisor-tablet-inlay",
+          "parent": "advisor-tablet-arm"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "advisor-long-robe",
+          "parent": ""
+        },
+        {
+          "name": "advisor-winged-hat",
+          "parent": ""
+        },
+        {
+          "name": "advisor-winged-hat",
+          "parent": ""
+        },
+        {
+          "name": "advisor-left-cuff",
+          "parent": ""
+        },
+        {
+          "name": "advisor-standard-black",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "advisor-standard-black"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "advisor-standard-black"
+        },
+        {
+          "name": "advisor-cloth",
+          "parent": "advisor-standard-black"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "advisor-cloth"
+        }
+      ],
+      "pinned_vertices": 14,
+      "flutter": true
+    },
+    {
+      "kind": "horse",
+      "side": "red",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -6.705522664907093e-10,
+      "bounds": {
+        "min": [
+          -9.07778695322452,
+          0.545,
+          5.646079373645783
+        ],
+        "max": [
+          -8.522213046775482,
+          1.9458000005573033,
+          6.486373675594294
+        ]
+      },
+      "color": "d33c30",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "horse-lance",
+      "joints": {
+        "rider": "",
+        "lance": "horse-lance",
+        "head": "horse-head"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            -0.285,
+            0.75,
+            0.04
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0.285,
+            0.75,
+            0.04
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-arm--1",
+          "parent": ""
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "human-arm-1",
+          "parent": ""
+        },
+        {
+          "name": "horse-lance",
+          "parent": ""
+        },
+        {
+          "name": "horse-standard-red",
+          "parent": "horse-lance"
+        },
+        {
+          "name": "standard-pole",
+          "parent": "horse-standard-red"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "horse-standard-red"
+        },
+        {
+          "name": "horse-cloth",
+          "parent": "horse-standard-red"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "horse-cloth"
+        },
+        {
+          "name": "horse-head",
+          "parent": ""
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-muzzle",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-bridle",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-eye",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-bridle",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-eye",
+          "parent": "horse-head"
+        },
+        {
+          "name": "frontLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "frontLeft-knee",
+          "parent": "frontLeft-hip"
+        },
+        {
+          "name": "frontLeft-ankle",
+          "parent": "frontLeft-knee"
+        },
+        {
+          "name": "frontLeft-boot",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "frontLeft-sole",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "frontRight-hip",
+          "parent": ""
+        },
+        {
+          "name": "frontRight-knee",
+          "parent": "frontRight-hip"
+        },
+        {
+          "name": "frontRight-ankle",
+          "parent": "frontRight-knee"
+        },
+        {
+          "name": "frontRight-boot",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "frontRight-sole",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "rearLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearLeft-knee",
+          "parent": "rearLeft-hip"
+        },
+        {
+          "name": "rearLeft-ankle",
+          "parent": "rearLeft-knee"
+        },
+        {
+          "name": "rearLeft-boot",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearLeft-sole",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearRight-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearRight-knee",
+          "parent": "rearRight-hip"
+        },
+        {
+          "name": "rearRight-ankle",
+          "parent": "rearRight-knee"
+        },
+        {
+          "name": "rearRight-boot",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "rearRight-sole",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "horse-saddle",
+          "parent": ""
+        },
+        {
+          "name": "horse-tail",
+          "parent": ""
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    },
+    {
+      "kind": "horse",
+      "side": "black",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -6.705522664907093e-10,
+      "bounds": {
+        "min": [
+          -9.07778695322452,
+          0.545,
+          5.793626324405707
+        ],
+        "max": [
+          -8.522213046775482,
+          1.9458000005573033,
+          6.633920626354218
+        ]
+      },
+      "color": "243a40",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "horse-lance",
+      "joints": {
+        "rider": "",
+        "lance": "horse-lance",
+        "head": "horse-head"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            -0.285,
+            0.75,
+            0.04
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0.285,
+            0.75,
+            0.04
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "human-leg--1",
+          "parent": ""
+        },
+        {
+          "name": "left-knee",
+          "parent": "human-leg--1"
+        },
+        {
+          "name": "left-ankle",
+          "parent": "left-knee"
+        },
+        {
+          "name": "left-boot",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "left-sole",
+          "parent": "left-ankle"
+        },
+        {
+          "name": "human-arm--1",
+          "parent": ""
+        },
+        {
+          "name": "human-leg-1",
+          "parent": ""
+        },
+        {
+          "name": "right-knee",
+          "parent": "human-leg-1"
+        },
+        {
+          "name": "right-ankle",
+          "parent": "right-knee"
+        },
+        {
+          "name": "right-boot",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "right-sole",
+          "parent": "right-ankle"
+        },
+        {
+          "name": "human-arm-1",
+          "parent": ""
+        },
+        {
+          "name": "horse-lance",
+          "parent": ""
+        },
+        {
+          "name": "horse-standard-black",
+          "parent": "horse-lance"
+        },
+        {
+          "name": "standard-pole",
+          "parent": "horse-standard-black"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "horse-standard-black"
+        },
+        {
+          "name": "horse-cloth",
+          "parent": "horse-standard-black"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "horse-cloth"
+        },
+        {
+          "name": "horse-head",
+          "parent": ""
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-mane",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-muzzle",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-bridle",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-eye",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-bridle",
+          "parent": "horse-head"
+        },
+        {
+          "name": "horse-eye",
+          "parent": "horse-head"
+        },
+        {
+          "name": "frontLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "frontLeft-knee",
+          "parent": "frontLeft-hip"
+        },
+        {
+          "name": "frontLeft-ankle",
+          "parent": "frontLeft-knee"
+        },
+        {
+          "name": "frontLeft-boot",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "frontLeft-sole",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "frontRight-hip",
+          "parent": ""
+        },
+        {
+          "name": "frontRight-knee",
+          "parent": "frontRight-hip"
+        },
+        {
+          "name": "frontRight-ankle",
+          "parent": "frontRight-knee"
+        },
+        {
+          "name": "frontRight-boot",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "frontRight-sole",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "rearLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearLeft-knee",
+          "parent": "rearLeft-hip"
+        },
+        {
+          "name": "rearLeft-ankle",
+          "parent": "rearLeft-knee"
+        },
+        {
+          "name": "rearLeft-boot",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearLeft-sole",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearRight-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearRight-knee",
+          "parent": "rearRight-hip"
+        },
+        {
+          "name": "rearRight-ankle",
+          "parent": "rearRight-knee"
+        },
+        {
+          "name": "rearRight-boot",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "rearRight-sole",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "horse-saddle",
+          "parent": ""
+        },
+        {
+          "name": "horse-tail",
+          "parent": ""
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    },
+    {
+      "kind": "elephant",
+      "side": "red",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -8.940696238912693e-10,
+      "bounds": {
+        "min": [
+          -9.1128,
+          0.5450000000000002,
+          5.501534817929378
+        ],
+        "max": [
+          -8.487200000000001,
+          1.2658000002026562,
+          6.513607673723306
+        ]
+      },
+      "color": "d33c30",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "head": "elephant-head",
+        "trunk": "elephant-trunk",
+        "foot": "elephant-strike-foot"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            -0.46,
+            0.75,
+            0.04
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0.46,
+            0.75,
+            0.04
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "elephant-head",
+          "parent": ""
+        },
+        {
+          "name": "elephant-fan-ear",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-tusk",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-brow-trim",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-fan-ear",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-tusk",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-brow-trim",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-forehead-cloth",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-forehead-jewel",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-trunk",
+          "parent": ""
+        },
+        {
+          "name": "elephant-strike-foot",
+          "parent": ""
+        },
+        {
+          "name": "frontRight-hip",
+          "parent": "elephant-strike-foot"
+        },
+        {
+          "name": "frontRight-knee",
+          "parent": "frontRight-hip"
+        },
+        {
+          "name": "frontRight-ankle",
+          "parent": "frontRight-knee"
+        },
+        {
+          "name": "frontRight-boot",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "frontRight-sole",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "frontLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "frontLeft-knee",
+          "parent": "frontLeft-hip"
+        },
+        {
+          "name": "frontLeft-ankle",
+          "parent": "frontLeft-knee"
+        },
+        {
+          "name": "frontLeft-boot",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "frontLeft-sole",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "rearLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearLeft-knee",
+          "parent": "rearLeft-hip"
+        },
+        {
+          "name": "rearLeft-ankle",
+          "parent": "rearLeft-knee"
+        },
+        {
+          "name": "rearLeft-boot",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearLeft-sole",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearRight-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearRight-knee",
+          "parent": "rearRight-hip"
+        },
+        {
+          "name": "rearRight-ankle",
+          "parent": "rearRight-knee"
+        },
+        {
+          "name": "rearRight-boot",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "rearRight-sole",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "elephant-standard-red",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "elephant-standard-red"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "elephant-standard-red"
+        },
+        {
+          "name": "elephant-cloth",
+          "parent": "elephant-standard-red"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "elephant-cloth"
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    },
+    {
+      "kind": "elephant",
+      "side": "black",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -8.940696238912693e-10,
+      "bounds": {
+        "min": [
+          -9.1128,
+          0.5450000000000002,
+          5.766392326276695
+        ],
+        "max": [
+          -8.487200000000001,
+          1.2658000002026562,
+          6.778465182070623
+        ]
+      },
+      "color": "243a40",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "head": "elephant-head",
+        "trunk": "elephant-trunk",
+        "foot": "elephant-strike-foot"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            -0.46,
+            0.75,
+            0.04
+          ]
+        },
+        {
+          "parent": "",
+          "local": [
+            0.46,
+            0.75,
+            0.04
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "elephant-head",
+          "parent": ""
+        },
+        {
+          "name": "elephant-fan-ear",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-tusk",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-brow-trim",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-fan-ear",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-tusk",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-brow-trim",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-forehead-cloth",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-forehead-jewel",
+          "parent": "elephant-head"
+        },
+        {
+          "name": "elephant-trunk",
+          "parent": ""
+        },
+        {
+          "name": "elephant-strike-foot",
+          "parent": ""
+        },
+        {
+          "name": "frontRight-hip",
+          "parent": "elephant-strike-foot"
+        },
+        {
+          "name": "frontRight-knee",
+          "parent": "frontRight-hip"
+        },
+        {
+          "name": "frontRight-ankle",
+          "parent": "frontRight-knee"
+        },
+        {
+          "name": "frontRight-boot",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "frontRight-sole",
+          "parent": "frontRight-ankle"
+        },
+        {
+          "name": "frontLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "frontLeft-knee",
+          "parent": "frontLeft-hip"
+        },
+        {
+          "name": "frontLeft-ankle",
+          "parent": "frontLeft-knee"
+        },
+        {
+          "name": "frontLeft-boot",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "frontLeft-sole",
+          "parent": "frontLeft-ankle"
+        },
+        {
+          "name": "rearLeft-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearLeft-knee",
+          "parent": "rearLeft-hip"
+        },
+        {
+          "name": "rearLeft-ankle",
+          "parent": "rearLeft-knee"
+        },
+        {
+          "name": "rearLeft-boot",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearLeft-sole",
+          "parent": "rearLeft-ankle"
+        },
+        {
+          "name": "rearRight-hip",
+          "parent": ""
+        },
+        {
+          "name": "rearRight-knee",
+          "parent": "rearRight-hip"
+        },
+        {
+          "name": "rearRight-ankle",
+          "parent": "rearRight-knee"
+        },
+        {
+          "name": "rearRight-boot",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "rearRight-sole",
+          "parent": "rearRight-ankle"
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "elephant-standard-black",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "elephant-standard-black"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "elephant-standard-black"
+        },
+        {
+          "name": "elephant-cloth",
+          "parent": "elephant-standard-black"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "elephant-cloth"
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    },
+    {
+      "kind": "chariot",
+      "side": "red",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -0.1799999928474426,
+      "bounds": {
+        "min": [
+          -9.26159929644103,
+          0.545,
+          5.426000001823902
+        ],
+        "max": [
+          -8.338400703558971,
+          1.3895600058972837,
+          6.60159929644103
+        ]
+      },
+      "color": "d33c30",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "chariot-chassis",
+      "joints": {
+        "chassis": "chariot-chassis",
+        "ram": "chariot-ram"
+      },
+      "marks": [
+        {
+          "parent": "chariot-chassis",
+          "local": [
+            -0.355,
+            0.16999999999999998,
+            0.04
+          ]
+        },
+        {
+          "parent": "chariot-chassis",
+          "local": [
+            0.355,
+            0.16999999999999998,
+            0.04
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "chariot-chassis",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-front-armor",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-armor-rivet",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-armor-rivet",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-standard-red",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "standard-pole",
+          "parent": "chariot-standard-red"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "chariot-standard-red"
+        },
+        {
+          "name": "chariot-cloth",
+          "parent": "chariot-standard-red"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "chariot-cloth"
+        },
+        {
+          "name": "chariot-ram",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        }
+      ],
+      "pinned_vertices": 14,
+      "flutter": true
+    },
+    {
+      "kind": "chariot",
+      "side": "black",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -0.1799999928474426,
+      "bounds": {
+        "min": [
+          -9.26159929644103,
+          0.545,
+          5.678400703558971
+        ],
+        "max": [
+          -8.338400703558971,
+          1.3895600058972837,
+          6.853999998176099
+        ]
+      },
+      "color": "243a40",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "chariot-chassis",
+      "joints": {
+        "chassis": "chariot-chassis",
+        "ram": "chariot-ram"
+      },
+      "marks": [
+        {
+          "parent": "chariot-chassis",
+          "local": [
+            -0.355,
+            0.16999999999999998,
+            0.04
+          ]
+        },
+        {
+          "parent": "chariot-chassis",
+          "local": [
+            0.355,
+            0.16999999999999998,
+            0.04
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "chariot-chassis",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "identity-mark",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-rail-post",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-front-armor",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-armor-rivet",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-armor-rivet",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "chariot-standard-black",
+          "parent": "chariot-chassis"
+        },
+        {
+          "name": "standard-pole",
+          "parent": "chariot-standard-black"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "chariot-standard-black"
+        },
+        {
+          "name": "chariot-cloth",
+          "parent": "chariot-standard-black"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "chariot-cloth"
+        },
+        {
+          "name": "chariot-ram",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        }
+      ],
+      "pinned_vertices": 14,
+      "flutter": true
+    },
+    {
+      "kind": "cannon",
+      "side": "red",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -0.12999999582767485,
+      "bounds": {
+        "min": [
+          -9.11620000202656,
+          0.545,
+          5.718400000607968
+        ],
+        "max": [
+          -8.483799997973442,
+          1.0580492182254793,
+          6.371200005674363
+        ]
+      },
+      "color": "d33c30",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "trunnion": "cannon-trunnion",
+        "barrel": "cannon-recoil-slide"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.43,
+            0.304
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "cannon-trunnion",
+          "parent": ""
+        },
+        {
+          "name": "cannon-recoil-slide",
+          "parent": "cannon-trunnion"
+        },
+        {
+          "name": "cannon-barrel-band",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-barrel-band",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-barrel-band",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-dark-bore",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-trunnion-cap",
+          "parent": "cannon-trunnion"
+        },
+        {
+          "name": "cannon-trunnion-cap",
+          "parent": "cannon-trunnion"
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "cannon-cradle-cheek",
+          "parent": ""
+        },
+        {
+          "name": "cannon-cradle-cheek",
+          "parent": ""
+        },
+        {
+          "name": "cannon-standard-red",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "cannon-standard-red"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "cannon-standard-red"
+        },
+        {
+          "name": "cannon-cloth",
+          "parent": "cannon-standard-red"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "cannon-cloth"
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    },
+    {
+      "kind": "cannon",
+      "side": "black",
+      "root": [
+        -8.8,
+        0.545,
+        6.140000000000001
+      ],
+      "scale": 0.68,
+      "restY": -0.12999999582767485,
+      "bounds": {
+        "min": [
+          -9.11620000202656,
+          0.545,
+          5.908799994325638
+        ],
+        "max": [
+          -8.483799997973442,
+          1.0580492182254793,
+          6.561599999392033
+        ]
+      },
+      "color": "243a40",
+      "markSharedGeometry": true,
+      "markSharedUV": true,
+      "standardParent": "",
+      "joints": {
+        "trunnion": "cannon-trunnion",
+        "barrel": "cannon-recoil-slide"
+      },
+      "marks": [
+        {
+          "parent": "",
+          "local": [
+            0,
+            0.43,
+            0.304
+          ]
+        }
+      ],
+      "descendants": [
+        {
+          "name": "cannon-trunnion",
+          "parent": ""
+        },
+        {
+          "name": "cannon-recoil-slide",
+          "parent": "cannon-trunnion"
+        },
+        {
+          "name": "cannon-barrel-band",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-barrel-band",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-barrel-band",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-dark-bore",
+          "parent": "cannon-recoil-slide"
+        },
+        {
+          "name": "cannon-trunnion-cap",
+          "parent": "cannon-trunnion"
+        },
+        {
+          "name": "cannon-trunnion-cap",
+          "parent": "cannon-trunnion"
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "spoked-wheel",
+          "parent": ""
+        },
+        {
+          "name": "identity-mark",
+          "parent": ""
+        },
+        {
+          "name": "cannon-cradle-cheek",
+          "parent": ""
+        },
+        {
+          "name": "cannon-cradle-cheek",
+          "parent": ""
+        },
+        {
+          "name": "cannon-standard-black",
+          "parent": ""
+        },
+        {
+          "name": "standard-pole",
+          "parent": "cannon-standard-black"
+        },
+        {
+          "name": "standard-finial",
+          "parent": "cannon-standard-black"
+        },
+        {
+          "name": "cannon-cloth",
+          "parent": "cannon-standard-black"
+        },
+        {
+          "name": "standard-mark",
+          "parent": "cannon-cloth"
+        }
+      ],
+      "pinned_vertices": 13,
+      "flutter": true
+    }
+  ],
+  "moves": [
+    {
+      "side": "red",
+      "kind": "soldier",
+      "rate": 0.62,
+      "paces": {
+        "walk": {
+          "duration": 2.291519999999999,
+          "sample": {
+            "root": [
+              -9.333809294530477,
+              0.545,
+              6.40178524361895
+            ],
+            "pace": "walk",
+            "cycle": 1.7928438133874234,
+            "knees": [
+              -2.200574724933234,
+              -1.342941206866185
+            ],
+            "upper": [
+              [
+                -0.07126347831727049,
+                -0.000890839877359479,
+                -0.012467889414877446,
+                0.9973792031098179
+              ],
+              [
+                0.05130441482483789,
+                -0.0005130612504040738,
+                0.009986662849242713,
+                0.9986329958261793
+              ]
+            ]
+          }
+        },
+        "run": {
+          "duration": 2.291519999999999,
+          "sample": {
+            "root": [
+              -9.333809294530477,
+              0.545,
+              6.40178524361895
+            ],
+            "pace": "run",
+            "cycle": 1.4854991596638656,
+            "knees": [
+              -1.1261166772316784,
+              -0.9802618650775514
+            ],
+            "upper": [
+              [
+                -0.15248435537897717,
+                -0.005339132762208124,
+                -0.03458313945707834,
+                0.9876861958594428
+              ],
+              [
+                0.013166446020256775,
+                -0.000493973297453529,
+                0.03748795718997876,
+                0.9992102149974746
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "side": "black",
+      "kind": "soldier",
+      "rate": 0.62,
+      "paces": {
+        "walk": {
+          "duration": 4.077120000000026,
+          "sample": {
+            "root": [
+              -9.157142710053193,
+              0.545,
+              -6.48036953570217
+            ],
+            "pace": "walk",
+            "cycle": 1.847172413793103,
+            "knees": [
+              -2.1223717889475546,
+              -1.33939034671625
+            ],
+            "upper": [
+              [
+                -0.06657378609140084,
+                -0.0008322156711602294,
+                -0.012471939673738892,
+                0.9977032069424794
+              ],
+              [
+                0.046609048800539996,
+                -0.00046610602497647926,
+                0.009988964505122211,
+                0.9988631537418915
+              ]
+            ]
+          }
+        },
+        "run": {
+          "duration": 4.077120000000026,
+          "sample": {
+            "root": [
+              -9.135807852047,
+              0.545,
+              -6.478382393609725
+            ],
+            "pace": "run",
+            "cycle": 1.4854991596638654,
+            "knees": [
+              -1.1261166772316784,
+              -0.9802618650775521
+            ],
+            "upper": [
+              [
+                -0.15248435537897706,
+                -0.00533913276220812,
+                -0.03458313945707834,
+                0.9876861958594428
+              ],
+              [
+                0.01316644602025664,
+                -0.0004939732974535239,
+                0.03748795718997876,
+                0.9992102149974746
+              ]
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "status": "PASS",
+  "native_midstride_pace_changes": [
+    {
+      "requested": "walk",
+      "before": {
+        "cycle": 0.39298919567827134,
+        "pace": "run"
+      },
+      "after": {
+        "cycle": 1.2192352941176474,
+        "pace": "walk",
+        "soles": [
+          [
+            -12.152162991652505,
+            0.5449999995440244,
+            9.31281904510591
+          ],
+          [
+            -12.314097167968596,
+            0.6513683626021455,
+            9.55827675765589
+          ],
+          [
+            -12.663819845437592,
+            0.6513683626021456,
+            9.268927247301189
+          ],
+          [
+            -12.552570921742106,
+            0.5449999995440247,
+            9.537819606139344
+          ]
+        ]
+      }
+    },
+    {
+      "requested": "run",
+      "before": {
+        "cycle": 1.700647058823531,
+        "pace": "walk"
+      },
+      "after": {
+        "cycle": 2.0176230492196887,
+        "pace": "run",
+        "soles": [
+          [
+            -11.652571221117064,
+            0.5449999995440244,
+            9.343193720196982
+          ],
+          [
+            -11.940908628737965,
+            0.5449999995440246,
+            9.583227258200441
+          ],
+          [
+            -12.236364817297577,
+            0.5477019852761507,
+            9.304881964741705
+          ],
+          [
+            -11.995191863295041,
+            0.5449999995440247,
+            9.579664892971913
+          ]
+        ]
+      }
+    }
+  ],
+  "bridge": {
+    "pace": "walk",
+    "narrow": 1,
+    "rate": "3",
+    "requested": "run"
+  },
+  "reduced_during_run": {
+    "upperRest": true,
+    "clothRest": true,
+    "planted": true,
+    "root": [
+      -11.503558357469966,
+      0.545,
+      9.474727134469575
+    ],
+    "scale": 0.68
+  },
+  "ambience_off_and_resume": true,
+  "mobile_no_overflow": true,
+  "script_sha256": "cd06d75ec9ec459915584d74a551dcc0bc46f526cdceb2a77d7ae9669a232dc9"
+}
