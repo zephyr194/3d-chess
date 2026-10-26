@@ -1,0 +1,124 @@
+{
+  "sample_rate": 22050,
+  "clips": [
+    {
+      "name": "swing",
+      "stats": {
+        "peak": 0.37706258893013,
+        "rms": 0.020789876270190643,
+        "last_audible_seconds": 0.2308843537414966
+      },
+      "file": ".audit/factions-focus-audio-review/swing.wav"
+    },
+    {
+      "name": "metal-impact",
+      "stats": {
+        "peak": 0.3882991075515747,
+        "rms": 0.06074679442317729,
+        "last_audible_seconds": 0.569297052154195
+      },
+      "file": ".audit/factions-focus-audio-review/metal-impact.wav"
+    },
+    {
+      "name": "horse-impact",
+      "stats": {
+        "peak": 0.3951181173324585,
+        "rms": 0.06503895387524497,
+        "last_audible_seconds": 0.566485260770975
+      },
+      "file": ".audit/factions-focus-audio-review/horse-impact.wav"
+    },
+    {
+      "name": "cannon",
+      "stats": {
+        "peak": 0.5951739549636841,
+        "rms": 0.07912286618240635,
+        "last_audible_seconds": 0.5945124716553288
+      },
+      "file": ".audit/factions-focus-audio-review/cannon.wav"
+    },
+    {
+      "name": "elephant",
+      "stats": {
+        "peak": 0.476347953081131,
+        "rms": 0.06858814360866235,
+        "last_audible_seconds": 0.5148752834467121
+      },
+      "file": ".audit/factions-focus-audio-review/elephant.wav"
+    },
+    {
+      "name": "victory",
+      "stats": {
+        "peak": 0.5513805747032166,
+        "rms": 0.0998423946270136,
+        "last_audible_seconds": 3.8499319727891157
+      },
+      "file": ".audit/factions-focus-audio-review/victory.wav"
+    },
+    {
+      "name": "battle-preview",
+      "stats": {
+        "peak": 0.7273460030555725,
+        "rms": 0.08015669486690147,
+        "last_audible_seconds": 11.247800453514738
+      },
+      "file": ".audit/factions-focus-audio-review/battle-preview.wav"
+    }
+  ],
+  "checks": [
+    {
+      "action": "muted",
+      "peak": 0,
+      "rms": 0,
+      "last_audible_seconds": 0
+    },
+    {
+      "action": "zero",
+      "peak": 0,
+      "rms": 0,
+      "last_audible_seconds": 0
+    },
+    {
+      "action": "cancel",
+      "peak": 0,
+      "rms": 0,
+      "last_audible_seconds": 0
+    },
+    {
+      "action": "mute-during-victory",
+      "before": {
+        "peak": 0.3783860206604004,
+        "rms": 0.11454875340112182,
+        "last_audible_seconds": 0.34993197278911564
+      },
+      "after": {
+        "peak": 0,
+        "rms": 0,
+        "last_audible_seconds": 0
+      }
+    },
+    {
+      "action": "reset-during-victory",
+      "before": {
+        "peak": 0.3783860206604004,
+        "rms": 0.11454875248802134,
+        "last_audible_seconds": 0.34993197278911564
+      },
+      "after": {
+        "peak": 0,
+        "rms": 0,
+        "last_audible_seconds": 0
+      }
+    },
+    {
+      "action": "maximum-overlap",
+      "peak": 0.9369304776191711,
+      "rms": 0.2204732114758809,
+      "last_audible_seconds": 1.999954648526077
+    }
+  ],
+  "source_sha256": {
+    "src/game/battle-audio.ts": "0d1b097246c896c2b67065440cd65e48e30679acb559ca20ead01fd9530e4adb",
+    "src/game/battle-drums.ts": "d8ef95e8daecbc601f550368ccabf307a3ba39aeac470c094d59b85b6a2a3c07"
+  }
+}

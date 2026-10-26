@@ -1,0 +1,81 @@
+{
+  "checks": [
+    {
+      "side": "red",
+      "focus": {
+        "id": "actor",
+        "selected": "actor",
+        "turn": "red",
+        "target": [
+          -8.8,
+          1.145,
+          6.140000000000001
+        ],
+        "camera": [
+          -4.365278675517382,
+          6.362924906655106,
+          9.874502167985366
+        ],
+        "distance": 7.799999999999998
+      },
+      "visibility": [
+        {
+          "height": 0.2,
+          "clear": true,
+          "blocker": null
+        },
+        {
+          "height": 0.7,
+          "clear": true,
+          "blocker": null
+        },
+        {
+          "height": 1.25,
+          "clear": true,
+          "blocker": null
+        }
+      ]
+    },
+    {
+      "side": "black",
+      "focus": {
+        "id": "actor",
+        "selected": "actor",
+        "turn": "black",
+        "target": [
+          -8.8,
+          1.145,
+          -6.140000000000001
+        ],
+        "camera": [
+          -4.365278675517382,
+          6.362924906655106,
+          -2.4054978320146354
+        ],
+        "distance": 7.799999999999998
+      },
+      "visibility": [
+        {
+          "height": 0.2,
+          "clear": true,
+          "blocker": null
+        },
+        {
+          "height": 0.7,
+          "clear": true,
+          "blocker": null
+        },
+        {
+          "height": 1.25,
+          "clear": true,
+          "blocker": null
+        }
+      ]
+    },
+    "Zoom retains focus after transition",
+    "Reduced motion focuses in one frame without interpolated camera movement",
+    "Tactical enemy inspection preserves turn and leaves selection empty",
+    "390px focus chip visible without horizontal overflow"
+  ],
+  "errors": []
+}

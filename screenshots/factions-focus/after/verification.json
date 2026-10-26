@@ -1,0 +1,297 @@
+{
+  "errors": [],
+  "checks": [
+    "Native canvas click selects and focuses red piece",
+    "Enemy focus preserves selected ally and turn",
+    "WASD and Escape release focus",
+    "Drag releases focus",
+    "Native legal capture click still captures; swing precedes exactly one impact",
+    "Run pace preserves ferry speed, physical deck support and frozen wheels",
+    "Independent effects/music volume and live mute controls",
+    "Actual general capture triggers one victory fanfare and stops battle drums",
+    "Reset cancels focus and scheduled victory sounds",
+    "390px viewport has focus controls and no horizontal overflow"
+  ],
+  "marches": [
+    {
+      "side": "red",
+      "kind": "soldier",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 4.8,
+      "samples": 24,
+      "max_target_error": 0.0170380800000009
+    },
+    {
+      "side": "red",
+      "kind": "soldier",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 2.8,
+      "samples": 14,
+      "max_target_error": 0.029611008000000955
+    },
+    {
+      "side": "red",
+      "kind": "horse",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 4.8,
+      "samples": 24,
+      "max_target_error": 0.04308480000000049
+    },
+    {
+      "side": "red",
+      "kind": "horse",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 3.0,
+      "samples": 15,
+      "max_target_error": 0.06877247999999961
+    },
+    {
+      "side": "red",
+      "kind": "chariot",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 6.4,
+      "samples": 32,
+      "max_target_error": 0.04896000000000181
+    },
+    {
+      "side": "red",
+      "kind": "chariot",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 4.0,
+      "samples": 20,
+      "max_target_error": 0.07833600000000232
+    },
+    {
+      "side": "red",
+      "kind": "cannon",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 4.0,
+      "samples": 20,
+      "max_target_error": 0.0408000000000009
+    },
+    {
+      "side": "red",
+      "kind": "cannon",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 2.8,
+      "samples": 14,
+      "max_target_error": 0.06038400000000133
+    },
+    {
+      "side": "red",
+      "kind": "elephant",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 17.8,
+      "samples": 89,
+      "max_target_error": 0.018768000000003598
+    },
+    {
+      "side": "red",
+      "kind": "elephant",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 11.8,
+      "samples": 59,
+      "max_target_error": 0.028396800000005218
+    },
+    {
+      "side": "red",
+      "kind": "advisor",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 10.4,
+      "samples": 52,
+      "max_target_error": 0.015863040000000984
+    },
+    {
+      "side": "red",
+      "kind": "advisor",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 5.8,
+      "samples": 29,
+      "max_target_error": 0.028984320000001087
+    },
+    {
+      "side": "red",
+      "kind": "general",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 7.2,
+      "samples": 36,
+      "max_target_error": 0.019388160000000886
+    },
+    {
+      "side": "red",
+      "kind": "general",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 3.8,
+      "samples": 19,
+      "max_target_error": 0.037862399999999866
+    },
+    {
+      "side": "black",
+      "kind": "soldier",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 8.4,
+      "samples": 42,
+      "max_target_error": 0.017038080000001614
+    },
+    {
+      "side": "black",
+      "kind": "soldier",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 4.8,
+      "samples": 24,
+      "max_target_error": 0.029611008000000768
+    },
+    {
+      "side": "black",
+      "kind": "horse",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 4.6,
+      "samples": 23,
+      "max_target_error": 0.043084307271318005
+    },
+    {
+      "side": "black",
+      "kind": "horse",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 3.0,
+      "samples": 15,
+      "max_target_error": 0.06877047706031363
+    },
+    {
+      "side": "black",
+      "kind": "chariot",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 5.4,
+      "samples": 27,
+      "max_target_error": 0.04896000000000278
+    },
+    {
+      "side": "black",
+      "kind": "chariot",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 3.4,
+      "samples": 17,
+      "max_target_error": 0.07833600000000122
+    },
+    {
+      "side": "black",
+      "kind": "cannon",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 2.8,
+      "samples": 14,
+      "max_target_error": 0.04080000000000096
+    },
+    {
+      "side": "black",
+      "kind": "cannon",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 1.8,
+      "samples": 9,
+      "max_target_error": 0.06038247634163225
+    },
+    {
+      "side": "black",
+      "kind": "elephant",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 17.8,
+      "samples": 89,
+      "max_target_error": 0.018768000000002984
+    },
+    {
+      "side": "black",
+      "kind": "elephant",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 11.8,
+      "samples": 59,
+      "max_target_error": 0.028396800000004305
+    },
+    {
+      "side": "black",
+      "kind": "advisor",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 10.4,
+      "samples": 52,
+      "max_target_error": 0.01586304000000128
+    },
+    {
+      "side": "black",
+      "kind": "advisor",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 5.8,
+      "samples": 29,
+      "max_target_error": 0.028984320000001135
+    },
+    {
+      "side": "black",
+      "kind": "general",
+      "pace": "walk",
+      "rate": 3.0,
+      "seconds": 7.2,
+      "samples": 36,
+      "max_target_error": 0.019388160000000945
+    },
+    {
+      "side": "black",
+      "kind": "general",
+      "pace": "run",
+      "rate": 3.0,
+      "seconds": 3.8,
+      "samples": 19,
+      "max_target_error": 0.037862399999998034
+    }
+  ],
+  "source_sha256": {
+    "src/game/battle-audio.ts": "0d1b097246c896c2b67065440cd65e48e30679acb559ca20ead01fd9530e4adb",
+    "src/game/battle-drums.ts": "d8ef95e8daecbc601f550368ccabf307a3ba39aeac470c094d59b85b6a2a3c07",
+    "src/game/xiangqi.ts": "ee3257e3428e6d7652991e99c27fe774ff75a850916c531a1db539952bef04f4",
+    "src/main.ts": "d916188f61f8e876d958e1fe28377853b2e6c8eaa26f7804b36dd734a64c373e",
+    "src/scene/battlefield.ts": "6ede4b03d6c06300ecae418270db8329c057e0ff9625faf5f18bb16ec60dee36",
+    "src/scene/board.ts": "fc6881aa8cd6f507b1a4b38b5e3073561b1c73b844bcf6f5fe15a997bd73a9a3",
+    "src/scene/combat.ts": "732b62a0370f95e51931ad50be5157a93870c6e757aa533ed0d95a426aea2ecb",
+    "src/scene/landscape-layout.ts": "82a0b83a12b01f06db72eb618ed5c17b49774e6f676ce111d82a51e8b2d1ac6e",
+    "src/scene/locomotion.ts": "7ac222d3e7e557526dc33f634fe5aeae21ec2c37c249baab3cfd7112cc319f7d",
+    "src/scene/troop-details.ts": "45b6a1a800049e82185f55d40138d2e351f9684b880a4619d5afafedbe2144d2",
+    "src/styles.css": "1164266d1f1d9f0e7d6f73d37ef63be7e25bfe98bacf52c0a669a59b64b0d950",
+    "src/ui/battle-banner.ts": "4b8a592fc7ffe01760ba29319ac942b72134f9ba8d579ab172836100e63b275d",
+    "src/ui/camera-focus.ts": "d9c451fca962fcfe177d94c8bddfedaf0498e6b644b7d138d50698d009abf3be",
+    "src/ui/camera-pan.ts": "b91b9d8963d48612d71403448922ec28bc4213b361d8d621e0371c09a34c6cce",
+    "src/ui/tactical-board.ts": "250b654307da749c7acc106bbba08bb7302a4ab722b68bc0edbba9b987a685df",
+    "index.html": "08ea10be8db0f8b9214f4213cdf1a9012ccbb646c26d4ada26574ce970cd9228"
+  },
+  "capture_method": "Native application callbacks on controlled browser time; not real-time frame rate",
+  "ferry": {
+    "riding": 28,
+    "waiting": 28,
+    "rays": 252,
+    "failures": [],
+    "wheelFailures": 0,
+    "median_boat_speed": 2.6000000000000028
+  },
+  "status": "PASS"
+}

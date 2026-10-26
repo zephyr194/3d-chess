@@ -76,3 +76,5 @@ python3 scripts/verify-troop-identity.py --record
 ```
 
 截图与验证需要 Playwright 和 `/usr/bin/chromium`，录制还需要 FFmpeg。测试接口仅注入浏览器响应，不进入产品发布包。
+
+下一轮迭代见 [棋子聚焦与两军战斗表现](factions-focus.md)，其中行走与奔跑已采用不同地面行进速度。

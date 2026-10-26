@@ -1,0 +1,34 @@
+Observed native stdout from the final frozen source on port 5183.
+Command: python3 scripts/verify-factions-focus.py --base-url http://127.0.0.1:5183 --record
+Rate: 1. Each printed march had already asserted endpoint, root height, scale, feet above support plane, retained camera focus, and target error below .12.
+
+March checked red soldier walk 14.0
+March checked red soldier run 8.2
+March checked red horse walk 14.2
+March checked red horse run 9.0
+March checked red chariot walk 19.0
+March checked red chariot run 12.0
+March checked red cannon walk 12.0
+March checked red cannon run 8.2
+March checked red elephant walk 53.2
+March checked red elephant run 35.2
+March checked red advisor walk 30.8
+March checked red advisor run 16.8
+March checked red general walk 21.4
+March checked red general run 11.0
+March checked black soldier walk 25.0
+March checked black soldier run 14.4
+March checked black horse walk 13.6
+March checked black horse run 8.6
+March checked black chariot walk 15.8
+March checked black chariot run 10.0
+March checked black cannon walk 8.0
+March checked black cannon run 5.4
+March checked black elephant walk 53.2
+March checked black elephant run 35.2
+March checked black advisor walk 30.8
+March checked black advisor run 16.8
+March checked black general walk 21.4
+March checked black general run 11.0
+
+The command later failed a test-harness assertion expecting waiting at the bank where the ferry already rested. It was not accepted as a complete verification run. Native ferry evidence at that point: riding28 frames, waiting0,252 support rays,0 missing support,0 wheel motion failures, boat speed2.6 after rate normalization. Corrected the fixture to start from the opposite bank. The final complete report is verification.json from the corrected run at rate3. This text preserves the earlier standard-speed march observations and is not a replacement for the complete report.

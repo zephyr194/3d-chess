@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "canvas_black_focus": {
+        "id": "actor",
+        "selected": "actor",
+        "turn": "black",
+        "target": [
+          -8.8,
+          1.145,
+          -6.140000000000001
+        ],
+        "camera": [
+          -8.304870286124066,
+          6.362924906655106,
+          -0.3634866714474363
+        ],
+        "distance": 7.799999999999999
+      }
+    },
+    "Zoom retains focus after transition",
+    "Reduced motion focuses in one frame without interpolated camera movement",
+    "Tactical enemy inspection preserves turn and leaves selection empty",
+    "390px focus chip visible without horizontal overflow"
+  ],
+  "errors": []
+}
