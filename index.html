@@ -26,6 +26,7 @@
 
         <div class="viewport-wrap">
           <canvas id="game-canvas" tabindex="0" aria-label="可操作的3D中国象棋棋盘，WASD或方向键平移视角" aria-keyshortcuts="W A S D ArrowUp ArrowDown ArrowLeft ArrowRight"></canvas>
+          <div id="piece-focus" class="piece-focus" role="status" hidden><span>棋子聚焦</span><strong id="focus-name"></strong><button id="release-focus" class="secondary" title="退出聚焦，保留当前视角">退出 · Esc</button></div>
           <div class="map-compass" aria-hidden="true"><span>北</span><i></i><span>南</span></div>
           <section id="battle-banner" class="battle-banner" role="status" aria-live="polite" aria-atomic="true" hidden>
             <span class="banner-plate banner-plate-left" aria-hidden="true"></span><span class="banner-plate banner-plate-right" aria-hidden="true"></span>
@@ -41,7 +42,7 @@
           <div class="battle-toast" id="battle-toast" role="status"></div>
           <section class="tactical-map" aria-label="棋局图"><div id="tactical-panel" hidden><div class="tactical-heading"><strong>棋局</strong><span>黑方在上 · 红方在下</span></div><div class="tactical-paper"><div id="tactical-board" role="group" aria-label="标准象棋布局"></div></div><p id="tactical-caption" aria-live="polite"></p></div><button id="tactical-toggle" aria-expanded="false" aria-controls="tactical-panel">看棋局 · M</button></section>
           <div id="route-caption" class="route-caption" hidden></div>
-          <div class="hint">WASD / 方向键平移 · 滚轮缩放 · 拖动旋转 · 悬停落点看道路</div>
+          <div class="hint">点击棋子聚焦 · 拖动 / WASD 退出跟随 · 滚轮缩放</div>
         </div>
 
         <aside class="control-panel" aria-label="行军操作台">
@@ -59,7 +60,7 @@
               <select id="pace-select" aria-describedby="pace-feedback">
                 <option value="walk" selected>行走</option><option value="run">奔跑</option>
               </select>
-              <small id="pace-feedback">桥栈自动收步，速度独立调节</small>
+              <small id="pace-feedback">步行稳健 · 奔跑提速 · 桥栈收步</small>
             </label>
             <div class="view-controls" role="group" aria-label="战场视角">
               <button id="landscape-button" class="secondary">战场全景</button><button id="view-button" class="secondary">恢复俯视</button>
@@ -68,7 +69,8 @@
             <details class="sound-settings"><summary>战场声音</summary>
               <div class="audio-controls">
                 <button id="music-button" class="secondary" aria-pressed="true">战鼓：开启</button><button id="sound-button" class="secondary" aria-pressed="true">音效：开启</button>
-                <label class="volume-label" for="music-volume"><span>战鼓音量</span><input id="music-volume" type="range" min="0" max="100" value="28" aria-label="战鼓音量" /></label>
+                <label class="volume-label" for="music-volume"><span>战鼓音量</span><input id="music-volume" type="range" min="0" max="100" value="40" aria-label="战鼓音量" /></label>
+                <label class="volume-label" for="effects-volume"><span>战斗音量</span><input id="effects-volume" type="range" min="0" max="100" value="75" aria-label="战斗音量" /></label>
                 <p id="music-status" class="music-status">点击棋盘后启奏</p>
               </div>
             </details>

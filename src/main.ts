@@ -15,11 +15,12 @@ import { getMarchPath, surfaceSpeed, type Surface } from "./scene/landscape-layo
 import { createTacticalBoard } from "./ui/tactical-board";
 import { createBattleBanner } from "./ui/battle-banner";
 import { createCameraPan } from "./ui/camera-pan";
+import { createCameraFocus } from "./ui/camera-focus";
+import { BattleAudio } from "./game/battle-audio";
 import { BattleDrums } from "./game/battle-drums";
-import { playMetalClash } from "./game/metal-impact";
 import { attackProfiles, applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat, sampleMarchPose, type TroopRig } from "./scene/combat";
-import { createTroopDetails, updateTroopDetails, restoreTroopDetails, type TroopDetailsRig } from "./scene/troop-details";
-import { addJointedLeg, applyLocomotion, createLocomotionRig, poseLeg, restoreLocomotion, type LegChain, type LocomotionRig, type WheelJoint } from "./scene/locomotion";
+import { createTroopDetails, updateTroopDetails, restoreTroopDetails, factionColors, type TroopDetailsRig } from "./scene/troop-details";
+import { gaitTravelScale, addJointedLeg, applyLocomotion, createLocomotionRig, poseLeg, restoreLocomotion, type LegChain, type LocomotionRig, type WheelJoint } from "./scene/locomotion";
 import {
   applyMove,
   initialState,
@@ -51,7 +52,8 @@ const viewportWrap = document.querySelector<HTMLDivElement>(".viewport-wrap")!;
 const battleBanner = createBattleBanner(document.querySelector<HTMLElement>("#battle-banner")!);
 const ambienceButton = document.querySelector<HTMLButtonElement>("#ambience-button")!;
 
-const drums = new BattleDrums();
+const audio = new BattleAudio();
+const drums = new BattleDrums(() => audio.musicPort());
 
 let state: GameState = initialState();
 let selectedId: string | null = null;
@@ -59,160 +61,11 @@ let availableMoves: Position[] = [];
 let interactionLocked = false;
 let soundEnabled = true;
 let ambienceEnabled = true;
-let audioContext: AudioContext | null = null;
-
-function getAudioContext() {
-  if (!soundEnabled) return null;
-  audioContext ??= new AudioContext();
-  if (audioContext.state === "suspended") void audioContext.resume();
-  return audioContext;
-}
-
-function playTone(
-  startFrequency: number,
-  endFrequency: number,
-  duration: number,
-  type: OscillatorType,
-  volume: number,
-  delay = 0,
-) {
-  const context = getAudioContext();
-  if (!context) return;
-  const started = context.currentTime + delay;
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(startFrequency, started);
-  oscillator.frequency.exponentialRampToValueAtTime(
-    Math.max(20, endFrequency),
-    started + duration,
-  );
-  gain.gain.setValueAtTime(0.001, started);
-  gain.gain.exponentialRampToValueAtTime(volume, started + 0.012);
-  gain.gain.exponentialRampToValueAtTime(0.001, started + duration);
-  oscillator.connect(gain).connect(context.destination);
-  oscillator.start(started);
-  oscillator.stop(started + duration + 0.02);
-}
-
-function playNoise(
-  duration: number,
-  volume: number,
-  cutoff: number,
-  delay = 0,
-) {
-  const context = getAudioContext();
-  if (!context) return;
-  const buffer = context.createBuffer(
-    1,
-    Math.ceil(context.sampleRate * duration),
-    context.sampleRate,
-  );
-  const data = buffer.getChannelData(0);
-  for (let index = 0; index < data.length; index += 1) {
-    const decay = 1 - index / data.length;
-    data[index] = (Math.random() * 2 - 1) * decay;
-  }
-  const source = context.createBufferSource();
-  const filter = context.createBiquadFilter();
-  const gain = context.createGain();
-  source.buffer = buffer;
-  filter.type = "lowpass";
-  filter.frequency.value = cutoff;
-  gain.gain.value = volume;
-  source.connect(filter).connect(gain).connect(context.destination);
-  source.start(context.currentTime + delay);
-}
-
-function playSelectSound() {
-  playTone(420, 610, 0.11, "sine", 0.085);
-  playTone(760, 910, 0.08, "triangle", 0.04, 0.035);
-}
-
-function playStepSound(kind: PieceKind, step: number) {
-  switch (kind) {
-    case "horse":
-      playTone(step % 2 ? 190 : 235, 88, 0.09, "triangle", 0.09);
-      playNoise(0.07, 0.055, 820);
-      break;
-    case "chariot":
-      playTone(step % 2 ? 105 : 86, 48, 0.12, "sawtooth", 0.07);
-      playNoise(0.08, 0.04, 520);
-      break;
-    case "cannon":
-      playTone(step % 2 ? 84 : 102, 56, 0.1, "square", 0.055);
-      playNoise(0.06, 0.035, 460);
-      break;
-    case "elephant":
-      playTone(82, 35, 0.16, "sine", 0.13);
-      playNoise(0.12, 0.06, 320);
-      break;
-    case "general":
-      playTone(180, 108, 0.08, "triangle", 0.06);
-      playTone(520, 380, 0.07, "sine", 0.035, 0.02);
-      break;
-    case "advisor":
-      playTone(560, 720, 0.09, "sine", 0.052);
-      break;
-    default:
-      playTone(step % 2 ? 245 : 285, 128, 0.06, "triangle", 0.065);
-      playNoise(0.04, 0.025, 1100);
-  }
-}
-
-function playCannonSound() {
-  playTone(118, 30, 0.52, "sine", 0.3);
-  playTone(230, 48, 0.28, "sawtooth", 0.13);
-  playNoise(0.46, 0.25, 720);
-}
-
+function playSelectSound() { audio.play({ kind: "select" }); }
 function playImpactSound(attacker: PieceKind, defender: PieceKind) {
-  const context = getAudioContext();
-  if (context && attacker !== "advisor" && attacker !== "elephant") playMetalClash(context);
-  const armorCutoff =
-    defender === "chariot" || defender === "cannon" ? 1900 : 1100;
-  switch (attacker) {
-    case "soldier":
-      playTone(920, 280, 0.16, "square", 0.105);
-      playNoise(0.16, 0.12, armorCutoff);
-      playTone(260, 150, 0.12, "triangle", 0.07, 0.035);
-      break;
-    case "horse":
-      playTone(470, 145, 0.26, "sawtooth", 0.13);
-      playTone(125, 48, 0.28, "sine", 0.17, 0.025);
-      playNoise(0.2, 0.13, 1250);
-      break;
-    case "chariot":
-      playTone(112, 28, 0.44, "sawtooth", 0.23);
-      playNoise(0.34, 0.22, 780);
-      playTone(680, 120, 0.19, "square", 0.08, 0.025);
-      break;
-    case "cannon":
-      playTone(96, 24, 0.62, "sine", 0.3);
-      playNoise(0.48, 0.28, 960);
-      playTone(320, 52, 0.32, "sawtooth", 0.15, 0.018);
-      break;
-    case "elephant":
-      playTone(74, 24, 0.55, "sine", 0.28);
-      playNoise(0.36, 0.2, 410);
-      playTone(150, 42, 0.28, "triangle", 0.1, 0.03);
-      break;
-    case "general":
-      playTone(1120, 220, 0.24, "square", 0.12);
-      playTone(210, 72, 0.4, "sine", 0.2, 0.035);
-      playNoise(0.18, 0.12, 2100);
-      break;
-    case "advisor":
-      playTone(760, 1480, 0.3, "sine", 0.11);
-      playTone(1140, 570, 0.34, "triangle", 0.09, 0.06);
-      playNoise(0.14, 0.07, 2400);
-  }
+  audio.play({ kind: "impact", attacker, defender });
 }
-
-function playAlertSound(victory = false) {
-  playTone(victory ? 220 : 175, victory ? 440 : 125, 0.42, "triangle", 0.09);
-  playTone(victory ? 330 : 260, victory ? 660 : 190, 0.5, "sine", 0.055, 0.11);
-}
+function playAlertSound(victory = false) { audio.play({ kind: victory ? "victory" : "check" }); }
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog("#b9d0c4", 65, 110);
@@ -240,6 +93,41 @@ controls.maxDistance = 150;
 controls.maxPolarAngle = Math.PI * 0.47;
 controls.target.set(0, 0.5, 0);
 const cameraPan = createCameraPan(camera, controls.target, canvas);
+const cameraFocus = createCameraFocus(camera, controls.target);
+const focusPanel = document.querySelector<HTMLElement>("#piece-focus")!;
+const focusName = document.querySelector<HTMLElement>("#focus-name")!;
+function focusPiece(piece: Piece) {
+  controls.enableDamping = false;
+  controls.update();
+  controls.enableDamping = true;
+  cameraPan.clear();
+  cameraFocus.focus(piece.id, () => {
+    const group = pieceGroups.get(piece.id);
+    return group?.visible ? group.position : undefined;
+  }, (eye, at) => {
+    scene.updateMatrixWorld(true);
+    let clear = 0;
+    for (const height of [.2, .7, 1.25]) {
+      const point = at.clone().add(new THREE.Vector3(0, height * PIECE_SCALE, 0));
+      const direction = point.sub(eye);
+      const ray = new THREE.Raycaster(eye, direction.clone().normalize(), 0, direction.length() - .12);
+      const blocked = ray.intersectObject(battlefield.root, true).some(hit => {
+        const mesh = hit.object as THREE.Mesh;
+        if (!mesh.isMesh || !mesh.visible) return false;
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        return materials.some(material => material.visible && (!material.transparent || material.opacity > .8));
+      });
+      if (!blocked) clear++;
+    }
+    return clear;
+  });
+  focusName.textContent = `${piece.side === "red" ? "红方" : "黑方"} · ${pieceLabels[piece.side][piece.kind]}`;
+  focusPanel.hidden = false;
+}
+function releaseFocus() { cameraFocus.release(); focusPanel.hidden = true; }
+document.querySelector("#release-focus")!.addEventListener("click", releaseFocus);
+document.addEventListener("keydown", event => { if (event.key === "Escape") releaseFocus(); });
+canvas.addEventListener("pointerdown", event => { if (event.button === 2) releaseFocus(); });
 
 scene.add(new THREE.HemisphereLight("#f1f4dc", "#234b42", 1.9));
 const sun = new THREE.DirectionalLight("#ffe2af", 3.1);
@@ -322,7 +210,7 @@ const redTroopMaterial = new THREE.MeshStandardMaterial({
   flatShading: true,
 });
 const blackTroopMaterial = new THREE.MeshStandardMaterial({
-  color: "#243a40",
+  color: factionColors.black.hide,
   roughness: 0.58,
   flatShading: true,
 });
@@ -349,9 +237,16 @@ const steelMaterial = new THREE.MeshStandardMaterial({
   flatShading: true,
 });
 
+const tribalSkinMaterial = new THREE.MeshStandardMaterial({ color: factionColors.black.skin, roughness: .95, flatShading: true });
+const tribalBoneMaterial = new THREE.MeshStandardMaterial({ color: factionColors.black.bone, roughness: .9, flatShading: true });
+const tribalIronMaterial = new THREE.MeshStandardMaterial({ color: factionColors.black.iron, roughness: .8, metalness: .25, flatShading: true });
+const tribalLeatherMaterial = new THREE.MeshStandardMaterial({ color: factionColors.black.hide, roughness: 1, flatShading: true });
+
 function troopMaterial(side: Side) {
   return side === "red" ? redTroopMaterial : blackTroopMaterial;
 }
+
+const regularMaterials = { skin: creamMaterial, armor: steelMaterial, trim: goldMaterial };
 
 function modelMesh(geometry: THREE.BufferGeometry, material: THREE.Material) {
   const mesh = new THREE.Mesh(geometry, material);
@@ -361,6 +256,9 @@ function modelMesh(geometry: THREE.BufferGeometry, material: THREE.Material) {
 }
 
 function addHumanoid(group: THREE.Group, side: Side, legs: LegChain[], height = 1, seated = false) {
+  const creamMaterial = side === "black" ? tribalSkinMaterial : regularMaterials.skin;
+  const steelMaterial = side === "black" ? tribalLeatherMaterial : regularMaterials.armor;
+  const goldMaterial = side === "black" ? tribalBoneMaterial : regularMaterials.trim;
   const torso = modelMesh(
     new THREE.CylinderGeometry(0.22, 0.32, 0.55 * height, 8),
     troopMaterial(side),
@@ -378,8 +276,8 @@ function addHumanoid(group: THREE.Group, side: Side, legs: LegChain[], height = 
   for (const side of [-1, 1]) {
     const leg = addJointedLeg(group, {
       role: side < 0 ? "left" : "right",
-      at: new THREE.Vector3(side * (seated ? .33 : .13), .43, 0),
-      upper: .23, lower: .23, width: .067, ankleHeight: .07,
+      at: new THREE.Vector3(side * (seated ? .33 : .13), seated ? .43 : .46, 0),
+      upper: seated ? .23 : .22, lower: seated ? .23 : .22, width: .067, ankleHeight: .07,
       upperMaterial: steelMaterial, lowerMaterial: woodMaterial, footMaterial: blackTroopMaterial,
     });
     leg.hip.name = `human-leg-${side}`;
@@ -417,6 +315,9 @@ function addSpokedWheel(parent: THREE.Group, radius: number, width: number, at: 
 }
 
 function createTroopModel(kind: PieceKind, side: Side) {
+  const creamMaterial = side === "black" ? tribalSkinMaterial : regularMaterials.skin;
+  const steelMaterial = side === "black" ? tribalIronMaterial : regularMaterials.armor;
+  const goldMaterial = side === "black" ? tribalBoneMaterial : regularMaterials.trim;
   const model = new THREE.Group();
   const wheels: WheelJoint[] = [];
   const legs: LegChain[] = [];
@@ -460,7 +361,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
     addHumanoid(model, side, legs, 1.08);
     const hat = modelMesh(
       new THREE.CylinderGeometry(0.28, 0.18, 0.18, 6),
-      blackTroopMaterial,
+      side === "black" ? tribalLeatherMaterial : blackTroopMaterial,
     );
     hat.position.y = 1.23;
     const tablet = modelMesh(
@@ -469,7 +370,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
     );
     tablet.position.set(0, 0.7, -0.29);
     tablet.rotation.x = -0.18;
-    const gem = modelMesh(new THREE.OctahedronGeometry(0.13), creamMaterial);
+    const gem = modelMesh(new THREE.OctahedronGeometry(0.13), side === "black" ? tribalBoneMaterial : creamMaterial);
     gem.position.set(0, 1.37, 0);
     model.add(hat, tablet, gem);
     const tabletArm = pivot("advisor-tablet-arm", new THREE.Vector3(0.2, 0.85, 0), tablet, model.getObjectByName("human-arm-1")!);
@@ -569,7 +470,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
       troopMaterial(side),
     );
     carriage.position.y = 0.62;
-    const roof = modelMesh(new THREE.ConeGeometry(0.48, 0.3, 4), goldMaterial);
+    const roof = modelMesh(new THREE.ConeGeometry(0.48, 0.3, 4), side === "black" ? tribalLeatherMaterial : goldMaterial);
     roof.rotation.y = Math.PI / 4;
     roof.position.y = 0.99;
     model.add(carriage, roof);
@@ -620,7 +521,7 @@ function createTroopModel(kind: PieceKind, side: Side) {
     addHumanoid(model, side, legs, 0.88);
     const helmet = modelMesh(
       new THREE.SphereGeometry(0.23, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2),
-      goldMaterial,
+      side === "black" ? tribalIronMaterial : goldMaterial,
     );
     helmet.position.y = 1.12;
     const spear = modelMesh(
@@ -763,6 +664,7 @@ function renderPieces() {
                 goldMaterial,
                 woodMaterial,
                 steelMaterial,
+                tribalSkinMaterial, tribalBoneMaterial, tribalIronMaterial, tribalLeatherMaterial,
               ].includes(m as THREE.MeshStandardMaterial)
             )
               m.dispose();
@@ -814,13 +716,14 @@ const tactical = createTacticalBoard(
     last: lastMove,
   }),
   (at) => {
-    if (interactionLocked) return;
-    getAudioContext();
+    const p = pieceAt(state, at);
+    if (interactionLocked || state.winner) { if (p) focusPiece(p); return; }
+    audio.unlock();
     drums.unlock();
     document.querySelector("#music-status")!.textContent = "战鼓随战况渐强";
-    const p = pieceAt(state, at);
     if (p?.side === state.turn) selectPiece(p);
-    else if (selectedId) void tryMove(at);
+    else if (selectedId && availableMoves.some(move => move.x === at.x && move.y === at.y)) void tryMove(at);
+    else if (p) focusPiece(p);
   },
   previewRoute,
 );
@@ -958,6 +861,7 @@ function showToast(message: string) {
 }
 
 function selectPiece(piece: Piece) {
+  focusPiece(piece);
   playSelectSound();
   selectedId = piece.id;
   availableMoves = legalMoves(state, piece);
@@ -1316,7 +1220,7 @@ async function animateCombat(attacker: Piece, defender: Piece, epoch: number) {
     world.add(projectile);
   }
   await new Promise<void>((resolve) => {
-    let previousTime: number | undefined, elapsed = 0, impacted = false;
+    let previousTime: number | undefined, elapsed = 0, impacted = false, swung = false;
     const finish = () => {
       restoreCombatRig(rig);
       troop.position.y = Number(g.userData.restY);
@@ -1345,11 +1249,14 @@ async function animateCombat(attacker: Piece, defender: Piece, epoch: number) {
         projectile.position.lerpVectors(g.position, target.position, flight);
         projectile.position.y += 0.6 + Math.sin(flight * Math.PI) * 0.18;
       }
+      if (!swung && phase >= (attacker.kind === "cannon" ? .22 : Math.max(.08, profile.impact - .22))) {
+        swung = true;
+        audio.play(attacker.kind === "cannon" ? { kind: "cannon" } : { kind: "swing", troop: attacker.kind });
+      }
       if (!impacted && phase >= profile.impact) {
         impacted = true;
         g.userData.combatImpacts = 1;
         battleBanner.impact();
-        if (attacker.kind === "cannon") playCannonSound();
         createImpact(target.position, attacker.kind, defender.kind);
       }
       const reaction = phase < profile.impact ? 0 : Math.sin(((phase - profile.impact) / (1 - profile.impact)) * Math.PI);
@@ -1378,7 +1285,10 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
       if (epoch !== animationEpoch) { stopLocomotion(g); resolve(); return; }
       const elapsed = previousTime === undefined ? 0 : (time - previousTime) / 1000;
       previousTime = time;
-      const simulationDelta = elapsed * readPresentationRate() * (reducedMotion.matches ? 5 : 1),
+      const current = march.advance(0);
+      const travelScale = current.status !== "cancelled" && current.motion === "walking"
+        ? gaitTravelScale(piece.kind, readPace(), current.surface) : 1;
+      const simulationDelta = elapsed * readPresentationRate() * travelScale * (reducedMotion.matches ? 5 : 1),
         frame = march.advance(simulationDelta);
       if (frame.status === "cancelled") { stopLocomotion(g); resolve(); return; }
       const distance = resumingAfterAttack
@@ -1392,7 +1302,7 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
       const d = path.getTangentAt(Math.min(0.9999, u)),
         yaw = Math.atan2(d.x, d.z) + Math.PI - Number(g.userData.modelBaseYaw);
       const turn = Math.atan2(Math.sin(yaw - g.rotation.y), Math.cos(yaw - g.rotation.y));
-      g.rotation.y += turn * 0.32;
+      g.rotation.y += turn * (1 - Math.exp(-Math.max(.001, elapsed) * 13));
       if (walking) groundDistance += distance - lastDistance;
       lastDistance = distance;
       troop.position.y = Number(g.userData.restY);
@@ -1405,15 +1315,13 @@ async function animateMove(piece: Piece, to: Position, captured: Piece | null) {
       const locomotion = g.userData.locomotionRig as LocomotionRig;
       g.userData.pace = locomotion.pace;
       if (walking && !reducedMotion.matches) {
-        applyCombatPose(g.userData.combatRig as TroopRig, sampleMarchPose(piece.kind, locomotion.cycle, locomotion.pace, locomotion.narrow));
+        applyCombatPose(g.userData.combatRig as TroopRig, sampleMarchPose(piece.kind, locomotion.cycle, locomotion.pace, locomotion.narrow, piece.side));
       } else restoreCombatRig(g.userData.combatRig as TroopRig);
-      const step = Math.floor(groundDistance / 0.9);
+      const step = Math.floor(locomotion.cycle * (piece.kind === "elephant" ? 4 : 2));
       if (step > dust && u > 0.05 && u < 0.95 && walking) {
         dust = step;
         if (!reducedMotion.matches && !["bridge", "boardwalk"].includes(surface)) createDustPuff(g.position, 0.6);
-        if (surface === "boardwalk") playTone(step % 2 ? 145 : 180, 80, 0.065, "triangle", 0.05);
-        else if (surface === "mud") playNoise(0.06, 0.045, 380);
-        else playStepSound(piece.kind, step);
+        audio.play({ kind: "step", troop: piece.kind, step, surface });
       }
       if (distance < stopDistance - 1e-9) requestAnimationFrame(tick);
       else { stopLocomotion(g); resolve(); }
@@ -1501,7 +1409,7 @@ canvas.addEventListener("pointerup", (event) => {
     return;
   }
   if (
-    interactionLocked ||
+    event.button !== 0 ||
     pointerDown.distanceTo(new THREE.Vector2(event.clientX, event.clientY)) > 6
   )
     return;
@@ -1529,16 +1437,20 @@ canvas.addEventListener("pointerup", (event) => {
   if (pieceId) {
     const piece = state.pieces.find((item) => item.id === pieceId);
     if (!piece) return;
-    if (piece.side === state.turn) {
+    if (interactionLocked) { focusPiece(piece); return; }
+    if (piece.side === state.turn && !state.winner) {
       selectPiece(piece);
       return;
     }
-    if (selectedId) {
+    if (selectedId && availableMoves.some(move => move.x === piece.x && move.y === piece.y)) {
       void tryMove({ x: piece.x, y: piece.y });
       return;
     }
+    focusPiece(piece);
+    return;
   }
 
+  if (interactionLocked) return;
   const markerMove = hit.object.userData.move as Position | undefined;
   if (markerMove) {
     void tryMove(markerMove);
@@ -1576,6 +1488,7 @@ let holdTimer = 0,
   held = false;
 canvas.addEventListener("pointerdown", (e) => {
   document.querySelector("#music-status")!.textContent = "战鼓随战况渐强";
+  audio.unlock();
   drums.unlock();
   held = false;
   if (e.pointerType === "touch")
@@ -1588,6 +1501,7 @@ canvas.addEventListener("pointerdown", (e) => {
     }, 450);
 });
 canvas.addEventListener("pointermove", (e) => {
+  if (e.buttons && pointerDown.distanceTo(new THREE.Vector2(e.clientX, e.clientY)) > 6) releaseFocus();
   if (e.buttons) {
     if (pointerDown.distanceTo(new THREE.Vector2(e.clientX, e.clientY)) > 6) {
       clearTimeout(holdTimer);
@@ -1613,6 +1527,8 @@ document.querySelector("#landscape-button")!.addEventListener("click", () => {
 
 function resetGame() {
   battleBanner.clear();
+  audio.cancelEffects();
+  releaseFocus();
   effectLayer.clear();
   drums.setState(initialState());
   animationEpoch++;
@@ -1630,6 +1546,7 @@ function resetGame() {
 }
 
 function resetView() {
+  releaseFocus();
   cameraPan.clear();
   controls.enableDamping = false;
   controls.target.copy(frameCamera(camera, overview));
@@ -1652,10 +1569,10 @@ document.querySelector("#music-button")!.addEventListener("click", () => {
 document
   .querySelector("#music-volume")!
   .addEventListener("input", (e) =>
-    drums.setVolume(Number((e.target as HTMLInputElement).value) / 100),
+    audio.setVolume("music", Number((e.target as HTMLInputElement).value) / 100),
   );
 document.addEventListener("visibilitychange", () => drums.visibility());
-window.addEventListener("pagehide", () => drums.dispose());
+window.addEventListener("pagehide", () => { drums.dispose(); audio.dispose(); });
 resetButton.addEventListener("click", resetGame);
 viewButton.addEventListener("click", () => {
   overview = false;
@@ -1664,9 +1581,13 @@ viewButton.addEventListener("click", () => {
 });
 soundButton.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
+  audio.setEffectsEnabled(soundEnabled);
   soundButton.textContent = `音效：${soundEnabled ? "开启" : "关闭"}`;
   soundButton.setAttribute("aria-pressed", String(soundEnabled));
   if (soundEnabled) playSelectSound();
+});
+document.querySelector("#effects-volume")!.addEventListener("input", event => {
+  audio.setVolume("effects", Number((event.target as HTMLInputElement).value) / 100);
 });
 ambienceButton.addEventListener("click", () => {
   ambienceEnabled = !ambienceEnabled;
@@ -1721,7 +1642,12 @@ resetView();
 
 let previousRenderTime: number | undefined;
 renderer.setAnimationLoop((time) => {
-  cameraPan.update(previousRenderTime === undefined ? 0 : (time - previousRenderTime) / 1000);
+  const delta = previousRenderTime === undefined ? 0 : Math.min(.1, (time - previousRenderTime) / 1000);
+  const oldTarget = controls.target.clone();
+  cameraPan.update(delta);
+  if (!oldTarget.equals(controls.target)) releaseFocus();
+  cameraFocus.update(delta, reducedMotion.matches);
+  if (!cameraFocus.id) focusPanel.hidden = true;
   previousRenderTime = time;
   battlefield.update(time, reducedMotion.matches || !ambienceEnabled);
   for (const group of pieceGroups.values()) {

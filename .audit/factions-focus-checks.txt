@@ -1,0 +1,55 @@
+
+> 3d-chess@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/3d-chess
+
+ ✓ tests/combat.test.ts (43 tests) 283ms
+ ✓ tests/troop-details.test.ts (30 tests) 102ms
+ ✓ tests/faction-details.test.ts (15 tests) 67ms
+ ✓ tests/atmosphere-depth.test.ts (4 tests) 49ms
+ ✓ tests/battle-audio.test.ts (5 tests) 13ms
+ ✓ tests/board.test.ts (3 tests) 9ms
+ ✓ tests/xiangqi.test.ts (16 tests) 9ms
+ ✓ tests/camera-focus.test.ts (4 tests) 5ms
+ ✓ tests/battlefield.test.ts (13 tests) 2133ms
+   ✓ restored continuous battlefield > keeps all 90 logical stations aligned and physically level, with small troops  795ms
+   ✓ restored continuous battlefield > waits for the opposite-bank ferry and supports walking aboard, riding and exiting in both directions  313ms
+ ✓ tests/locomotion.test.ts (57 tests) 4090ms
+   ✓ troop ground contact > keeps horse soles flat above mud and narrow surfaces in both paces and sides  490ms
+   ✓ troop ground contact > keeps elephant soles flat above mud and narrow surfaces in both paces and sides  537ms
+
+ Test Files  10 passed (10)
+      Tests  190 passed (190)
+   Start at  07:06:42
+   Duration  4.49s (transform 399ms, setup 0ms, collect 3.71s, tests 6.76s, environment 1ms, prepare 496ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+
+> 3d-chess@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   6.64 kB │ gzip:   2.40 kB
+dist/assets/index-DLrcmNsJ.css   16.48 kB │ gzip:   4.81 kB
+dist/assets/index-D0SBXVQK.js   643.00 kB │ gzip: 177.35 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.30s
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

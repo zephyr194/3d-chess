@@ -1,0 +1,151 @@
+{
+  "sample_rate": 22050,
+  "clips": [
+    {
+      "name": "swing",
+      "stats": {
+        "peak": 0.37706258893013,
+        "rms": 0.020789876270190643,
+        "last_audible_seconds": 0.2308843537414966
+      },
+      "file": "screenshots/factions-focus/after/audio/swing.wav"
+    },
+    {
+      "name": "metal-impact",
+      "stats": {
+        "peak": 0.3882997930049896,
+        "rms": 0.06074687490193325,
+        "last_audible_seconds": 0.569297052154195
+      },
+      "file": "screenshots/factions-focus/after/audio/metal-impact.wav"
+    },
+    {
+      "name": "horse-impact",
+      "stats": {
+        "peak": 0.3951181471347809,
+        "rms": 0.06503895377634455,
+        "last_audible_seconds": 0.566485260770975
+      },
+      "file": "screenshots/factions-focus/after/audio/horse-impact.wav"
+    },
+    {
+      "name": "cannon",
+      "stats": {
+        "peak": 0.5951739549636841,
+        "rms": 0.07912286621659391,
+        "last_audible_seconds": 0.5945124716553288
+      },
+      "file": "screenshots/factions-focus/after/audio/cannon.wav"
+    },
+    {
+      "name": "elephant",
+      "stats": {
+        "peak": 0.476347953081131,
+        "rms": 0.06858814360866235,
+        "last_audible_seconds": 0.5148752834467121
+      },
+      "file": "screenshots/factions-focus/after/audio/elephant.wav"
+    },
+    {
+      "name": "victory",
+      "stats": {
+        "peak": 0.5513805747032166,
+        "rms": 0.09984239420982226,
+        "last_audible_seconds": 3.8499319727891157
+      },
+      "file": "screenshots/factions-focus/after/audio/victory.wav"
+    },
+    {
+      "name": "before-metal-impact",
+      "stats": {
+        "peak": 0.3196803629398346,
+        "rms": 0.03371905624123615,
+        "last_audible_seconds": 0.4307482993197279
+      },
+      "file": "screenshots/factions-focus/after/audio/before-metal-impact.wav"
+    },
+    {
+      "name": "before-victory",
+      "stats": {
+        "peak": 0.0886325091123581,
+        "rms": 0.006980021123769572,
+        "last_audible_seconds": 0.6095238095238096
+      },
+      "file": "screenshots/factions-focus/after/audio/before-victory.wav"
+    },
+    {
+      "name": "battle-preview",
+      "stats": {
+        "peak": 0.7273460030555725,
+        "rms": 0.08015669511416053,
+        "last_audible_seconds": 11.247800453514738
+      },
+      "file": "screenshots/factions-focus/after/audio/battle-preview.wav"
+    }
+  ],
+  "checks": [
+    {
+      "action": "muted",
+      "peak": 0,
+      "rms": 0,
+      "last_audible_seconds": 0
+    },
+    {
+      "action": "zero",
+      "peak": 0,
+      "rms": 0,
+      "last_audible_seconds": 0
+    },
+    {
+      "action": "cancel",
+      "peak": 0,
+      "rms": 0,
+      "last_audible_seconds": 0
+    },
+    {
+      "action": "mute-during-victory",
+      "before": {
+        "peak": 0.3783860206604004,
+        "rms": 0.11454875265959984,
+        "last_audible_seconds": 0.34993197278911564
+      },
+      "after": {
+        "peak": 0,
+        "rms": 0,
+        "last_audible_seconds": 0
+      }
+    },
+    {
+      "action": "reset-during-victory",
+      "before": {
+        "peak": 0.3783860206604004,
+        "rms": 0.11454875261640594,
+        "last_audible_seconds": 0.34993197278911564
+      },
+      "after": {
+        "peak": 0,
+        "rms": 0,
+        "last_audible_seconds": 0
+      }
+    },
+    {
+      "action": "maximum-overlap",
+      "peak": 0.9369302988052368,
+      "rms": 0.220473208294849,
+      "last_audible_seconds": 1.999954648526077
+    }
+  ],
+  "source_sha256": {
+    "src/game/battle-audio.ts": "0d1b097246c896c2b67065440cd65e48e30679acb559ca20ead01fd9530e4adb",
+    "src/game/battle-drums.ts": "d8ef95e8daecbc601f550368ccabf307a3ba39aeac470c094d59b85b6a2a3c07"
+  },
+  "baseline_comparison": {
+    "baseline_source_sha256": {
+      "src/main.ts": "635f5f49fa6d80a198db2c445ee6468da3db4d1f03daf2af4c0c326aab26858b",
+      "src/game/metal-impact.ts": "68aef77e43a6c4e3fe28c595bb4aaad1bed5aad9b8436065248e779a388b22eb"
+    },
+    "baseline_commit": "782a93c2bd940a33570f1f84d5ed69410b3bf7f2",
+    "impact_rms_gain_db": 5.112970600774025,
+    "victory_rms_gain_db": 23.10916499718449
+  }
+}

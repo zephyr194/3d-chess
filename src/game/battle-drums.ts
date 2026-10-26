@@ -1,5 +1,5 @@
 import type { GameState } from "./xiangqi";
-/** Small Web Audio score. Starts from a user gesture and never catches up hidden beats. */
+import type { AudioPort } from "./battle-audio";
 export class BattleDrums {
   private context: AudioContext | null = null;
   private out: GainNode | null = null;
@@ -7,15 +7,21 @@ export class BattleDrums {
   private beat = 0;
   private strength = 0;
   private enabled = true;
-  private volume = 0.28;
+  private volume: number;
+  private finished = false;
+  constructor(private readonly port?: () => AudioPort | null) {
+    this.volume = port ? 1 : .4;
+  }
   private dead = false;
   unlock() {
     if (this.dead) return;
     if (!this.context) {
-      this.context = new AudioContext();
+      const shared = this.port?.();
+      if (this.port && !shared) return;
+      this.context = shared?.context ?? new AudioContext();
       this.out = this.context.createGain();
-      this.out.gain.value = this.volume * 0.4;
-      this.out.connect(this.context.destination);
+      this.out.gain.value = this.enabled && !this.finished ? this.volume : 0;
+      this.out.connect(shared?.output ?? this.context.destination);
     }
     void this.context.resume();
     this.schedule();
@@ -24,6 +30,7 @@ export class BattleDrums {
     if (
       this.timer ||
       !this.enabled ||
+      this.finished ||
       document.hidden ||
       !this.context ||
       this.dead
@@ -79,6 +86,8 @@ export class BattleDrums {
     const crossings = state.pieces.filter((p) =>
       p.side === "red" ? p.y < 5 : p.y > 4,
     ).length;
+    this.finished = Boolean(state.winner);
+    if (this.out && this.context) this.out.gain.setValueAtTime(this.enabled && !this.finished ? this.volume : 0, this.context.currentTime);
     this.strength = state.winner
       ? 0
       : Math.min(
@@ -93,22 +102,25 @@ export class BattleDrums {
   }
   setEnabled(v: boolean) {
     this.enabled = v;
+    if (this.out && this.context) this.out.gain.setValueAtTime(v && !this.finished ? this.volume : 0, this.context.currentTime);
     if (v) {
       this.unlock();
     } else this.stop();
   }
   setVolume(v: number) {
-    this.volume = v;
+    this.volume = Math.max(0, Math.min(1, Number.isFinite(v) ? v : 0));
     if (this.out && this.context)
-      this.out.gain.setTargetAtTime(v * 0.4, this.context.currentTime, 0.05);
+      this.out.gain.setValueAtTime(this.enabled && !this.finished ? this.volume : 0, this.context.currentTime);
   }
   visibility() {
     this.stop();
+    if (this.out && this.context) this.out.gain.setValueAtTime(!document.hidden && this.enabled && !this.finished ? this.volume : 0, this.context.currentTime);
     if (!document.hidden) this.schedule();
   }
   dispose() {
     this.dead = true;
     this.stop();
-    void this.context?.close();
+    this.out?.disconnect();
+    if (!this.port) void this.context?.close();
   }
 }

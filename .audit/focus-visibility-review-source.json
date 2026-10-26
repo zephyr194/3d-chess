@@ -1,0 +1,18 @@
+{
+  "src/game/battle-audio.ts": "0d1b097246c896c2b67065440cd65e48e30679acb559ca20ead01fd9530e4adb",
+  "src/game/battle-drums.ts": "d8ef95e8daecbc601f550368ccabf307a3ba39aeac470c094d59b85b6a2a3c07",
+  "src/game/xiangqi.ts": "ee3257e3428e6d7652991e99c27fe774ff75a850916c531a1db539952bef04f4",
+  "src/main.ts": "d916188f61f8e876d958e1fe28377853b2e6c8eaa26f7804b36dd734a64c373e",
+  "src/scene/battlefield.ts": "6ede4b03d6c06300ecae418270db8329c057e0ff9625faf5f18bb16ec60dee36",
+  "src/scene/board.ts": "fc6881aa8cd6f507b1a4b38b5e3073561b1c73b844bcf6f5fe15a997bd73a9a3",
+  "src/scene/combat.ts": "732b62a0370f95e51931ad50be5157a93870c6e757aa533ed0d95a426aea2ecb",
+  "src/scene/landscape-layout.ts": "82a0b83a12b01f06db72eb618ed5c17b49774e6f676ce111d82a51e8b2d1ac6e",
+  "src/scene/locomotion.ts": "7ac222d3e7e557526dc33f634fe5aeae21ec2c37c249baab3cfd7112cc319f7d",
+  "src/scene/troop-details.ts": "45b6a1a800049e82185f55d40138d2e351f9684b880a4619d5afafedbe2144d2",
+  "src/styles.css": "1164266d1f1d9f0e7d6f73d37ef63be7e25bfe98bacf52c0a669a59b64b0d950",
+  "src/ui/battle-banner.ts": "4b8a592fc7ffe01760ba29319ac942b72134f9ba8d579ab172836100e63b275d",
+  "src/ui/camera-focus.ts": "d9c451fca962fcfe177d94c8bddfedaf0498e6b644b7d138d50698d009abf3be",
+  "src/ui/camera-pan.ts": "b91b9d8963d48612d71403448922ec28bc4213b361d8d621e0371c09a34c6cce",
+  "src/ui/tactical-board.ts": "250b654307da749c7acc106bbba08bb7302a4ab722b68bc0edbba9b987a685df",
+  "index.html": "08ea10be8db0f8b9214f4213cdf1a9012ccbb646c26d4ada26574ce970cd9228"
+}

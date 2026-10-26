@@ -185,3 +185,10 @@ button.tactical-cell.in-check { outline: 3px solid #c03622; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .banner-sparks, .banner-clash { display: none; }
 }
+
+.piece-focus { position: absolute; top: 14px; left: 14px; z-index: 3; display: flex; align-items: center; gap: 12px; padding: 5px 6px 5px 12px; border: 1px solid #d5b97899; border-radius: 5px; background: #23382aef; box-shadow: 0 4px 12px #10231844; font-size: 12px; }
+.piece-focus > span { color: #b8bd9e; font-size: 10px; }
+.piece-focus > strong { color: #f1dfad; }
+.piece-focus button { min-height: 36px; padding: 5px 9px; color: #e8dfbf; background: #304937; font-size: 11px; }
+.piece-focus:not([hidden]) ~ .route-caption { top: 68px; }
+@media (max-width: 600px) { .piece-focus { left: 10px; top: 10px; gap: 8px; } .piece-focus > span { display: none; } }

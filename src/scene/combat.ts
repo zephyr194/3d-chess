@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { PieceKind } from "../game/xiangqi";
+import type { PieceKind, Side } from "../game/xiangqi";
 import type { LocomotionPace } from "./locomotion";
 
 type Actuators = {
@@ -108,38 +108,39 @@ export function sampleCombat<K extends PieceKind>(kind: K, phase: number): Comba
   return attackProfiles[kind].sample(Math.max(0, Math.min(1, phase))) as CombatPose<K>;
 }
 
-export function sampleMarchPose<K extends PieceKind>(kind: K, cycle: number, pace: LocomotionPace, narrow = 0): CombatPose<K> {
+export function sampleMarchPose<K extends PieceKind>(kind: K, cycle: number, pace: LocomotionPace, narrow = 0, side: Side = "red"): CombatPose<K> {
   const wave = Math.sin(cycle * Math.PI * 2), counter = Math.cos(cycle * Math.PI * 2);
   const double = Math.cos(cycle * Math.PI * 4);
   const run = pace === "run" ? 1 : 0;
+  const tribal = side === "black" ? 1 : 0;
   const careful = 1 - THREE.MathUtils.clamp(narrow, 0, 1) * .55;
   const swing = (.065 + run * .085) * careful;
   const poses: { [P in PieceKind]: CombatPose<P> } = {
     soldier: { kind: "soldier", joints: {
-      spear: { rx: -.08 - run * .24 + wave * swing, rz: -.025 - run * .045 },
-      shield: { rx: .04 - wave * swing, rz: .02 + run * .055 },
+      spear: { rx: -.055 - run * .16 - tribal * .075 + wave * swing, rz: -.025 - run * .045 - tribal * .035 },
+      shield: { rx: .025 - wave * swing * .8, rz: .02 + run * .035 + tribal * .04 },
     } },
     general: { kind: "general", joints: {
-      torso: { rx: -run * .13 + double * .012 * careful, ry: wave * swing * .4 },
+      torso: { rx: -run * .10 - tribal * .035 + double * .009 * careful, ry: wave * swing * (.4 + tribal * .12) },
       weapon: { rx: -.045 - run * .19 - wave * swing, rz: -run * .06 },
     } },
     advisor: { kind: "advisor", joints: {
-      tabletArm: { rx: -.035 - run * .065 + wave * swing * .2, rz: counter * .015 * careful },
+      tabletArm: { rx: -.035 - run * .065 + tribal * .07 + wave * swing * .2, rz: counter * .015 * careful + tribal * .045 },
     } },
     horse: { kind: "horse", joints: {
-      rider: { rx: -.045 - run * .19 + double * swing * .3, rz: wave * .018 * careful },
-      lance: { rx: -.08 - run * .3 - double * swing * .2 },
-      head: { rx: .02 + run * .055 + double * swing * .55 },
+      rider: { rx: -.035 - run * .15 - tribal * .035 + double * swing * .18, rz: wave * .014 * careful },
+      lance: { rx: -.06 - run * .22 - tribal * .025 - double * swing * .15 },
+      head: { rx: .015 + run * .04 + wave * swing * .35 },
     } },
     elephant: { kind: "elephant", joints: {
       head: { rx: double * .022 * careful, ry: wave * .025 * careful },
-      trunk: { rx: -.035 - run * .07 + wave * swing * .65, rz: counter * swing * .4 },
+      trunk: { rx: -.035 - run * .07 - tribal * .02 + wave * swing * .65, rz: counter * swing * .4 },
     } },
     chariot: { kind: "chariot", joints: {
-      chassis: { rx: -run * .035 + double * (.008 + run * .008) * careful, rz: wave * .008 * careful },
+      chassis: { rx: -run * .035 + double * (.008 + run * .008) * careful, rz: wave * (.008 + tribal * .006) * careful },
     } },
     cannon: { kind: "cannon", joints: {
-      trunnion: { rx: -run * .018 + double * .004 * careful },
+      trunnion: { rx: -run * .018 + double * .004 * careful + tribal * wave * .006 },
     } },
   };
   return poses[kind];
