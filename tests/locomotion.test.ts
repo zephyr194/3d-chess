@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { addJointedLeg, applyLocomotion, createLocomotionRig, restoreLocomotion, type LegRole, type LocomotionPace } from "../src/scene/locomotion";
+import { addJointedLeg, applyLocomotion, createLocomotionRig, restoreLocomotion, gaitTravelScale, type LegRole, type LocomotionPace } from "../src/scene/locomotion";
 import { applyCombatPose, createTroopRig, restoreCombatRig, sampleCombat } from "../src/scene/combat";
 import { BASE, PIECE_SCALE } from "../src/scene/board";
+import { surfaceSpeed } from "../src/scene/landscape-layout";
 import type { PieceKind } from "../src/game/xiangqi";
 
 const walkers = ["soldier", "general", "advisor", "horse", "elephant"] as const;
@@ -19,9 +20,9 @@ function walkingRig(kind: PieceKind, side: "red" | "black" = "red") {
   const quadruped = kind === "horse" || kind === "elephant";
   const roles: LegRole[] = quadruped ? ["frontLeft", "frontRight", "rearLeft", "rearRight"] : ["left", "right"];
   const legs = roles.map((role, index) => addJointedLeg(model, {
-    role, at: new THREE.Vector3(index % 2 ? .2 : -.2, quadruped ? .55 : .43, quadruped ? index < 2 ? -.24 : .24 : 0),
-    upper: quadruped ? kind === "horse" ? .31 : .3 : .23,
-    lower: quadruped ? kind === "horse" ? .3 : .27 : .23,
+    role, at: new THREE.Vector3(index % 2 ? .2 : -.2, quadruped ? .55 : .46, quadruped ? index < 2 ? -.24 : .24 : 0),
+    upper: quadruped ? kind === "horse" ? .31 : .3 : .22,
+    lower: quadruped ? kind === "horse" ? .3 : .27 : .22,
     width: kind === "elephant" ? .105 : .067,
     ankleHeight: kind === "elephant" ? .08 : kind === "horse" ? .06 : .07,
     bend: quadruped && index > 1 ? -1 : 1,
@@ -260,5 +261,56 @@ describe("rolling and combat", () => {
     restoreCombatRig(combat);
     restoreLocomotion(walking, true);
     expect(footPosition(leg).y).toBeCloseTo(0, 10);
+  });
+});
+
+
+describe("natural march timing", () => {
+  it.each(walkers)("keeps %s cadence readable at standard playback while run covers more ground", (kind) => {
+    const rates = {} as Record<LocomotionPace, number>;
+    const speeds = {} as Record<LocomotionPace, number>;
+    for (const pace of paces) {
+      const { root, rig } = walkingRig(kind);
+      const speed = surfaceSpeed(kind, "dirt") * gaitTravelScale(kind, pace, "dirt");
+      applyLocomotion(rig, { distance: 0, surface: "dirt", motion: "walking", reduced: false, pace });
+      const startCycle = rig.cycle;
+      for (let frame = 1; frame <= 120; frame++) {
+        const distance = speed * frame / 60;
+        root.position.z = -5 - distance;
+        applyLocomotion(rig, { distance, surface: "dirt", motion: "walking", reduced: false, pace });
+      }
+      rates[pace] = (rig.cycle - startCycle) / 2;
+      speeds[pace] = speed;
+      expect(rates[pace]).toBeGreaterThanOrEqual((pace === "walk" ? 1.2 : 1.5) - 1e-9);
+      expect(rates[pace]).toBeLessThanOrEqual(pace === "walk" ? 1.8 : 2.4);
+      expect(root.position.y).toBe(BASE);
+    }
+    expect(speeds.run).toBeGreaterThan(speeds.walk * 1.25);
+    expect(rates.run).toBeGreaterThan(rates.walk);
+  });
+
+  it.each(walkers)("makes %s use walking speed on a narrow crossing without slowing its boat", (kind) => {
+    for (const surface of ["bridge", "boardwalk"] as const) {
+      expect(gaitTravelScale(kind, "run", surface)).toBe(gaitTravelScale(kind, "walk", surface));
+      const speed = surfaceSpeed(kind, surface) * gaitTravelScale(kind, "run", surface);
+      expect(speed).toBeLessThan(surfaceSpeed(kind, "dirt") * gaitTravelScale(kind, "walk", "dirt"));
+    }
+    expect(gaitTravelScale(kind, "run", "ferry")).toBe(1);
+    expect(gaitTravelScale(kind, "walk", "ferry")).toBe(1);
+  });
+
+  it.each(["soldier", "general", "advisor"] as const)("starts and resumes %s from neutral feet instead of snapping into a split stance", (kind) => {
+    for (const pace of paces) {
+      const { rig } = walkingRig(kind);
+      const standing = rig.legs.map(footPosition);
+      expect(rig.legs.every((leg) => Math.abs(leg.knee.rotation.x) < 1.05)).toBe(true);
+      applyLocomotion(rig, { distance: 0, surface: "dirt", motion: "walking", reduced: false, pace });
+      rig.legs.forEach((leg, index) => expect(footPosition(leg).distanceTo(standing[index])).toBeLessThan(1e-8));
+      applyLocomotion(rig, { distance: .001, surface: "dirt", motion: "walking", reduced: false, pace });
+      rig.legs.forEach((leg, index) => expect(footPosition(leg).distanceTo(standing[index])).toBeLessThan(.004));
+      applyLocomotion(rig, { distance: .13, surface: "dirt", motion: "waiting", reduced: false, pace });
+      applyLocomotion(rig, { distance: .13, surface: "dirt", motion: "walking", reduced: false, pace });
+      rig.legs.forEach((leg, index) => expect(footPosition(leg).distanceTo(standing[index])).toBeLessThan(1e-8));
+    }
   });
 });

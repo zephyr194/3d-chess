@@ -183,3 +183,20 @@ describe("upper body march poses", () => {
     }
   });
 });
+
+
+describe("faction march posture", () => {
+  it.each(kinds)("keeps %s faction poses distinct and restrained without translating its joints", (kind) => {
+    const { rig, nodes, root } = rigFor(kind);
+    applyCombatPose(rig, sampleMarchPose(kind, .17, "walk", 0, "red"));
+    const red = Object.values(nodes).map((node) => node.quaternion.clone());
+    applyCombatPose(rig, sampleMarchPose(kind, .17, "walk", 0, "black"));
+    expect(Object.values(nodes).some((node, index) => node.quaternion.angleTo(red[index]) > .003)).toBe(true);
+    for (const node of Object.values(nodes)) {
+      expect(node.position.length()).toBe(0);
+      expect(node.quaternion.angleTo(new THREE.Quaternion())).toBeLessThan(.4);
+    }
+    expect(root.position.toArray()).toEqual([3, .545, -5]);
+    expect(root.scale.toArray()).toEqual([.68, .68, .68]);
+  });
+});

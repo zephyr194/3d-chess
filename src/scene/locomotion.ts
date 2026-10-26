@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import type { PieceKind } from "../game/xiangqi";
 import { PIECE_SCALE } from "./board";
-import type { Surface } from "./landscape-layout";
+import { surfaceSpeed, type Surface } from "./landscape-layout";
 
 export type LegRole = "left" | "right" | "frontLeft" | "frontRight" | "rearLeft" | "rearRight";
 export type LegChain = {
@@ -25,8 +25,10 @@ export type LocomotionRig = {
   wheels: WheelJoint[];
   distance: number;
   cycle: number;
+  startCycle: number;
   narrow: number;
   pace: LocomotionPace;
+  motion: "resting" | "stepping";
   stepOffsets: { z: number; until: number }[];
 };
 export type LocomotionInput = {
@@ -86,9 +88,9 @@ export function addJointedLeg(parent: THREE.Group, spec: JointedLegSpec): LegCha
 
 type GaitProfile = { stride: number; stance: number; lift: number; phases: readonly number[] };
 export const gaitProfiles: Record<PieceKind, GaitProfile> = {
-  soldier: { stride: .58, stance: .62, lift: .13, phases: [0, .5] },
-  general: { stride: .48, stance: .7, lift: .085, phases: [0, .5] },
-  advisor: { stride: .36, stance: .73, lift: .065, phases: [0, .5] },
+  soldier: { stride: .50, stance: .60, lift: .075, phases: [0, .5] },
+  general: { stride: .44, stance: .62, lift: .06, phases: [0, .5] },
+  advisor: { stride: .36, stance: .70, lift: .05, phases: [0, .5] },
   horse: { stride: .8, stance: .56, lift: .19, phases: [0, .5, .5, 0] },
   elephant: { stride: .46, stance: .8, lift: .075, phases: [0, .5, .75, .25] },
   chariot: { stride: 1, stance: 1, lift: 0, phases: [] },
@@ -96,14 +98,33 @@ export const gaitProfiles: Record<PieceKind, GaitProfile> = {
 };
 
 export const runGaitProfiles: Record<PieceKind, GaitProfile> = {
-  soldier: { stride: .7, stance: .55, lift: .17, phases: [0, .5] },
-  general: { stride: .64, stance: .6, lift: .14, phases: [0, .5] },
-  advisor: { stride: .52, stance: .66, lift: .105, phases: [0, .5] },
+  soldier: { stride: .60, stance: .50, lift: .125, phases: [0, .5] },
+  general: { stride: .58, stance: .50, lift: .105, phases: [0, .5] },
+  advisor: { stride: .48, stance: .525, lift: .085, phases: [0, .5] },
   horse: { stride: .98, stance: .58, lift: .23, phases: [0, .48, .58, .08] },
   elephant: { stride: .58, stance: .8, lift: .105, phases: [0, .5, .75, .25] },
   chariot: { stride: 1, stance: 1, lift: 0, phases: [] },
   cannon: { stride: 1, stance: 1, lift: 0, phases: [] },
 };
+
+const cadences: Record<PieceKind, Record<LocomotionPace, number>> = {
+  soldier: { walk: 1.45, run: 2.1 },
+  general: { walk: 1.35, run: 2.0 },
+  advisor: { walk: 1.35, run: 1.85 },
+  horse: { walk: 1.65, run: 2.15 },
+  elephant: { walk: 1.25, run: 1.5 },
+  chariot: { walk: 1.5, run: 2.4 },
+  cannon: { walk: 1.25, run: 1.85 },
+};
+
+export function gaitTravelScale(kind: PieceKind, pace: LocomotionPace, surface: Surface) {
+  if (surface === "ferry") return 1;
+  const narrow = surface === "bridge" || surface === "boardwalk";
+  const effectivePace = narrow ? "walk" : pace;
+  const profile = (effectivePace === "run" ? runGaitProfiles : gaitProfiles)[kind];
+  const stride = profile.stride * (narrow ? .72 : 1);
+  return stride * PIECE_SCALE * cadences[kind][effectivePace] / surfaceSpeed(kind, "dirt");
+}
 
 export function poseLeg(leg: LegChain, z: number, lift: number) {
   const down = leg.hip.position.y - leg.groundY - leg.ankleHeight - lift;
@@ -118,12 +139,13 @@ export function poseLeg(leg: LegChain, z: number, lift: number) {
 }
 
 export function createLocomotionRig(kind: PieceKind, legs: LegChain[], wheels: WheelJoint[]): LocomotionRig {
-  const rig: LocomotionRig = { kind, legs, wheels, distance: 0, cycle: 0, narrow: 0, pace: "walk", stepOffsets: [] };
+  const rig: LocomotionRig = { kind, legs, wheels, distance: 0, cycle: 0, startCycle: 0, narrow: 0, pace: "walk", motion: "resting", stepOffsets: [] };
   restoreLocomotion(rig, true);
   return rig;
 }
 
 export function restoreLocomotion(rig: LocomotionRig, resetDistance = false) {
+  rig.motion = "resting";
   rig.stepOffsets = [];
   for (const leg of rig.legs) {
     poseLeg(leg, 0, 0);
@@ -170,6 +192,17 @@ export function applyLocomotion(rig: LocomotionRig, input: LocomotionInput) {
   const narrowTarget = input.surface === "boardwalk" || input.surface === "bridge" ? 1 : 0;
   rig.narrow += THREE.MathUtils.clamp(narrowTarget - rig.narrow, -delta * 4, delta * 4);
   const requested = narrowTarget ? "walk" : input.pace ?? "walk";
+  if (rig.motion === "resting") {
+    rig.pace = requested;
+    const startingProfile = (requested === "run" ? runGaitProfiles : gaitProfiles)[rig.kind];
+    const humanoid = rig.kind === "soldier" || rig.kind === "general" || rig.kind === "advisor";
+    rig.cycle = rig.startCycle = humanoid ? startingProfile.stance / 2 : 0;
+    rig.stepOffsets = (humanoid ? rig.legs : []).map((_, index) => {
+      const step = gaitStep(rig.kind, startingProfile, index, rig.cycle, rig.narrow, input.surface === "mud");
+      return { z: -step.z / step.correction, until: Math.floor(rig.cycle + step.offset) + 1 - step.offset };
+    });
+    rig.motion = "stepping";
+  }
   let profile = (rig.pace === "run" ? runGaitProfiles : gaitProfiles)[rig.kind];
   const stride = profile.stride * THREE.MathUtils.lerp(1, .72, rig.narrow);
   const nextCycle = rig.cycle + delta / stride;
@@ -190,7 +223,7 @@ export function applyLocomotion(rig: LocomotionRig, input: LocomotionInput) {
   } else rig.cycle = nextCycle;
   rig.legs.forEach((leg, index) => {
     const step = gaitStep(rig.kind, profile, index, rig.cycle, rig.narrow, input.surface === "mud");
-    poseLeg(leg, step.z + stepCorrection(rig, index, rig.cycle, step.correction), step.lift);
+    poseLeg(leg, step.z + stepCorrection(rig, index, rig.cycle, step.correction), step.lift * THREE.MathUtils.smoothstep(rig.cycle - rig.startCycle, 0, .5));
     leg.planted = step.planted;
   });
   for (const wheel of rig.wheels) {
